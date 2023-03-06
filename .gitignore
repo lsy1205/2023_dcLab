@@ -1,0 +1,13 @@
+# git ignore
+
+*.log
+*.fsdb
+*.bak
+
+*.zip
+*.pdf
+*.ppt
+
+db\
+incrementa_db\
+output_files\
