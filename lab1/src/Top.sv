@@ -5,79 +5,98 @@ module Top (
 	output [3:0] o_random_out
 );
 
-// ===== States =====
-parameter S_IDLE = 1'b0;
-parameter S_PROC = 1'b1;
+	// ===== States =====
+	parameter S_IDLE = 1'b0;
+	parameter S_PROC = 1'b1;
 
-// ===== Output Buffers =====
-logic [3:0] o_random_out_r, o_random_out_w;
+	// ===== Output Buffers =====
+	logic [3:0] o_random_out_r, o_random_out_w;
 
-// ===== Registers & Wires =====
-logic        state, state_nxt;
-logic [24:0] counter, counter_nxt;
-logic [3:0]  cycle, cycle_nxt;
-logic [15:0] rnd_seed = 16'haf15;
-logic        rnd_gen;
+	// ===== Registers & Wires =====
+	logic        state, state_nxt;
+	logic [3:0]  cycle, cycle_nxt;
+	logic        rnd_gen, rnd_gen_nxt;
+	logic [24:0] counter, counter_nxt;
+	logic [15:0] rnd_seed = 16'haf15;		// need noisy input
 
-// ===== Output Assignments =====
-assign o_random_out = o_random_out_r;
+	// ===== Output Assignments =====
+	assign o_random_out = o_random_out_r;
 
+	// ===== Combinational Circuits =====
+	PRNG prng_0(.rst_n(i_rst_n), .seed(rnd_seed), .gen(rnd_gen), .random_num(o_random_out_w));
 
-// ===== Combinational Circuits =====
-PRNG prng_0(.rst_n(i_rst_n), .seed(rnd_seed), .gen(rnd_gen), .random_num(o_random_out_w));
-
-always_comb begin
-	// Default Values
-	// o_random_out_w = o_random_out_r;
-	state_nxt      = state;
-	counter_nxt    = counter;
-	cycle_nxt      = cycle;
-	rnd_gen        = 0;
 
 	// FSM
-	case(state)
-		S_IDLE: begin
-			if (i_start) begin
-				state_nxt      = S_PROC;
-			end
-		end
+	always_comb begin
+		// default
+		state_nxt = state;
 
-		S_PROC: begin
-			//bonus
-			//if (i_start) begin
-				
-			//end
-			counter_nxt = counter + 1;
-			if(counter[24:21]==cycle)begin
-				rnd_gen = 1'b1;
-				counter_nxt = 26'd0;
-				cycle_nxt = cycle + 4'd1;
+		case(state)
+			S_IDLE: begin
+				if (i_start) begin
+					state_nxt = S_PROC;
+				end
 			end
 
-			if(cycle == 4'hf )begin
+			S_PROC: begin
+				if (i_start || cycle == 4'd15) begin
+					state_nxt = S_IDLE;
+				end
+			end
+
+			default: begin
 				state_nxt = S_IDLE;
 			end
+		endcase
+	end
+
+	// scheduler
+	always_comb begin
+		// default
+		cycle_nxt   = cycle;
+		counter_nxt = counter;
+		rnd_gen_nxt = 1'b0;
+
+		case (state)
+			S_IDLE: begin
+				cycle_nxt = 4'b0;
+			end
+			S_PROC: begin
+				if (counter[24:21] == cycle) begin
+					cycle_nxt   = cycle + 4'b1;
+					counter_nxt = 25'b0;
+					rnd_gen_nxt = 1'b1;
+				end
+				else begin
+					counter_nxt = counter + 1;
+				end
+			end
+			default: begin
+				cycle_nxt   =  4'b0;
+				counter_nxt = 25'b0;
+				rnd_gen_nxt =  1'b0;
+			end
+		endcase
+	end
+
+	// ===== Sequential Circuits =====
+	always_ff @(posedge i_clk or negedge i_rst_n) begin
+		// reset
+		if (!i_rst_n) begin
+			o_random_out_r <= 4'b0;
+			state	       <= S_IDLE;
+			cycle          <= 4'b0;
+			counter        <= 25'b0;
+			rnd_gen        <= 1'b0;
 		end
-
-	endcase
-end
-
-// ===== Sequential Circuits =====
-always_ff @(posedge i_clk or negedge i_rst_n) begin
-	// reset
-	if (!i_rst_n) begin
-		o_random_out_r <= 4'd0;
-		state	       <= S_IDLE;
-		counter        <= 25'd0;
-		cycle          <= 4'd0;
+		else begin
+			o_random_out_r <= o_random_out_w;
+			state 		   <= state_nxt;
+			cycle          <= cycle_nxt;
+			counter        <= counter_nxt;
+			rnd_gen        <= rnd_gen_nxt;
+		end
 	end
-	else begin
-		o_random_out_r <= o_random_out_w;
-		state 		   <= state_nxt;
-		counter        <= counter_nxt;
-		cycle          <= cycle_nxt;
-	end
-end
 
 endmodule
 
