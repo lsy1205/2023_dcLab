@@ -3,11 +3,13 @@
 *.log
 *.fsdb
 *.bak
+*.qpf
+*.qws
 
 *.zip
 *.pdf
 *.ppt
 
-db\
-incrementa_db\
-output_files\
+db/
+incremental_db/
+output_files/

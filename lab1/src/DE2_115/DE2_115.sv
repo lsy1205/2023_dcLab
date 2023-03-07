@@ -150,7 +150,8 @@ Top top0(
 	.i_clk(CLOCK_50),
 	.i_rst_n(KEY[1]),
 	.i_start(keydown),
-	.o_random_out(random_value)
+	.o_random_out(random_value),
+	.o_changing(LEDR[0])
 );
 
 SevenHexDecoder seven_dec0(
