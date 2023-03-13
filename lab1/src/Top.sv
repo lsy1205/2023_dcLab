@@ -2,6 +2,7 @@ module Top (
 	input        i_clk,
 	input        i_rst_n,
 	input        i_start,
+	input        i_show_last,
 	output [3:0] o_random_out,
 	output       o_changing
 );
@@ -15,6 +16,9 @@ module Top (
 	logic [3:0]  cycle, cycle_nxt;
 	logic [24:0] counter, counter_nxt;
 	logic        rnd_set_seed, rnd_gen;
+	logic [3:0]  record, record_nxt;
+	logic [3:0]  rnd_out, rnd_out_nxt;
+	logic [3:0]  rnd_num;
 
 	// ===== Sub Module =====
 	PRNG prng_0(
@@ -23,11 +27,13 @@ module Top (
 		.i_set_seed(rnd_set_seed),
 		.i_seed(counter[20:5]),
 		.i_generate(rnd_gen),
-		.o_random_num(o_random_out)
+		.o_random_num(rnd_num)
 	);
 
 	// ===== Combinational Circuits =====
 	assign o_changing = (state == S_PROC);
+	assign o_random_out = rnd_out;
+	assign rnd_out_nxt = (i_show_last) ? record : rnd_num; 
 
 	always_comb begin : FSM
 		// default
@@ -55,10 +61,11 @@ module Top (
 	// scheduler
 	always_comb begin
 		// default
-		cycle_nxt    = cycle;
-		counter_nxt  = counter;
-		rnd_set_seed = 1'b0;
-		rnd_gen      = 1'b0;
+		cycle_nxt       = cycle;
+		counter_nxt     = counter;
+		rnd_set_seed    = 1'b0;
+		rnd_gen         = 1'b0;
+		record_nxt      = record;  
 
 		case (state)
 			S_IDLE: begin
@@ -66,6 +73,7 @@ module Top (
 					cycle_nxt    = 4'd1;
 					counter_nxt  = 25'd0;
 					rnd_set_seed = 1'b1;
+					record_nxt   = rnd_num;
 				end
 				else begin
 					counter_nxt = counter + 1;
@@ -77,6 +85,7 @@ module Top (
 					cycle_nxt   = cycle + 1;
 					counter_nxt = 25'd0;
 					rnd_gen     = 1'b1;
+
 				end
 				else begin
 					counter_nxt = counter + 1;
@@ -93,14 +102,18 @@ module Top (
 	// ===== Sequential Circuits =====
 	always_ff @(posedge i_clk or negedge i_rst_n) begin
 		if (!i_rst_n) begin
-			state     <= S_IDLE;
-			cycle     <= 4'd1;
-			counter   <= 25'd0;
+			state   <= S_IDLE;
+			cycle   <= 4'd1;
+			counter <= 25'd0;
+			record  <= 4'd0;
+			rnd_out <= 4'd0;
 		end
 		else begin
-			state     <= state_nxt;
-			cycle     <= cycle_nxt;
-			counter   <= counter_nxt;
+			state   <= state_nxt;
+			cycle   <= cycle_nxt;
+			counter <= counter_nxt;
+			record  <= record_nxt;
+			rnd_out <= rnd_out_nxt;
 		end
 	end
 
