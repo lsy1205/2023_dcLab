@@ -158,7 +158,7 @@ Top top0(
 	.i_clk(CLOCK_50),
 	.i_rst_n(KEY[1]),
 	.i_start(keydown),
-	.i_show_last(~press),
+	.i_show_last_n(press),
 	.o_random_out(random_value),
 	.o_changing(LEDR[0])
 );

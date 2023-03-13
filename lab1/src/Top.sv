@@ -2,7 +2,7 @@ module Top (
 	input        i_clk,
 	input        i_rst_n,
 	input        i_start,
-	input        i_show_last,
+	input        i_show_last_n,
 	output [3:0] o_random_out,
 	output       o_changing
 );
@@ -33,7 +33,7 @@ module Top (
 	// ===== Combinational Circuits =====
 	assign o_changing = (state == S_PROC);
 	assign o_random_out = rnd_out;
-	assign rnd_out_nxt = (i_show_last) ? record : rnd_num; 
+	assign rnd_out_nxt = (!i_show_last_n) ? record : rnd_num; 
 
 	always_comb begin : FSM
 		// default
