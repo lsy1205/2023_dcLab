@@ -70,7 +70,7 @@ module Top (
 		case (state)
 			S_IDLE: begin
 				if (i_start) begin
-					cycle_nxt    = 4'd1;
+					cycle_nxt    = 4'd0;
 					counter_nxt  = 25'd0;
 					rnd_set_seed = 1'b1;
 					record_nxt   = rnd_num;
@@ -92,7 +92,7 @@ module Top (
 				end
 			end
 			default: begin
-				cycle_nxt   =  4'd1;
+				cycle_nxt   =  4'd0;
 				counter_nxt = 25'd0;
 				rnd_gen     =  1'b0;
 			end
@@ -103,7 +103,7 @@ module Top (
 	always_ff @(posedge i_clk or negedge i_rst_n) begin
 		if (!i_rst_n) begin
 			state   <= S_IDLE;
-			cycle   <= 4'd1;
+			cycle   <= 4'd0;
 			counter <= 25'd0;
 			record  <= 4'd0;
 			rnd_out <= 4'd0;
