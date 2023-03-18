@@ -67,20 +67,26 @@ always_ff @(posedge i_clk or posedge i_rst) begin
 		state_r    <= S_IDLE;
 		o_ans_r    <= 0;
 		o_fin_r    <= 0;
-		prep_fin_r <= 0;
-		mul_fin_r  <= 0;
-		sqr_fin_r  <= 0;
 		counter_r  <= 0;
 	end
 	else begin
 		state_r    <= state_w;
 		o_ans_r    <= o_ans_w;
 		o_fin_r    <= o_fin_w;
-		prep_fin_r <= prep_fin_w;
-		mul_fin_r  <= mul_fin_w;
-		sqr_fin_r  <= sqr_fin_w;
 		counter_r  <= counter_w;
 	end
 end
 
+endmodule
+
+module RsaPrep (
+	output o_fin
+);
+	
+endmodule
+
+module RsaMont (
+	output o_fin
+);
+	
 endmodule

@@ -75,12 +75,12 @@ always_comb begin : FSM
 
     case (state_r)
         S_GET_KEY: begin
-            if(bytes_counter_r == 63 && !avm_waitrequest) begin
+            if(bytes_counter_r == 63 && !avm_waitrequest && stage_r == ST_TRANS) begin
                 state_w = S_GET_DATA;
             end
         end
         S_GET_DATA: begin
-            if(bytes_counter_r == 31 && !avm_waitrequest) begin
+            if(bytes_counter_r == 31 && !avm_waitrequest && stage_r == ST_TRANS) begin
                 state_w = S_WAIT_CALCULATE;
             end
         end
@@ -90,7 +90,7 @@ always_comb begin : FSM
             end
         end
         S_SEND_DATA: begin
-            if(bytes_counter_r == 30 && !avm_waitrequest) begin
+            if(bytes_counter_r == 30 && !avm_waitrequest && stage_r == ST_TRANS) begin
                 state_w = S_GET_DATA;
             end
         end
@@ -108,7 +108,6 @@ always_comb begin
     avm_address_w   = avm_address_r;
     avm_read_w      = avm_read_r;
     avm_write_w     = avm_write_r;
-    state_w         = state_r;
     bytes_counter_w = bytes_counter_r;
     rsa_start_w     = rsa_start_r;
     stage_w         = stage_r;
@@ -117,14 +116,19 @@ always_comb begin
         S_GET_KEY: begin
             case (stage_r)
                 ST_CHECK: begin
-                    StartRead(STATUS_BASE);
+                    avm_read_w = 1;
+                    avm_write_w = 0;
+                    avm_address_w = STATUS_BASE;
                     
                     if(!avm_waitrequest && avm_readdata[RX_OK_BIT]) begin
+                        avm_read_w = 0;
                         stage_w = ST_TRANS;
                     end
                 end
                 ST_TRANS: begin
-                    StartRead(RX_BASE);
+                    avm_read_w = 1;
+                    avm_write_w = 0;
+                    avm_address_w = RX_BASE;
                     
                     if(!avm_waitrequest) begin
                         if(bytes_counter_r < 32) begin
@@ -137,6 +141,7 @@ always_comb begin
                         end
                     
                         bytes_counter_w = (bytes_counter_r != 63) ? bytes_counter_r + 1 : 0;
+                        avm_read_w = 0;
                         stage_w = ST_CHECK;
                     end
                 end
@@ -145,14 +150,19 @@ always_comb begin
         S_GET_DATA: begin
             case (stage_r)
                 ST_CHECK: begin
-                    StartRead(STATUS_BASE);
+                    avm_read_w = 1;
+                    avm_write_w = 0;
+                    avm_address_w = STATUS_BASE;
                     
                     if(!avm_waitrequest && avm_readdata[RX_OK_BIT]) begin
+                        avm_read_w = 0;
                         stage_w = ST_TRANS;
                     end
                 end
                 ST_TRANS: begin
-                    StartRead(RX_BASE);
+                    avm_read_w = 1;
+                    avm_write_w = 0;
+                    avm_address_w = RX_BASE;
                     
                     if(!avm_waitrequest) begin
                         enc_w = enc_r >> 8;
@@ -160,6 +170,7 @@ always_comb begin
                         
                         bytes_counter_w = (bytes_counter_r != 31) ? bytes_counter_r + 1 : 0;
                         rsa_start_w = (bytes_counter_r == 31); 
+                        avm_read_w = 0;
                         stage_w = ST_CHECK;
                     end
                 end
@@ -172,23 +183,40 @@ always_comb begin
         S_SEND_DATA: begin
             case (stage_r)
                 ST_CHECK: begin
-                    StartRead(STATUS_BASE);
+                    avm_read_w = 1;
+                    avm_write_w = 0;
+                    avm_address_w = STATUS_BASE;
+
                     if(!avm_waitrequest && avm_readdata[TX_OK_BIT]) begin
+                        avm_read_w = 0;
                         stage_w = ST_TRANS;
                     end
                 end
                 ST_TRANS: begin
-                    StartWrite(TX_BASE);
+                    avm_read_w = 0;
+                    avm_write_w = 1;
+                    avm_address_w = TX_BASE;
+
                     if(!avm_waitrequest) begin
                         dec_w = dec_r << 8;
                         bytes_counter_w = (bytes_counter_r != 30) ? bytes_counter_r + 1 : 0;
+                        avm_write_w = 0;
                         stage_w = ST_CHECK;
                     end
                 end
             endcase
         end
         default: begin
-            state_w = state_r;
+            n_w             = n_r;
+            d_w             = d_r;
+            enc_w           = enc_r;
+            dec_w           = dec_r;
+            avm_address_w   = avm_address_r;
+            avm_read_w      = avm_read_r;
+            avm_write_w     = avm_write_r;
+            bytes_counter_w = bytes_counter_r;
+            rsa_start_w     = rsa_start_r;
+            stage_w         = stage_r;
         end
     endcase
 end
