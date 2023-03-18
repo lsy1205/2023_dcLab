@@ -53,10 +53,10 @@ On the other hand, you may assume the data hold if "receiver" set rdy to 0.
 
 So now it's easy to understand the design for core module.
 
-{a, e, n} -> core module -> {pow(a, e) mod n}
+{a, d, n} -> core module -> {pow(a, d) mod n}
 
-That's all, your mission is to implement a module that accept {a, e, n} and
-output pow(a, e) mod n, conforming to the two wire protocol.
+That's all, your mission is to implement a module that accept {a, d, n} and
+output pow(a, d) mod n, conforming to the two wire protocol.
 We also prepared a testbench for you (see appendix).
 
 ## Implement a Avalon Master to Control RS-232 and Wrap Your Core
@@ -69,10 +69,10 @@ The RS-232 module mainly has 2 functionalities.
 Basically, your module (Avalon master) will work like this.
 
 1. Receive 32 bytes from computer (n)
-2. Receive 32 bytes from computer (e)
+2. Receive 32 bytes from computer (d)
 3. Receive 32 bytes from computer (a)
 4. Compute
-5. Send 31 bytes to computer (pow(a, e) mod n)
+5. Send 31 bytes to computer (pow(a, d) mod n)
 6. Go to 3
 
 And you have to use Avalon protocol to actually read/write a byte from the RS-232 Qsys module.
