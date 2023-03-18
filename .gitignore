@@ -14,4 +14,4 @@ db/
 incremental_db/
 output_files/
 
-DS_Store
+.DS_Store
