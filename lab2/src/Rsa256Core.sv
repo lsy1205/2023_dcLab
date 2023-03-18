@@ -12,4 +12,11 @@ module Rsa256Core (
 // operations for RSA256 decryption
 // namely, the Montgomery algorithm
 
+localparam S_IDLE = 2'd0;
+localparam S_PREP = 2'd1;
+localparam S_MONT = 2'd2;
+localparam S_CALC = 2'd3;
+
+
+
 endmodule
