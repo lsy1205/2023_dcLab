@@ -40,10 +40,10 @@ Rsa256Core rsa256_core(
     .i_clk(avm_clk),
     .i_rst(avm_rst),
     .i_start(rsa_start_r),
-    .i_a(enc_r),
-    .i_d(d_r),
+    .i_msg(enc_r),
+    .i_key(d_r),
     .i_n(n_r),
-    .o_a_pow_d(rsa_dec),
+    .o_ans(rsa_dec),
     .o_finished(rsa_finished)
 );
 
