@@ -121,7 +121,7 @@ always_comb begin
                     avm_address_w = STATUS_BASE;
                     
                     if(!avm_waitrequest && avm_readdata[RX_OK_BIT]) begin
-                        avm_read_w = 0;
+                        avm_read_w = 0; // can delete???????
                         stage_w = ST_TRANS;
                     end
                 end
