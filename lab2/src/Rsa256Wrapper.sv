@@ -75,12 +75,12 @@ always_comb begin : FSM
 
     case (state_r)
         S_GET_KEY: begin
-            if(bytes_counter_r == 63 && !avm_waitrequest && stage_r == ST_TRANS) begin
+            if(bytes_counter_r == 63 && stage_r == ST_TRANS && !avm_waitrequest) begin
                 state_w = S_GET_DATA;
             end
         end
         S_GET_DATA: begin
-            if(bytes_counter_r == 31 && !avm_waitrequest && stage_r == ST_TRANS) begin
+            if(bytes_counter_r == 31 && stage_r == ST_TRANS && !avm_waitrequest) begin
                 state_w = S_WAIT_CALCULATE;
             end
         end
@@ -90,12 +90,12 @@ always_comb begin : FSM
             end
         end
         S_SEND_DATA: begin
-            if(bytes_counter_r == 30 && !avm_waitrequest && stage_r == ST_TRANS) begin
+            if(bytes_counter_r == 30 && stage_r == ST_TRANS && !avm_waitrequest) begin
                 state_w = S_GET_DATA;
             end
         end
         default: begin
-            state_w = state_r;
+            state_w = S_GET_KEY;
         end
     endcase
 end
@@ -121,7 +121,7 @@ always_comb begin
                     avm_address_w = STATUS_BASE;
                     
                     if(!avm_waitrequest && avm_readdata[RX_OK_BIT]) begin
-                        avm_read_w = 0; // can delete???????
+                        avm_read_w = 0;
                         stage_w = ST_TRANS;
                     end
                 end
@@ -228,10 +228,10 @@ always_ff @(posedge avm_clk or posedge avm_rst) begin
         enc_r           <= 0;
         dec_r           <= 0;
         avm_address_r   <= STATUS_BASE;
-        avm_read_r      <= 1;
+        avm_read_r      <= 0;   // 1;
         avm_write_r     <= 0;
         state_r         <= S_GET_KEY;
-        bytes_counter_r <= 63;
+        bytes_counter_r <= 0;   // 63;
         rsa_start_r     <= 0;
         stage_r         <= 0;
     end else begin
