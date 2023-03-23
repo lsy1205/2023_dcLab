@@ -19,6 +19,7 @@ localparam S_CALC = 2'd3;
 
 logic  [1:0] state_r, state_w;
 logic  [7:0] counter_r, counter_w;
+logic[255:0] key_r, key_w;
 logic[255:0] o_ans_r, o_ans_w;
 logic        o_fin_r, o_fin_w;
 logic        prep_start_r, prep_start_w;
