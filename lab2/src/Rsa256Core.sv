@@ -201,9 +201,6 @@ module RsaPrep (
 			if (i_start) begin
 				o_m_w = i_b;	
 			end
-			else begin
-				o_m_w = 0;
-			end
 		end
 		CALC: begin
 			if (counter_r == 8'hff) begin
@@ -211,7 +208,7 @@ module RsaPrep (
 			end
 			else begin
 				counter_w = counter_r + 1;
-			    o_m_w = (m_2 > i_N) ? m_2 - i_N : m_2;
+			    o_m_w = (m_2 < i_N) ? m_2 : m_2 - i_N;
 			end
 		end
 		endcase
@@ -248,13 +245,16 @@ module RsaMont (
 localparam S_IDLE = 0;
 localparam S_CALC = 1;
 
-logic [255:0] m_w, m_r;
-logic   [8:0] counter_w, counter_r;
-logic 		  fin_w, fin_r;
-logic 		  state_w, state_r;
+logic 		  state_r, state_w;
+logic 		  fin_r, fin_w;
+logic   [8:0] counter_r, counter_w;
+logic [255:0] m_r, m_w;
+logic [256:0] m_prime;
+logic [256:0] m_result_r, m_result_w;
+logic [255:0] a_r, a_w;
 
 assign o_fin = fin_r;
-assign o_m   = m_r;
+assign o_m   = m_result_r;
 
 always_comb begin : FSM
 	state_w = state_r;
@@ -266,7 +266,7 @@ always_comb begin : FSM
 			end
 		end
 		S_CALC: begin
-			if(counter_r == 256) begin
+			if(counter_r == 257) begin
 				state_w = S_IDLE;
 			end
 		end
@@ -275,52 +275,50 @@ end
 
 always_comb begin
 	m_w = m_r;
+	m_result_w = m_result_r;
 	counter_w = counter_r;
 	fin_w = fin_r;
+	a_w = a_r;
 
 	case (state_r)
 		S_IDLE: begin
 			m_w = 0;
 			counter_w = 0;
 			fin_w = 0;
+			if(i_start) begin
+				a_w = i_a;
+			end
 		end
 		S_CALC: begin
-			if(i_a[counter_r] == 1) begin
-				m_w = m_r + i_b;
-			end
+			m_prime = (a_r[0] == 1) ? m_r + i_b : m_r;
+			m_w = ((m_prime[0] == 1) ? (m_prime + i_N) : m_prime) >> 1;
+			a_w = a_r << 1;
 			
-			if(m_w[0] == 1) begin
-				m_w = m_w - i_N;
-			end
-
-			m_w = m_w >> 1;
-
-			if(counter_r == 256) begin
-				if(m_w >= i_N) begin
-					m_w = m_w - i_N;
-				end
+			if(counter_r == 257) begin
+				m_result_w = (m_r < i_N) ? m_r : m_r - i_N;
 				fin_w = 1;
 			end
-			else begin
-				fin_w = 0;
-				counter_w = counter_r + 1;
-			end
+			counter_w = counter_r + 1;
 		end
 	endcase
 end
 
 always_ff @(posedge i_clk or posedge i_rst) begin
 	if(i_rst) begin
-		m_r 	  <= 0;
-		counter_r <= 0;
-		fin_r 	  <= 0;
-		state_r   <= S_IDLE;
+		m_r 	   <= 0;
+		counter_r  <= 0;
+		fin_r 	   <= 0;
+		a_r        <= 0;
+		m_result_r <= 0;
+		state_r    <= S_IDLE;
 	end
 	else begin
-		m_r 	  <= m_w;
-		counter_r <= counter_w;
-		fin_r     <= fin_w;
-		state_r   <= state_w;
+		m_r 	   <= m_w;
+		counter_r  <= counter_w;
+		fin_r      <= fin_w;
+		a_r        <= a_w;
+		m_result_r <= m_result_w;
+		state_r    <= state_w;
 	end
 end
 	
