@@ -92,7 +92,6 @@ module RsaPrep (
 );
 	logic   [7:0] counter_r, counter_w;
 	logic [255:0] y_r, y_w;
-	logic [255:0] o_m_r, o_m_w;
 	logic         o_fin_r, o_fin_w;
 
 	assign o_fin = o_fin_r;
@@ -100,9 +99,7 @@ module RsaPrep (
 
 	always_comb begin
 		o_fin_w = 0;
-		o_m_r = 0;
 		counter_w = counter_r;
-		o_m_w = o_m_r;
 
 		case (counter_r)
 			8'b11111111:begin
@@ -124,13 +121,11 @@ module RsaPrep (
 		if(start) begin
 			counter_r = 0;
 			y_r = i_b;
-			o_m_r = 0;
 			o_fin_r = 0;
 		end
 		else begin
 			counter_r = counter_w;
 			y_r = y_w;
-			o_m_r = o_m_w;
 			o_fin_r = o_fin_w;
 		end
 	end
