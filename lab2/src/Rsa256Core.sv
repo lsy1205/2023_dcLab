@@ -86,7 +86,79 @@ module RsaPrep (
 endmodule
 
 module RsaMont (
-	output o_fin
+	input          i_clk,
+	input 		   i_start,
+	input  [255:0] i_N,
+	input  [255:0] i_a,
+	input  [255:0] i_b,
+	output         o_fin,
+	output [255:0] o_m
 );
+
+// localparam S_IDLE = 0;
+// localparam S_CALC = 1;
+
+logic [255:0] m_w, m_r;
+logic   [7:0] counter_w, counter_r;
+logic 		  fin_w, fin_r;
+// logic 		  state_w, state_r;
+
+assign o_fin = fin_r;
+assign o_m   = m_r;
+
+// always_comb begin
+// 	state_w = state_r;
+		
+// 	case (state_r)
+// 		S_IDLE: begin
+// 			if(i_start) begin
+// 				state_w = S_CALC;
+// 			end
+// 		end
+// 		S_CALC: begin
+// 			if(counter_r == 256) begin
+// 				state_w = S_IDLE;
+// 			end
+// 		end
+// 	endcase
+// end
+
+always_comb begin
+	m_w = m_r;
+	if(i_a[counter_r] == 1) begin
+		m_w = m_r + i_b;
+	end
+	
+	if(m_w[0] == 1) begin
+		m_w = m_w - i_N;
+	end
+
+	m_w = m_w >> 1;
+
+	if(counter_r == 255) begin
+		if(m_w >= i_N) begin
+			m_w = m_w - i_N;
+		end
+		fin_w = 1;
+	end
+	else begin
+		fin_w = 0;
+	end
+
+	counter_w = counter_r + 1;
+end
+
+always_ff @(posedge i_clk or posedge i_start) begin
+	if(i_start) begin
+		m_r 	  <= 0;
+		counter_r <= 0;
+		fin_r 	  <= 0;
+	end
+	else begin
+		m_r 	  <= m_w;
+		counter_r <= counter_w;
+		fin_r     <= fin_w;
+	end
+end
 	
 endmodule
