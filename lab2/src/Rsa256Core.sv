@@ -80,9 +80,60 @@ end
 endmodule
 
 module RsaPrep (
-	output o_fin
-);
+	input  [255:0] i_N,
+	input          i_clk,
+	input          start,
+	// input  [255:0] i_a,
+	input  [255:0] i_b,
+	// input    [8:0] i_k,
 	
+	output         o_fin,
+	output [255:0] o_m
+);
+	logic   [7:0] counter_r, counter_w;
+	logic [255:0] y_r, y_w;
+	logic [255:0] o_m_r, o_m_w;
+	logic         o_fin_r, o_fin_w;
+
+	assign o_fin = o_fin_r;
+	assign o_m   = y_r;
+
+	always_comb begin
+		o_fin_w = 0;
+		o_m_r = 0;
+		counter_w = counter_r;
+		o_m_w = o_m_r;
+
+		case (counter_r)
+			8'b11111111:begin
+				o_fin_w = 1;
+			end 
+			default: begin
+				counter_w = counter_r + 1;
+				if (y_r + y_r > i_N) begin
+					y_w = y_r << 1 - i_N;
+				end
+				else begin
+					y_w = y_r << 1;
+				end
+			end
+		endcase
+	end
+
+	always_ff @(posedge i_clk or posedge start) begin
+		if(start) begin
+			counter_r = 0;
+			y_r = i_b;
+			o_m_r = 0;
+			o_fin_r = 0;
+		end
+		else begin
+			counter_r = counter_w;
+			y_r = y_w;
+			o_m_r = o_m_w;
+			o_fin_r = o_fin_w;
+		end
+	end
 endmodule
 
 module RsaMont (
