@@ -3,8 +3,6 @@
 *.log
 *.fsdb
 *.bak
-*.qpf
-*.qws
 
 *.zip
 *.pdf
@@ -13,5 +11,7 @@
 db/
 incremental_db/
 output_files/
+.qsys_edit/
+
 
 .DS_Store

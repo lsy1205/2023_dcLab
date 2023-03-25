@@ -180,8 +180,8 @@ module tb;
 
 	localparam EXTRA_ACK = 2;
 	initial begin
-		$dumpfile("wrapper.fsdb");
-		$dumpvars;
+		$fsdbDumpfile("wrapper.fsdb");
+		$fsdbDumpvars;
 		u_input.fp = $fopen("wrapper_input.txt", "r");
 		u_output.fp = $fopen("wrapper_output.txt", "r");
 		u_output.expected = 217;
