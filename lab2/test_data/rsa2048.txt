@@ -1,0 +1,37 @@
+Prime number (Bitsize: 1024) (*): p
+============================================================= hex ==== 
+ef084eba78339f2f070e09805ab5e62c592a7c5666632a9a9ff8875cf97690bfca6f1ccf5a81de32b84572c5960d628f96f9af2cc35f7c190eaba9451899edbc27932a5c9df15fd44668612523943118217f18251c5cb02429ff6198aa6466bdec81ec8fc266ef27368500b231ac768b46228ad13f62dfc8fad9fa9e8b1b59cd
+
+Prime number (Bitsize: 1024) (*): q
+============================================================= hex ==== 
+e47b8007a5eb0bd8af48d3f1d07cf38329bb6d1df7bbc953dca19ed105a36928f47043d9b7a50831fccbea93c660d5738c51d5b527836243a247ef80ef948e7afe802728ffa11270c6cf0cfa9d47678b34d9bacf4c492761520895e240b155f9913aae9b6779178e5b01cdcf5c2847fe24b8e068d0af27d1f22297bbff3484c9
+
+Modulus (Bitsize: 2048): n=p*q
+============================================================= hex ==== 
+d556b6a73228f03499967d8e69b33391251b2c6cf0ffb7704d8a0c79fb261f5e7b55039d1bd6718fe24590daebc44a63f91ac21c1059c38b39bba12337f53c5b1bd98bf7e3875a02283e69f03b295e9e234e13448e942e5ccdadb4a4bfc44c3ab12bc37f4a0775315bff0d13c369f9adf64a10be9efcb4fc7af591472e5bf1d1f0efe9b201619c2bbd99b0af1236d38b5d9b2006ca8cdf64eafc9be188dc9c82b3582fcec2f5f7a991a6c5012678e8600c90b8f72bc09d7447dfb3d5af44549421ac8201cfb6a6fe5f97a1a883ad754412fc6b6e01534b9c0a59edbe2603af80712d0bede2522946542295b50bf67b77cbf6922d0e78e0cfa55089f5c36b35f5
+
+Euler's phi(n) function (*): phi(n)=(p-1)*(q-1)
+============================================================= hex ==== 
+d556b6a73228f03499967d8e69b33391251b2c6cf0ffb7704d8a0c79fb261f5e7b55039d1bd6718fe24590daebc44a63f91ac21c1059c38b39bba12337f53c5b1bd98bf7e3875a02283e69f03b295e9e234e13448e942e5ccdadb4a4bfc44c3ab12bc37f4a0775315bff0d13c369f9adf64a10be9efcb4fc7af591472e5bf1d01d6c1aefe342f1240742d33ce703f9dbdab536926c6deb766e6275b389c2a299f478cf25b0cf1144dc9567a7ca0ab05ce945341540ddbf1796ec1b0fa715d85cfb99307c322434b952603388c2d1dca0bca3987998ad74168e51f6433aedf2c8f37070c2b8722290c29bc7337e21bcee611b26f2fe66d934b853f79b391b5760
+
+Public exponent: e [1 < e < phi ;  e and phi are coprime]
+============================================================= hex ==== 
+10001
+
+Private exponent (*): d=(e^-1) mod phi
+============================================================= hex ==== 
+56cf8e4bc2d17dcd29a25f3d102de791ec737e44665ce81c3eb12a1a88e41e67a7f014245e2b88d26fd4b6f91e6f258640db6e9954ddf2003961ec5414752a3638c2f17dd18c46481270335399ff5f8d21f8a746826e31df79a2719b889d2c17c5f874f8dafae5e94bf2213425947e1117e353a4fdb4ff40ae183721abefa61a759e83e791a6afd16552fffa0c5745d8fcca3886a4b0a5dbef570966216c9e15dfb13939b114d1861fec7bdd7f0d926e7c4db8bfdd415e7d0ee0ccb235df61c79469e59ce41a6f89e9c753b116f5a6bd9185508a4a626a96b31b0f069478370f26605ec21da3f404cbebefc738502a3d262e924ed6ceab1c14d5b62fe7b10481
+
+Chinese Remainder Theorem (CRT) exponent 1 (*): dP=d mod (p-1)
+============================================================= hex ==== 
+5a4ad512731d6ce022d61698b9ab448b34136c6c66b8c6fb29ba83c7872456815c42a4ab5f10f792493152ad78850dda17b9b1864336ea75bca8f383fa4b0b16ac0c57502d09649d970b0ec72cad69ee27990ed1d5e8dd508bdcc04d1ef0562f200be40459f6f017ebec49db061093a7009343c4cf20d64fe1123e2d6d76a371
+
+Chinese Remainder Theorem (CRT) exponent 2 (*): dQ=d mod (q-1)
+============================================================= hex ==== 
+7a3ae77f2fefd26295432cbf4c7dcbf7fb375d648ec753291dfb086f61c8cdd52f0f6ffce515d0908d60b9995ca3290dab9f8be861bf13ae82fe60ce655cdfec44826270b8707ee0fe3a7e030468d2a7d21a38a9f5719d339f2320abed57f15a95ab0305f810fbdd182a9ae3b7b584ee1ccf1a9e78257bf400c928cb55f7cea1
+
+Chinese Remainder Theorem (CRT) coefficient (*): qInv=(q^-1) mod p
+============================================================= hex ==== 
+3376da1524253bfc084b072a0f6e84ee8a52e8295819d770f35f285ce3a712b5739f7f36936eb2860a2c537581463716750f3701b6dde4969403b36ea093373c001a92894d94969be2082a85d71c4bcb20870b5bf8de70b7997e0c7523eaf02c9aa1f484cce1dfe150634b122b9a59eea2b086312bf51f0bd0582260726e0678
+
+(*) Keep this information secret!
