@@ -32,10 +32,12 @@ logic[255:0] t_r, t_w;
 logic[255:0] t_pre;
 logic[255:0] t_sqr;
 
+assign o_ans = o_ans_r;
+
 RsaPrep prep_0 (
 	.i_clk(i_clk), 
 	.i_rst(i_rst), 
-	.i_start(start_prep_r), 
+	.i_start(prep_start_r), 
 	.i_N(i_n), 
 	.i_b(i_msg), 
 	.o_fin(prep_fin), 
@@ -45,7 +47,7 @@ RsaPrep prep_0 (
 RsaMont mont_mul (
 	.i_clk(i_clk), 
 	.i_rst(i_rst), 
-	.i_start(start_mul_r),  
+	.i_start(mul_start_r),  
 	.i_N(i_n),
     .i_a(o_ans_r), 
 	.i_b(t_r),   
@@ -56,7 +58,7 @@ RsaMont mont_mul (
 RsaMont mont_sqr (
 	.i_clk(i_clk), 
 	.i_rst(i_rst), 
-	.i_start(start_sqr_r),  
+	.i_start(sqr_start_r),  
 	.i_N(i_n), 
 	.i_a(t_r),
 	.i_b(t_r), 
@@ -98,22 +100,48 @@ end
 
 always_comb begin 
 	counter_w = counter_r;
+	o_fin_w = o_fin_r;
 	t_w       = t_r;
+	prep_start_w = prep_start_r;
+	mul_start_w = mul_start_r;
+	sqr_start_w = sqr_start_r;
+
 	case (state_r)
 		S_IDLE: begin
+			o_fin_w = 0;
+			counter_w = 0;
+			if(i_start) begin
+				key_w = i_key;
+				prep_start_w = 1;
+			end
 		end
 		S_PREP: begin
+			prep_start_w = 0;
 			if (prep_fin) begin
 				t_w = t_pre;
 			end
 		end
 		S_MONT: begin
+			sqr_start_w = 1;
+			if(key_r[0]) begin
+				mul_start_w = 1;
+			end
+
+			if(mul_fin) begin
+				mul_start_w = 0;
+			end
+			
 			if(sqr_fin) begin
+				sqr_start_w = 0;
 				t_w = t_sqr;
 			end
 		end
 		S_CALC: begin
 			counter_w = counter_r + 1;
+			key_w = key_r >> 1;
+			if (counter_r == 8'hff) begin
+				o_fin_w = 1;
+			end
 		end
 		default: begin
 			
@@ -123,18 +151,26 @@ end
 
 always_ff @(posedge i_clk or posedge i_rst) begin
 	if (i_rst) begin
-		state_r    <= S_IDLE;
-		o_ans_r    <= 1;
-		o_fin_r    <= 0;
-		counter_r  <= 0;
-		t_r        <= 0;
+		state_r      <= S_IDLE;
+		o_ans_r      <= 1;
+		o_fin_r      <= 0;
+		counter_r    <= 0;
+		key_r        <= 0;
+		t_r          <= 0;
+		prep_start_r <= 0;
+		mul_start_r  <= 0;
+		sqr_start_r  <= 0;
 	end
 	else begin
-		state_r    <= state_w;
-		o_ans_r    <= o_ans_w;
-		o_fin_r    <= o_fin_w;
-		counter_r  <= counter_w;
-		t_r        <= t_w;
+		state_r      <= state_w;
+		o_ans_r      <= o_ans_w;
+		o_fin_r      <= o_fin_w;
+		counter_r    <= counter_w;
+		t_r          <= t_w;
+		key_r        <= key_w;
+		prep_start_r <= prep_start_w;
+		mul_start_r  <= mul_start_w;
+		sqr_start_r  <= sqr_start_w;
 	end
 end
 
