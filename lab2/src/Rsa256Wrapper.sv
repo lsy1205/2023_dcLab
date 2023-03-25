@@ -1,7 +1,6 @@
 module Rsa256Wrapper #(
     parameter  KEY_W      = 256,
-    parameter  BYTE_COUNT = KEY_W / 8,
-    localparam COUNTER_W  = $clog2(BYTE_COUNT) + 1
+    parameter  BYTE_COUNT = KEY_W / 8
 ) (
     input         avm_rst,
     input         avm_clk,
@@ -12,6 +11,8 @@ module Rsa256Wrapper #(
     output [31:0] avm_writedata,
     input         avm_waitrequest
 );
+
+localparam COUNTER_W  = $clog2(BYTE_COUNT) + 1;
 
 localparam RX_BASE     = 0*4;
 localparam TX_BASE     = 1*4;

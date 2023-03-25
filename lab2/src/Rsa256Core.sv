@@ -1,6 +1,5 @@
 module Rsa256Core #(
-    parameter  KEY_W     = 256,
-    localparam COUNTER_W = $clog2(KEY_W)
+    parameter  KEY_W     = 256
 ) (
 	input              i_clk,
 	input              i_rst,
@@ -11,6 +10,8 @@ module Rsa256Core #(
 	output [KEY_W-1:0] o_ans,    // plain text x
 	output             o_finished
 );
+
+localparam COUNTER_W = $clog2(KEY_W);
 
 // operations for RSA256 decryption
 // namely, the Montgomery algorithm
@@ -191,8 +192,7 @@ end
 endmodule
 
 module RsaPrep #(
-    parameter  KEY_W     = 256,
-    localparam COUNTER_W = $clog2(KEY_W)
+    parameter  KEY_W     = 256
 ) (
 	input              i_clk,
 	input              i_rst,
@@ -204,79 +204,80 @@ module RsaPrep #(
 	output             o_fin
 );
 
-	localparam S_IDLE = 0;
-	localparam S_CALC = 1;
+localparam COUNTER_W = $clog2(KEY_W);
 
-	logic                 state_r, state_w;
-	logic [COUNTER_W-1:0] counter_r, counter_w;
-	logic     [KEY_W-1:0] o_m_r, o_m_w;
-	logic                 o_fin_r, o_fin_w; 
-	logic [(KEY_W+1)-1:0] m_2;
+localparam S_IDLE = 0;
+localparam S_CALC = 1;
 
-	assign o_m   = o_m_r;
-	assign o_fin = o_fin_r;
-	assign m_2   = o_m_r << 1;
+logic                 state_r, state_w;
+logic [COUNTER_W-1:0] counter_r, counter_w;
+logic     [KEY_W-1:0] o_m_r, o_m_w;
+logic                 o_fin_r, o_fin_w; 
+logic [(KEY_W+1)-1:0] m_2;
 
-	always_comb begin
-		state_w = state_r;
+assign o_m   = o_m_r;
+assign o_fin = o_fin_r;
+assign m_2   = o_m_r << 1;
 
-		case (state_r)
-		S_IDLE: begin
-			if(i_start) begin
-				state_w = S_CALC;
-			end
+always_comb begin
+	state_w = state_r;
+
+	case (state_r)
+	S_IDLE: begin
+		if(i_start) begin
+			state_w = S_CALC;
 		end
-		S_CALC: begin
-			if(counter_r == KEY_W-1) begin
-				state_w = S_IDLE;
-			end
-		end
-		default: begin
+	end
+	S_CALC: begin
+		if(counter_r == KEY_W-1) begin
 			state_w = S_IDLE;
 		end
-		endcase	
 	end
-
-	always_comb begin
-		counter_w = counter_r;
-		o_m_w     = o_m_r;
-		o_fin_w   = 0;
-
-		case (state_r)
-		S_IDLE:begin
-			counter_w = 0;
-			o_m_w     = (i_start) ? i_b : 0;
-		end
-		S_CALC: begin
-			counter_w = counter_r + 1;
-			o_m_w     = (m_2 < i_N) ? m_2 : m_2 - i_N;
-			if (counter_r == KEY_W-1) begin
-				o_fin_w = 1;
-			end
-		end
-		endcase
+	default: begin
+		state_w = S_IDLE;
 	end
+	endcase	
+end
 
-	always_ff @(posedge i_clk or posedge i_rst) begin
-		if(i_rst) begin
-			state_r   <= 0;
-			counter_r <= 0;
-			o_m_r     <= 0;
-			o_fin_r   <= 0;
-		end
-		else begin
-			state_r   <= state_w;
-			counter_r <= counter_w;
-			o_m_r     <= o_m_w;
-			o_fin_r   <= o_fin_w;
+always_comb begin
+	counter_w = counter_r;
+	o_m_w     = o_m_r;
+	o_fin_w   = 0;
+
+	case (state_r)
+	S_IDLE:begin
+		counter_w = 0;
+		o_m_w     = (i_start) ? i_b : 0;
+	end
+	S_CALC: begin
+		counter_w = counter_r + 1;
+		o_m_w     = (m_2 < i_N) ? m_2 : m_2 - i_N;
+		if (counter_r == KEY_W-1) begin
+			o_fin_w = 1;
 		end
 	end
+	endcase
+end
+
+always_ff @(posedge i_clk or posedge i_rst) begin
+	if(i_rst) begin
+		state_r   <= 0;
+		counter_r <= 0;
+		o_m_r     <= 0;
+		o_fin_r   <= 0;
+	end
+	else begin
+		state_r   <= state_w;
+		counter_r <= counter_w;
+		o_m_r     <= o_m_w;
+		o_fin_r   <= o_fin_w;
+	end
+end
 
 endmodule
 
 module RsaMont #(
-    parameter  KEY_W     = 256,
-    localparam COUNTER_W = $clog2(KEY_W)
+    parameter  KEY_W     = 256
 ) (
 	input              i_clk,
 	input              i_rst,
@@ -287,6 +288,9 @@ module RsaMont #(
 	output [KEY_W-1:0] o_m,
 	output             o_fin
 );
+
+localparam COUNTER_W = $clog2(KEY_W);
+
 
 localparam S_IDLE = 0;
 localparam S_CALC = 1;

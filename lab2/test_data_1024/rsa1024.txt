@@ -1,0 +1,37 @@
+Prime number (Bitsize: 512) (*): p
+============================================================= hex ==== 
+e413b5f6f35b11b3f11a5873174afebb9fea27e7245d32fc9134a14d826639bc62a01092a068ef006444710d8ebafd12cda7204652fdb02e356ee6745fe50281
+
+Prime number (Bitsize: 512) (*): q
+============================================================= hex ==== 
+e2d129e3c0481906fb27e837c90231b53ff8204bcd94c15b5bc6466357b2fb2f777eaaf4adfffed77169af5285e9b2104133c1e610009efaf5642201e5e00f1b
+
+Modulus (Bitsize: 1024): n=p*q
+============================================================= hex ==== 
+ca13c00da260fe3e374e9e82c4cc548a31eafbd31ea4d1729416814f42facd0393f9518ef67968e3d9e1b388369bb326ae6e571ad127f8ecb4a4b5db80c1ce95b77c1423757d11fd73f409153931cbab91228efa9a76a7ee3e90da74b139af118e621b015c1b906bcc9ae7ab48fe4cd2a6bb99e47ec54b361b6d08051e2cd29b
+
+Euler's phi(n) function (*): phi(n)=(p-1)*(q-1)
+============================================================= hex ==== 
+ca13c00da260fe3e374e9e82c4cc548a31eafbd31ea4d1729416814f42facd0393f9518ef67968e3d9e1b388369bb326ae6e571ad127f8ecb4a4b5db80c1ce93f0973448c1d9e74287b1c86a58e49b3ab14046c7a884b3965195f2c3d7207a25b4435f7a0db2a293f6ecc74b34599daf97e0b7b81bc6fc0cf099ff8ed867c100
+
+Public exponent: e [1 < e < phi ;  e and phi are coprime]
+============================================================= hex ==== 
+10001
+
+Private exponent (*): d=(e^-1) mod phi
+============================================================= hex ==== 
+c17c9db4b058ccb787bf6878efb471f20c8fe1e5a8fec9693b303d4a4668dc2a63e2225c8fd57a4048dc1a49ff779fd716c7a1f194790098acf2d50a42c3cf67c9c30d95e8bf1af691f501600a9381aa76138472220245ee555a0d23c5755c5f83b5cad294110a2841134053dae13fe1e4bb8f4de292e9bdfe16862321445f01
+
+Chinese Remainder Theorem (CRT) exponent 1 (*): dP=d mod (p-1)
+============================================================= hex ==== 
+b60c81a71f3226dc416bad0418a894d180606fff50884fc547c601a6939a33258a778722f2852f98597043e8f56f8dc76f7da2066001fc99b5aed2a63b50d981
+
+Chinese Remainder Theorem (CRT) exponent 2 (*): dQ=d mod (q-1)
+============================================================= hex ==== 
+ccef0b983a4d6a3f82820631112f2856899bd92264777954e050ff9c16cb22653ae479f665989d5b6f9f7bc7663346ada51bec9fbfe9afbb3428eb0927f80fed
+
+Chinese Remainder Theorem (CRT) coefficient (*): qInv=(q^-1) mod p
+============================================================= hex ==== 
+1dadd199ab669cb8235463d732c31f663b99e6cb4bfb2bfa6e05c3e3e0b7bf1d569e7584348e0c40eacad040dfbe097144cceeb397c0d96e6b53c5eba8665eb5
+
+(*) Keep this information secret!
