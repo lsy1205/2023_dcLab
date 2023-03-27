@@ -1,5 +1,5 @@
 module Rsa256Core #(
-    parameter  KEY_W     = 256
+    parameter KEY_W = 256
 ) (
 	input              i_clk,
 	input              i_rst,
@@ -192,7 +192,7 @@ end
 endmodule
 
 module RsaPrep #(
-    parameter  KEY_W     = 256
+    parameter KEY_W = 256
 ) (
 	input              i_clk,
 	input              i_rst,
@@ -277,7 +277,7 @@ end
 endmodule
 
 module RsaMont #(
-    parameter  KEY_W     = 256
+    parameter KEY_W = 256
 ) (
 	input              i_clk,
 	input              i_rst,

@@ -2,9 +2,9 @@
 from serial import Serial, EIGHTBITS, PARITY_NONE, STOPBITS_ONE
 from sys import argv
 
-KEY_W = 256
+KEY_W = 512
 
-assert len(argv) == 2
+assert len(argv) == 6, "Usage: {} <COM port> <e|d> <key file> <input file> <output file>".format(argv[0])
 s = Serial(
     port=argv[1],
     baudrate=115200,
@@ -14,9 +14,9 @@ s = Serial(
     xonxoff=False,
     rtscts=False
 )
-fp_key = open('key.bin', 'rb')
-fp_enc = open('enc3.bin', 'rb')
-fp_dec = open('dec3.bin', 'wb')
+fp_key = open(argv[3], 'rb')
+fp_enc = open(argv[4], 'rb')
+fp_dec = open(argv[5], 'wb')
 assert fp_key and fp_enc and fp_dec
 
 key = fp_key.read(KEY_W*2//8)
