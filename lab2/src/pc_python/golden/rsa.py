@@ -70,9 +70,9 @@ if __name__ == '__main__':
     # val_e = 0x010001
     # val_d = 0xc17c9db4b058ccb787bf6878efb471f20c8fe1e5a8fec9693b303d4a4668dc2a63e2225c8fd57a4048dc1a49ff779fd716c7a1f194790098acf2d50a42c3cf67c9c30d95e8bf1af691f501600a9381aa76138472220245ee555a0d23c5755c5f83b5cad294110a2841134053dae13fe1e4bb8f4de292e9bdfe16862321445f01
     # 512
-    val_n = 0x0
+    val_n = 0x6d2222eaa6a74f3fb3fddf38aab211200a020756787947070ee72550a27acbe475d0d553ca718516f7dec617aa9eedd3b7849845263e9b17894b4f4a10c8b50b
     val_e = 0x010001
-    val_d = 0x0
+    val_d = 0x1f2af9a7e472b21a727055f91c1f00ef128ca3c5d960619dad6eec644c131ff9bc96c695506af918483291044a7f453817ac41f367721cfd4d7e1eb71a8a9781
 
     assert len(argv) == 4, "Usage: {} <e|d> <input file> <output file>".format(argv[0])
     if argv[1] == 'e':
