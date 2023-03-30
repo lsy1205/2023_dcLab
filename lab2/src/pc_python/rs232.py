@@ -2,9 +2,10 @@
 from serial import Serial, EIGHTBITS, PARITY_NONE, STOPBITS_ONE
 from sys import argv
 
-KEY_W = 512
+KEY_W = 256
 
-assert len(argv) == 6, "Usage: {} <COM port> <e|d> <key file> <input file> <output file>".format(argv[0])
+assert len(
+    argv) == 6, "Usage: {} <COM port> <e|d> <key file> <input file> <output file>".format(argv[0])
 s = Serial(
     port=argv[1],
     baudrate=115200,
