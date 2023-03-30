@@ -48,6 +48,7 @@ module rsa_qsys (
 		.writedata (),                                   //                      .writedata
 		.c0        (altpll_0_c0_clk),                    //                    c0.clk
 		.areset    (),                                   //        areset_conduit.export
+		.c1        (),                                   //            c1_conduit.export
 		.locked    (),                                   //        locked_conduit.export
 		.phasedone ()                                    //     phasedone_conduit.export
 	);
