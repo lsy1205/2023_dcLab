@@ -1,5 +1,5 @@
 module Rsa256Wrapper #(
-    parameter KEY_W = 512
+    parameter KEY_W = 256
 ) (
     input         avm_rst,
     input         avm_clk,
