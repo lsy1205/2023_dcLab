@@ -108,7 +108,8 @@ AudPlayer player0(
 	.i_daclrck(i_AUD_DACLRCK),
 	.i_en(),
 	.i_dac_data(dac_data),
-	.o_aud_dacdat(o_AUD_DACDAT)
+	.o_aud_dacdat(o_AUD_DACDAT),
+	.o_fin()
 );
 
 // === AudRecorder ===
@@ -119,7 +120,8 @@ AudRecorder recorder0(
 	.i_adclrck(i_AUD_ADCLRCK),
 	.i_en(),
 	.i_aud_adcdat(i_AUD_ADCDAT),
-	.o_adc_data(adc_data)
+	.o_adc_data(adc_data),
+	.o_fin()
 );
 
 always_comb begin : FSM
