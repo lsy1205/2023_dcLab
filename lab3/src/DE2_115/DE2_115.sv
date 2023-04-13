@@ -151,33 +151,48 @@ Altpll pll0( // generate with qsys, please follow lab2 tutorials
 
 // you can decide key down settings on your own, below is just an example
 Debounce deb0(
-	.i_in(KEY[0]), // Record/Pause
-	.i_rst_n(KEY[3]),
+	.i_in(SW[0]), // Record=1/Play=0 mode
+	.i_rst_n(SW[17]),
 	.i_clk(CLK_12M),
-	.o_neg(key0down) 
+	.o_debounced(sw0level)
 );
 
 Debounce deb1(
-	.i_in(KEY[1]), // Play/Pause
-	.i_rst_n(KEY[3]),
+	.i_in(KEY[0]), // Start/Pause
+	.i_rst_n(SW[17]),
 	.i_clk(CLK_12M),
-	.o_neg(key1down) 
+	.o_neg(key0down)
 );
 
 Debounce deb2(
-	.i_in(KEY[2]), // Stop
-	.i_rst_n(KEY[3]),
+	.i_in(KEY[1]), // Stop
+	.i_rst_n(SW[17]),
 	.i_clk(CLK_12M),
-	.o_neg(key2down) 
+	.o_neg(key1down)
+);
+
+Debounce deb3(
+	.i_in(KEY[2]), // Speed up
+	.i_rst_n(SW[17]),
+	.i_clk(CLK_12M),
+	.o_neg(key2down)
+);
+
+Debounce deb4(
+	.i_in(KEY[3]), // Speed down
+	.i_rst_n(SW[17]),
+	.i_clk(CLK_12M),
+	.o_neg(key3down)
 );
 
 Top top0(
-	.i_rst_n(KEY[3]),
+	.i_rst_n(SW[17]),
 	.i_clk(CLK_12M),
-	.i_key_0(key0down),
-	.i_key_1(key1down),
-	.i_key_2(key2down),
-	// .i_speed(SW[3:0]), // design how user can decide mode on your own
+	.i_sw_0(sw0level),  // Record=1/Play=0 mode
+	.i_key_0(key0down), // Start/Pause
+	.i_key_1(key1down), // Stop
+	.i_key_2(key2down), // Speed up
+	.i_key_3(key2down), // Speed down
 	
 	// AudDSP and SRAM
 	.o_SRAM_ADDR(SRAM_ADDR), // [19:0]
@@ -198,24 +213,24 @@ Top top0(
 	.i_AUD_ADCLRCK(AUD_ADCLRCK),
 	.i_AUD_BCLK(AUD_BCLK),
 	.i_AUD_DACLRCK(AUD_DACLRCK),
-	.o_AUD_DACDAT(AUD_DACDAT)
+	.o_AUD_DACDAT(AUD_DACDAT),
 
 	// SEVENDECODER (optional display)
 	// .o_record_time(recd_time),
 	// .o_play_time(play_time),
 
 	// LCD (optional display)
-	// .i_clk_800k(CLK_800K),
-	// .o_LCD_DATA(LCD_DATA), // [7:0]
-	// .o_LCD_EN(LCD_EN),
-	// .o_LCD_RS(LCD_RS),
-	// .o_LCD_RW(LCD_RW),
-	// .o_LCD_ON(LCD_ON),
-	// .o_LCD_BLON(LCD_BLON),
+	.i_clk_800k(CLK_800K),
+	.o_LCD_DATA(LCD_DATA), // [7:0]
+	.o_LCD_EN(LCD_EN),
+	.o_LCD_RS(LCD_RS),
+	.o_LCD_RW(LCD_RW),
+	.o_LCD_ON(LCD_ON),
+	.o_LCD_BLON(LCD_BLON),
 
 	// LED
-	// .o_ledg(LEDG), // [8:0]
-	// .o_ledr(LEDR) // [17:0]
+	.o_ledg(LEDG), // [8:0]
+	.o_ledr(LEDR) // [17:0]
 );
 
 // SevenHexDecoder seven_dec0(
@@ -227,7 +242,7 @@ Top top0(
 // SevenHexDecoder seven_dec1(
 // 	.i_num(recd_time),
 // 	.o_seven_ten(HEX5),
-//  	.o_seven_one(HEX4)
+// 	.o_seven_one(HEX4)
 // );
 
 // comment those are use for display
