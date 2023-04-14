@@ -4,29 +4,27 @@
 `define HPERIOD    (`PERIOD/2)
 `define DELAY      (1 * `PERIOD/4)
 
-
 module tb_player;
 	integer error = 0;
 
 	logic clk, bclk, rst_n;
-	logic daclrck, start, aud_dacdat, fin;
-	logic [15:0] dac_data, wm8731_data;
+	logic adclrck, start, aud_adcdat, fin;
+	logic [15:0] wm8731_data, adc_data;
 		
-	AudPlayer player0 (
+	AudRecorder recorder0 (
 		.i_rst_n(rst_n),
 		.i_bclk(bclk),
-		.i_daclrck(daclrck),
+		.i_adclrck(adclrck),
 		.i_start(start),
-		.i_dac_data(dac_data), // 16bits
-		.o_aud_dacdat(aud_dacdat),
+		.i_aud_adcdat(aud_adcdat),
+		.o_adc_data(adc_data), // 16bits
 		.o_fin(fin)
 	);
 
 	initial begin
-		$fsdbDumpfile("player.fsdb");
+		$fsdbDumpfile("recorder.fsdb");
 		$fsdbDumpvars;
 		start = 0;
-		dac_data = 0;
 		rst_n = 0;
 		#(2*`PERIOD)
 		rst_n = 1;
@@ -38,16 +36,22 @@ module tb_player;
 	initial begin : DSP
 		#(10*`PERIOD)
 		for(int i = 0; i < `SAMPLE_NUM; i++) begin
-			wait(daclrck);
-			dac_data = $random($stime);
+			wait(adclrck);
 			@(posedge clk) start = 1;
 			@(posedge clk) start = 0;
 			wait(fin);
+			if (adc_data !== wm8731_data) begin
+				$display("Error left! correct data: %16b , received data: %16b", adc_data, wm8731_data);
+				error++;
+			end
 			#(3*`PERIOD);
-			dac_data = $random($stime);
 			@(posedge clk) start = 1;
 			@(posedge clk) start = 0;
 			wait(fin);
+			if (adc_data !== wm8731_data) begin
+				$display("Error right! correct data: %b , received data: %b", adc_data, wm8731_data);
+				error++;
+			end	
 			#(3*`PERIOD);
 		end
 
@@ -69,45 +73,38 @@ module tb_player;
 	// WM8731
 	initial begin
 		bclk = 1;
-		#($random($stime)%`PERIOD) bclk = ~bclk;
+		#(`DELAY) bclk = ~bclk;
 		while (1) begin
 			#(`HPERIOD) bclk = ~bclk;
 		end
 	end
 	initial begin
-		daclrck = 1;
-		@(negedge bclk) daclrck = ~daclrck;
+		adclrck = 1;
+		@(negedge bclk) adclrck = ~adclrck;
 		while (1) begin
-			#(25*`PERIOD) daclrck = ~daclrck;
+			#(25*`PERIOD) adclrck = ~adclrck;
 		end
 	end
 	initial begin
 		#(10*`PERIOD)
 		for (int i = 0; i < `SAMPLE_NUM; i++) begin
-			@(negedge daclrck);
-			wm8731_data = 0;
-			#(`PERIOD)
+			@(negedge adclrck);
+			wm8731_data = $random($stime);
+			#(`HPERIOD)
 			for (int i = 0; i < 16; i++) begin
-				@(posedge bclk) begin
-					wm8731_data[15-i] = aud_dacdat;
+				@(negedge bclk) begin
+					aud_adcdat = wm8731_data[15-i];
 				end
-			end
-			if (dac_data !== wm8731_data) begin
-				$display("Error left! correct data: %16b , received data: %16b", dac_data, wm8731_data);
-				error++;
 			end
 
-			@(posedge daclrck);
-			#(`PERIOD)
+			@(posedge adclrck);
+			wm8731_data = $random($stime);
+			#(`HPERIOD)
 			for (int i = 0; i < 16; i++) begin
-				@(posedge bclk) begin
-					wm8731_data[15-i] = aud_dacdat;
+				@(negedge bclk) begin
+					aud_adcdat = wm8731_data[15-i];
 				end
 			end
-			if (dac_data !== wm8731_data) begin
-				$display("Error right! correct data: %b , received data: %b", dac_data, wm8731_data);
-				error++;
-			end			
 		end
 	end
 

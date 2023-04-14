@@ -1,6 +1,5 @@
 module AudPlayer (
     input         i_rst_n,
-	input         i_clk,
 	input         i_bclk,
 	input         i_daclrck,
 	input         i_start,
@@ -62,7 +61,7 @@ always_comb begin
 	endcase
 end
 
-always_ff @(posedge i_clk or negedge i_rst_n) begin
+always_ff @(posedge i_bclk or negedge i_rst_n) begin
 	if (!i_rst_n) begin
 		state_r       <= S_IDLE;
 		counter_r     <= 0;
@@ -85,5 +84,6 @@ always_ff @(negedge i_bclk or negedge i_rst_n) begin
 		record_data_r <= record_data_w;
 	end
 end
+
 
 endmodule
