@@ -151,34 +151,41 @@ Altpll pll0( // generate with qsys, please follow lab2 tutorials
 
 // you can decide key down settings on your own, below is just an example
 Debounce deb0(
-	.i_in(SW[0]), // Record=1/Play=0 mode
+	.i_in(SW[0]), // Play=0/Record=1 mode
 	.i_rst_n(SW[17]),
 	.i_clk(CLK_12M),
 	.o_debounced(sw0level)
 );
 
 Debounce deb1(
+	.i_in(SW[1]), // 0/1 order interpolation
+	.i_rst_n(SW[17]),
+	.i_clk(CLK_12M),
+	.o_debounced(sw1level)
+);
+
+Debounce deb2(
 	.i_in(KEY[0]), // Start/Pause
 	.i_rst_n(SW[17]),
 	.i_clk(CLK_12M),
 	.o_neg(key0down)
 );
 
-Debounce deb2(
+Debounce deb3(
 	.i_in(KEY[1]), // Stop
 	.i_rst_n(SW[17]),
 	.i_clk(CLK_12M),
 	.o_neg(key1down)
 );
 
-Debounce deb3(
+Debounce deb4(
 	.i_in(KEY[2]), // Speed up
 	.i_rst_n(SW[17]),
 	.i_clk(CLK_12M),
 	.o_neg(key2down)
 );
 
-Debounce deb4(
+Debounce deb5(
 	.i_in(KEY[3]), // Speed down
 	.i_rst_n(SW[17]),
 	.i_clk(CLK_12M),
@@ -188,7 +195,8 @@ Debounce deb4(
 Top top0(
 	.i_rst_n(SW[17]),
 	.i_clk(CLK_12M),
-	.i_sw_0(sw0level),  // Record=1/Play=0 mode
+	.i_sw_0(sw0level),  // Play=0/Record=1 mode
+	.i_sw_1(sw1level),  // 0/1 order interpolation
 	.i_key_0(key0down), // Start/Pause
 	.i_key_1(key1down), // Stop
 	.i_key_2(key2down), // Speed up
