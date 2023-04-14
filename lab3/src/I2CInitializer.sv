@@ -2,30 +2,193 @@ module I2CInitializer (
     input  i_rst_n,
 	input  i_clk,
 	input  i_start,
-	output o_finished,
-	output o_scl,
-	output o_sda,
-	output o_oen // you are outputing (you are not outputing only when you are "ack"ing.)
+	output o_fin,
+	inout  io_sda,
+	output o_scl
+	// output o_oen // you are outputing (you are not outputing only when you are "ack"ing.)
 );
-    
+
+// state
+localparam S_IDLE  = 3'd0;
+localparam S_START = 3'd1;
+localparam S_TRANS = 3'd2;
+localparam S_ACK   = 3'd3;
+localparam S_TER   = 3'd4;
+
+// command
+localparam COMMON =   00110100000;
+localparam RESET  = 1111000000000;
+localparam AAPC   = 0100000010101;
+localparam DAPC   = 0101000000000;
+localparam PDC    = 0110000000000;
+localparam DAIF   = 0111001000010;
+localparam SC     = 1000000011001;
+localparam AC     = 1001000000001;
+
+logic        state_r, state_w;
+logic  [2:0] cmd_counter_r, cmd_counter_w;
+logic  [4:0] counter_r, counter_w;
+logic [23:0] data_r, data_w;
+logic        out_r, out_w;
+logic        o_fin_r, o_fin_w;
+logic        ack;
+logic        ack1_r, ack1_w, ack2_r, ack2_w, ack3_r, ack3_w;
+
+assign io_sda = out_r ? 1'bz : 1'b0;
+assign o_scl  = (state_r == S_TRANS|| state_r == S_ACK) ? ~i_clk : 1;
+assign o_fin  = o_fin_r;
+assign ack    = ack1 && ack2 && ack3;
+
+always_comb begin: FSM
+	state_w = S_IDLE;
+	case (state_r)
+		S_IDLE: begin
+			if(i_start) state_w = S_START;
+			else        state_w = S_IDLE;
+		end
+		S_START: begin
+			if(counter_r == 1) state_w = S_TRANS;
+			else               state_w = S_START;
+		end
+		S_TRANS: begin
+			if(counter_r == 7 || counter_r == 16 || counter_r == 25) state_w = S_ACK;
+			else state_w = S_TRANS;
+		end
+		S_ACK: begin
+			if(counter_r != 26) state_w = S_TRANS;
+			else                state_w = S_TER;
+		end
+		S_TER: begin
+			if(cmd_counter_r != 6) state_w = S_START;
+			else                   state_w = S_IDLE;
+		end
+		default: begin
+			state_w = S_IDLE;
+		end
+	endcase
+end
+
+always_comb begin
+	counter_w     = counter_r;
+	cmd_counter_w = cmd_counter_r;
+	data_w        = data_r;
+	ack1_w        = ack1_r;
+	ack2_w        = ack2_r;
+	ack3_w        = ack3_r;
+	out_w         = 1;
+	o_fin_w       = 0;
+	case (state_r)
+		S_IDLE: begin
+			out_w         = 1;
+			ack1_w        = 0;
+			ack2_w        = 0;
+			ack3_w        = 0;
+			counter_w     = 0;
+			cmd_counter_w = 0;
+		end
+		S_START: begin
+			counter_w = counter_r + 1;
+			if (counter_r == 0) begin
+				out_w = 0;
+				case (cmd_counter_r)
+					3'd0: begin
+						data_w = {COMMON, RESET};
+					end 
+					3'd1: begin
+						data_w = {COMMON, AAPC};
+					end 
+					3'd2: begin
+						data_w = {COMMON, DAPC};
+					end 
+					3'd3: begin
+						data_w = {COMMON, PDC};
+					end 
+					3'd4: begin
+						data_w = {COMMON, DAIF};
+					end 
+					3'd5: begin
+						data_w = {COMMON, SC};
+					end 
+					3'd6: begin
+						data_w = {COMMON, AC};
+					end 
+					default: begin
+						data_w = {23{1'b1}};
+					end
+				endcase
+			end
+			else begin
+				counter_w = 0;
+				out_w     = data_r[23];
+				data_w    = data_r << 1;
+			end
+		end
+		S_TRANS: begin
+			counter_w = counter_r + 1;
+			out_w     = data_r[23];
+			data_w    = data_r << 1;
+		end
+		S_ACK: begin
+			counter_w = counter_r + 1;
+			out_w     = 1'b1;
+			case (counter_r)
+				8: begin
+					ack1_w = io_sda;
+				end
+				17: begin
+					ack2_w = io_sda;
+				end
+				26:begin
+					ack3_w = io_sda;
+				end
+				default: begin
+				end
+			endcase
+		end
+		S_TER: begin
+			cmd_counter_w = cmd_counter_r + 1;
+			counter_w     = 0;
+			out_w         = 0;
+			if(cmd_counter_r == 6) begin
+				o_fin_w = 1;
+			end
+			else begin
+				o_fin_w = 0;
+			end
+		end
+		default: begin
+		end
+	endcase
+end
+
+always_ff @( posedge i_clk or negedge i_rst_n) begin
+	if(!i_rst_n) begin
+		state_r       <= S_IDLE;
+		counter_r     <= 0;
+		cmd_counter_r <= 0;
+		data_r        <= 0;
+		out_r         <= 0;
+		ack1_r        <= 0;
+		ack2_r        <= 0;
+		ack3_r        <= 0;
+		o_fin_r       <= 0;
+	end
+
+	else begin
+		state_r       <= state_w;
+		counter_r     <= counter_w;
+		cmd_counter_r <= cmd_counter_w;
+		data_r        <= data_w;
+		out_r         <= out_w;
+		ack1_r        <= ack1_w;
+		ack2_r        <= ack2_w;
+		ack3_r        <= ack3_w;
+		o_fin_r       <= o_fin_w;
+
+	end
+end
+
 endmodule
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // module i2c (
 // 			 CLOCK,
@@ -34,11 +197,8 @@ endmodule
 // 			 I2C_DATA,		//DATA:[SLAVE_ADDR,SUB_ADDR,DATA]
 // 			 GO,      		//GO transfor
 // 			 END,    	    //END transfor 
-// 			 W_R,     		//W_R
 // 			 ACK,     	    //ACK
 // 			 RESET,
-// 			 //TEST
-// 			 SD_COUNTER,
 // 			 SDO
 // 		   	);
 
@@ -46,38 +206,21 @@ endmodule
 // //  PORT declarations
 // //=======================================================
 			
-// 	input 			 CLOCK;
-// 	input 			 [23:0]I2C_DATA;	
-// 	input 			 GO;
-// 	input  			 RESET;	
-// 	input  			 W_R;
-	
-//  	inout  			 I2C_SDAT;
+// 	input 			[23:0]I2C_DATA;	
+//  output  		      I2C_SDAT;
  		
-// 	output 			 I2C_SCLK;
-// 	output			 END;	
-// 	output 			 ACK;
-
+// 	output 			      I2C_SCLK;
 // //TEST
 // 	output	[5:0]	 SD_COUNTER;
 // 	output 			 SDO;
 
 
-// 	reg 			 SDO;
-// 	reg 			 SCLK;
-// 	reg 			 END;
-// 	reg 	[23:0]	 SD;
-// 	reg 	[5:0]	 SD_COUNTER;
+
 
 // wire I2C_SCLK = SCLK | ( ((SD_COUNTER >= 4) & (SD_COUNTER <= 30))? ~CLOCK :0 );
-// wire I2C_SDAT = SDO?1'bz:0 ;
 
 // reg ACK1,ACK2,ACK3;
 // wire ACK = ACK1 | ACK2 | ACK3;
-
-// //=============================================================================
-// // Structural coding
-// //=============================================================================
 
 // //==============================I2C COUNTER====================================
 // always @(negedge RESET or posedge CLOCK ) 
