@@ -47,11 +47,11 @@ always_comb begin
 		S_IDLE: begin
 			counter_w = 0;
 			record_lrc_w = i_adclrck;
-			record_data_w = 0;
 		end
 		S_WAIT: begin
 			counter_w = 0;
 			record_lrc_w = i_adclrck;
+			record_data_w = 0;
 		end
 		S_GET: begin
 			counter_w = counter_r + 1;
@@ -78,4 +78,5 @@ always_ff @(posedge i_bclk or negedge i_rst_n) begin
 		fin_r         <= fin_w;
 	end
 end
+
 endmodule
