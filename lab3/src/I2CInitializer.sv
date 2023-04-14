@@ -16,28 +16,28 @@ localparam S_ACK   = 3'd3;
 localparam S_TER   = 3'd4;
 
 // command
-localparam COMMON =   00110100000;
-localparam RESET  = 1111000000000;
-localparam AAPC   = 0100000010101;
-localparam DAPC   = 0101000000000;
-localparam PDC    = 0110000000000;
-localparam DAIF   = 0111001000010;
-localparam SC     = 1000000011001;
-localparam AC     = 1001000000001;
+localparam COMMON  =        12'b0011_0100_1_000;
+localparam RESET   = 16'b1_1110_1_0000_0000_1_0;
+localparam AAPC    = 16'b0_1000_1_0001_0101_1_0;
+localparam DAPC    = 16'b0_1010_1_0000_0000_1_0;
+localparam PDC     = 16'b0_1100_1_0000_0000_1_0;
+localparam DAIF    = 16'b0_1110_1_0100_0010_1_0;
+localparam SC      = 16'b1_0000_1_0001_1001_1_0;
+localparam AC      = 16'b1_0010_1_0000_0001_1_0;
 
-logic        state_r, state_w;
+logic  [2:0] state_r, state_w;
 logic  [2:0] cmd_counter_r, cmd_counter_w;
 logic  [4:0] counter_r, counter_w;
-logic [23:0] data_r, data_w;
+logic [27:0] data_r, data_w;
 logic        out_r, out_w;
 logic        o_fin_r, o_fin_w;
-logic        ack;
-logic        ack1_r, ack1_w, ack2_r, ack2_w, ack3_r, ack3_w;
+logic        nack;
+logic        nack1_r, nack1_w, nack2_r, nack2_w, nack3_r, nack3_w;
 
 assign io_sda = out_r ? 1'bz : 1'b0;
-assign o_scl  = (state_r == S_TRANS|| state_r == S_ACK) ? ~i_clk : 1;
+assign o_scl  = (state_r == S_TRANS || state_r == S_ACK || state_r == S_TER) ? ~i_clk : 1;
 assign o_fin  = o_fin_r;
-assign ack    = ack1 && ack2 && ack3;
+assign nack   = nack1_r | nack2_r | nack3_r;
 
 always_comb begin: FSM
 	state_w = S_IDLE;
@@ -72,17 +72,17 @@ always_comb begin
 	counter_w     = counter_r;
 	cmd_counter_w = cmd_counter_r;
 	data_w        = data_r;
-	ack1_w        = ack1_r;
-	ack2_w        = ack2_r;
-	ack3_w        = ack3_r;
+	nack1_w       = nack1_r;
+	nack2_w       = nack2_r;
+	nack3_w       = nack3_r;
 	out_w         = 1;
 	o_fin_w       = 0;
 	case (state_r)
 		S_IDLE: begin
 			out_w         = 1;
-			ack1_w        = 0;
-			ack2_w        = 0;
-			ack3_w        = 0;
+			nack1_w       = 0;
+			nack2_w       = 0;
+			nack3_w       = 0;
 			counter_w     = 0;
 			cmd_counter_w = 0;
 		end
@@ -113,33 +113,34 @@ always_comb begin
 						data_w = {COMMON, AC};
 					end 
 					default: begin
-						data_w = {23{1'b1}};
+						data_w = {28{1'b1}};
 					end
 				endcase
 			end
 			else begin
 				counter_w = 0;
-				out_w     = data_r[23];
+				out_w     = data_r[27];
 				data_w    = data_r << 1;
 			end
 		end
 		S_TRANS: begin
 			counter_w = counter_r + 1;
-			out_w     = data_r[23];
+			out_w     = data_r[27];
 			data_w    = data_r << 1;
 		end
 		S_ACK: begin
 			counter_w = counter_r + 1;
-			out_w     = 1'b1;
+			out_w     = data_r[27];
+			data_w    = data_r << 1;
 			case (counter_r)
-				8: begin
-					ack1_w = io_sda;
+				5'd08: begin
+					nack1_w = io_sda;
 				end
-				17: begin
-					ack2_w = io_sda;
+				5'd17: begin
+					nack2_w = io_sda;
 				end
-				26:begin
-					ack3_w = io_sda;
+				5'd26: begin
+					nack3_w = io_sda;
 				end
 				default: begin
 				end
@@ -148,7 +149,7 @@ always_comb begin
 		S_TER: begin
 			cmd_counter_w = cmd_counter_r + 1;
 			counter_w     = 0;
-			out_w         = 0;
+			out_w         = 1;
 			if(cmd_counter_r == 6) begin
 				o_fin_w = 1;
 			end
@@ -157,6 +158,14 @@ always_comb begin
 			end
 		end
 		default: begin
+			counter_w     = counter_r;
+			cmd_counter_w = cmd_counter_r;
+			data_w        = data_r;
+			nack1_w       = nack1_r;
+			nack2_w       = nack2_r;
+			nack3_w       = nack3_r;
+			out_w         = 1;
+			o_fin_w       = 0;
 		end
 	endcase
 end
@@ -168,163 +177,22 @@ always_ff @( posedge i_clk or negedge i_rst_n) begin
 		cmd_counter_r <= 0;
 		data_r        <= 0;
 		out_r         <= 0;
-		ack1_r        <= 0;
-		ack2_r        <= 0;
-		ack3_r        <= 0;
+		nack1_r       <= 0;
+		nack2_r       <= 0;
+		nack3_r       <= 0;
 		o_fin_r       <= 0;
 	end
-
 	else begin
 		state_r       <= state_w;
 		counter_r     <= counter_w;
 		cmd_counter_r <= cmd_counter_w;
 		data_r        <= data_w;
 		out_r         <= out_w;
-		ack1_r        <= ack1_w;
-		ack2_r        <= ack2_w;
-		ack3_r        <= ack3_w;
+		nack1_r       <= nack1_w;
+		nack2_r       <= nack2_w;
+		nack3_r       <= nack3_w;
 		o_fin_r       <= o_fin_w;
-
 	end
 end
 
 endmodule
-
-// module i2c (
-// 			 CLOCK,
-// 			 I2C_SCLK,		//I2C CLOCK
-// 			 I2C_SDAT,		//I2C DATA
-// 			 I2C_DATA,		//DATA:[SLAVE_ADDR,SUB_ADDR,DATA]
-// 			 GO,      		//GO transfor
-// 			 END,    	    //END transfor 
-// 			 ACK,     	    //ACK
-// 			 RESET,
-// 			 SDO
-// 		   	);
-
-// //=======================================================
-// //  PORT declarations
-// //=======================================================
-			
-// 	input 			[23:0]I2C_DATA;	
-//  output  		      I2C_SDAT;
- 		
-// 	output 			      I2C_SCLK;
-// //TEST
-// 	output	[5:0]	 SD_COUNTER;
-// 	output 			 SDO;
-
-
-
-
-// wire I2C_SCLK = SCLK | ( ((SD_COUNTER >= 4) & (SD_COUNTER <= 30))? ~CLOCK :0 );
-
-// reg ACK1,ACK2,ACK3;
-// wire ACK = ACK1 | ACK2 | ACK3;
-
-// //==============================I2C COUNTER====================================
-// always @(negedge RESET or posedge CLOCK ) 
-// 	begin
-// 		if (!RESET)
-// 			begin
-// 				SD_COUNTER = 6'b111111;
-// 			end
-// 		else begin
-// 				if (GO == 0)
-// 					begin
-// 						SD_COUNTER = 0;
-// 					end
-// 				else begin
-// 						if (SD_COUNTER < 6'b111111)
-// 							begin
-// 								SD_COUNTER = SD_COUNTER+1;
-// 							end	
-// 					 end		
-// 			 end
-// 	end
-// //==============================I2C COUNTER====================================
-
-// always @(negedge RESET or  posedge CLOCK ) 
-// 	begin
-// 		if (!RESET) 
-// 			begin 
-// 				SCLK = 1;
-// 				SDO  = 1; 
-// 				ACK1 = 0;
-// 				ACK2 = 0;
-// 				ACK3 = 0; 
-// 				END  = 1; 
-// 			end
-// 		else
-// 			case (SD_COUNTER)
-// 					6'd0  : begin 
-// 								ACK1 = 0 ;
-// 								ACK2 = 0 ;
-// 								ACK3 = 0 ; 
-// 								END  = 0 ; 
-// 								SDO  =1  ; 
-// 								SCLK =1  ;
-// 							end
-// 					//=========start===========
-// 					6'd1  : begin 
-// 								SD  = I2C_DATA;
-// 								SDO = 0;
-// 							end
-							
-// 					6'd2  : 	SCLK = 0;
-// 					//======SLAVE ADDR=========
-// 					6'd3  : 	SDO = SD[23];
-// 					6'd4  : 	SDO = SD[22];
-// 					6'd5  : 	SDO = SD[21];
-// 					6'd6  : 	SDO = SD[20];
-// 					6'd7  : 	SDO = SD[19];
-// 					6'd8  : 	SDO = SD[18];
-// 					6'd9  :	    SDO	= SD[17];
-// 					6'd10 : 	SDO = SD[16];	
-// 					6'd11 : 	SDO = 1'b1;//ACK
-
-// 					//========SUB ADDR==========
-// 					6'd12  : begin 
-// 								SDO  = SD[15]; 
-// 								ACK1 = I2C_SDAT; 
-// 							 end
-// 					6'd13  : 	SDO = SD[14];
-// 					6'd14  : 	SDO = SD[13];
-// 					6'd15  : 	SDO = SD[12];
-// 					6'd16  : 	SDO = SD[11];
-// 					6'd17  : 	SDO = SD[10];
-// 					6'd18  : 	SDO = SD[9];
-// 					6'd19  : 	SDO = SD[8];	
-// 					6'd20  : 	SDO = 1'b1;//ACK
-
-// 					//===========DATA============
-// 					6'd21  : begin 
-// 								SDO  = SD[7]; 
-// 								ACK2 = I2C_SDAT; 
-// 							 end
-// 					6'd22  : 	SDO = SD[6];
-// 					6'd23  : 	SDO = SD[5];
-// 					6'd24  : 	SDO = SD[4];
-// 					6'd25  : 	SDO = SD[3];
-// 					6'd26  : 	SDO = SD[2];
-// 					6'd27  : 	SDO = SD[1];
-// 					6'd28  : 	SDO = SD[0];	
-// 					6'd29  : 	SDO = 1'b1;//ACK
-
-	
-// 					//stop
-// 					6'd30 : begin 
-// 								SDO  = 1'b0;	
-// 								SCLK = 1'b0; 
-// 								ACK3 = I2C_SDAT; 
-// 							end	
-// 					6'd31 : 	SCLK = 1'b1; 
-// 					6'd32 : begin 
-// 								SDO = 1'b1; 
-// 								END = 1; 
-// 							end 
-
-// 			endcase
-// 	end
-	
-// endmodule
