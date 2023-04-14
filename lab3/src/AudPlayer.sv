@@ -1,5 +1,6 @@
 module AudPlayer (
     input         i_rst_n,
+	input         i_clk,
 	input         i_bclk,
 	input         i_daclrck,
 	input         i_start,
@@ -56,23 +57,21 @@ always_comb begin
 		S_SEND: begin
 			counter_w = counter_r + 1;
 			fin_w = (counter_r == 15)? 1 : 0;
-			record_data_w = record_data_r << 1;
+			record_data_w = (counter_r) ? record_data_r << 1 : record_data_r;
 		end
 	endcase
 end
 
-always_ff @(posedge i_bclk or negedge i_rst_n) begin
+always_ff @(posedge i_clk or negedge i_rst_n) begin
 	if (!i_rst_n) begin
 		state_r       <= S_IDLE;
 		counter_r     <= 0;
-		record_data_r <= 0;
 		record_lrc_r  <= 0;
 		fin_r         <= 0;
 	end
 	else begin
 		state_r       <= state_w;
 		counter_r     <= counter_w;
-		record_data_r <= record_data_w;
 		record_lrc_r  <= record_lrc_w;
 		fin_r         <= fin_w;
 	end
