@@ -79,6 +79,7 @@ logic        dsp_start_r, dsp_start_w;
 logic        dsp_fin;
 
 logic [15:0] dac_data;
+logic        play_data_ready_r, play_data_ready_w;
 logic        player_start_r, player_start_w;
 logic        player_fin;
 
@@ -154,16 +155,18 @@ AudDSP dsp0(
 	.i_mode(mode_r),			// 0: play, 1:record
 	.i_speed(speed_r),			// 0: 1/8, 1: 1/7, ..., 7: 1, ..., 13: 7, 14: 8
 	.i_interpol(interpol_r),	// 0: 0-order, 1: 1-order
+	// .i_lr(left_right),			// 0: left, 1: right
 	.i_start(dsp_start_r),
 	.o_fin(dsp_fin),
 	
 	.o_data_addr(data_addr),
 
-	.i_dac_lrck(i_AUD_DACLRCK),
+	// .i_dac_lrck(i_AUD_DACLRCK),
+	.i_rdata_ready(play_data_ready_r),
 	.i_rdata(play_data),
 	.o_dac_data(dac_data),
 
-	.i_adc_lrck(i_AUD_ADCLRCK),
+	// .i_adc_lrck(i_AUD_ADCLRCK),
 	.i_adc_data(adc_data),
 	.o_wdata(record_data)
 );
@@ -316,28 +319,30 @@ end
 
 always_ff @(posedge i_clk or negedge i_rst_n) begin
 	if (!i_rst_n) begin
-		state_r          <= S_INIT;
-		mode_r           <= M_RECD;
-		speed_r          <= 4'd7;
-		interpol_r       <= 1'b0;
-		i2c_start_r      <= 1'b0;
-		dsp_start_r      <= 1'b0;
-		player_start_r   <= 1'b0;
-		recorder_start_r <= 1'b0;
-		ledg_r           <= 9'b0;
-		ledr_r           <= 18'b0;
+		state_r           <= S_INIT;
+		mode_r            <= M_RECD;
+		speed_r           <= 4'd7;
+		interpol_r        <= 1'b0;
+		i2c_start_r       <= 1'b0;
+		dsp_start_r       <= 1'b0;
+		player_start_r    <= 1'b0;
+		recorder_start_r  <= 1'b0;
+		play_data_ready_r <= 1'b0;
+		ledg_r            <= 9'b0;
+		ledr_r            <= 18'b0;
 	end
 	else begin
-		state_r          <= state_w;
-		mode_r           <= mode_w;
-		speed_r          <= speed_w;
-		interpol_r       <= interpol_w;
-		i2c_start_r      <= i2c_start_w;
-		dsp_start_r      <= dsp_start_w;
-		player_start_r   <= player_start_w;
-		recorder_start_r <= recorder_start_w;
-		ledg_r           <= ledg_w;
-		ledr_r           <= ledr_w;
+		state_r           <= state_w;
+		mode_r            <= mode_w;
+		speed_r           <= speed_w;
+		interpol_r        <= interpol_w;
+		i2c_start_r       <= i2c_start_w;
+		dsp_start_r       <= dsp_start_w;
+		player_start_r    <= player_start_w;
+		recorder_start_r  <= recorder_start_w;
+		play_data_ready_r <= play_data_ready_w;
+		ledg_r            <= ledg_w;
+		ledr_r            <= ledr_w;
 	end
 end
 
