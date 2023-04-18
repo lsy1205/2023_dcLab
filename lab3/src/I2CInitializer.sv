@@ -14,6 +14,7 @@ localparam S_START = 3'd1;
 localparam S_TRANS = 3'd2;
 localparam S_ACK   = 3'd3;
 localparam S_TER   = 3'd4;
+localparam S_FIN   = 3'd5;
 
 // command
 localparam COMMON  =        12'b0011_0100_1_000;
@@ -60,7 +61,10 @@ always_comb begin: FSM
 		end
 		S_TER: begin
 			if(cmd_counter_r != 6) state_w = S_START;
-			else                   state_w = S_IDLE;
+			else                   state_w = S_FIN;
+		end
+		S_FIN: begin
+			state_w = S_FIN;
 		end
 		default: begin
 			state_w = S_IDLE;
@@ -76,7 +80,7 @@ always_comb begin
 	nack2_w       = nack2_r;
 	nack3_w       = nack3_r;
 	out_w         = 1;
-	o_fin_w       = 0;
+	o_fin_w       = o_fin_r;
 	case (state_r)
 		S_IDLE: begin
 			out_w         = 1;
@@ -150,12 +154,10 @@ always_comb begin
 			cmd_counter_w = cmd_counter_r + 1;
 			counter_w     = 0;
 			out_w         = 1;
-			if(cmd_counter_r == 6) begin
-				o_fin_w = 1;
-			end
-			else begin
-				o_fin_w = 0;
-			end
+			o_fin_w = (cmd_counter_r == 6);
+		end
+		S_FIN: begin
+			
 		end
 		default: begin
 			counter_w     = counter_r;

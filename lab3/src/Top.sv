@@ -256,7 +256,7 @@ end
 
 always_comb begin
 	dsp_clear = 0;
-	i2c_start_w      = 0;
+	i2c_start_w      = i2c_start_r;
 	dsp_start_w      = 0;
 	player_start_w   = 0;
 	recorder_start_w = 0;
