@@ -62,13 +62,18 @@ localparam M_PLAY = 0;
 localparam M_RECD = 1;
 
 
+logic        key_2_r, key_2_w;
+logic        key_3_r, key_3_w;
+
 logic  [2:0] state_r, state_w;
 logic        mode_r, mode_w;			// 0: play, 1:record
-logic  [3:0] speed_r, speed_w;			// 0: 1/8, 1: 1/7, ..., 7: 1, ..., 13: 7, 14: 8
+logic  [3:0] speed_r, speed_w;			// 1: 1/8, 2: 1/7, ..., 8: 1, ..., 14: 7, 15: 8
 logic        interpol_r, interpol_w;	// 0: 0-order, 1: 1-order
+logic        change_en;
+logic        speed_up, speed_down;
 logic        mem_lim;
 
-logic [19:0] data_addr;
+logic [20:0] data_addr;
 logic [15:0] play_data, record_data;
 
 logic        i2c_start_r, i2c_start_w;
@@ -86,16 +91,27 @@ logic        player_fin;
 logic [15:0] adc_data;
 logic        recorder_start_r, recorder_start_w;
 logic        recorder_fin;
+logic        data_length_r, data_length_w;
 
 logic  [8:0] ledg_r, ledg_w;
 logic [17:0] ledr_r, ledr_w;
 
 
-assign mode_w     = i_sw_0;
-assign interpol_w = i_sw_1;
-assign mem_lim    = (data_addr == 20'hfffff);
+assign change_en  = ( state_r == S_IDLE  || state_r == S_INIT  ||
+                      state_r == S_RESET || state_r == S_WAT_R || state_r == S_PAUSE );
+assign key_2_w    = (change_en) ?   1'b0 : (i_key_2 | key_2_r);
+assign key_3_w    = (change_en) ?   1'b0 : (i_key_3 | key_3_r);
+assign mode_w     = (change_en) ? i_sw_0 : mode_r;
+assign interpol_w = (change_en) ? i_sw_1 : interpol_r;
 
-assign o_SRAM_ADDR = data_addr;
+assign speed_up   = (change_en) && ( (i_key_2 | key_2_r) && (speed_r != 15) );
+assign speed_down = (change_en) && ( (i_key_3 | key_3_r) && (speed_r !=  1) );
+assign speed_w    = (speed_up)   ? speed_r + 1 :
+                    (speed_down) ? speed_r - 1 : speed_r;
+
+assign mem_lim     = data_addr[20];
+
+assign o_SRAM_ADDR = data_addr[19:0];
 assign io_SRAM_DQ  = (mode_r == M_RECD) ? record_data : 16'dz; // sram_dq as output
 assign play_data   = (mode_r == M_PLAY) ?  io_SRAM_DQ : 16'd0; // sram_dq as input
 assign o_SRAM_WE_N = (mode_r == M_RECD) ?        1'b0 :  1'b1;
@@ -139,8 +155,8 @@ end
 I2CInitializer init0(
 	.i_rst_n(i_rst_n),
 	.i_clk(i_clk_100K),
-	.i_start(i2c_start_r),
-	.o_fin(i2c_fin),
+	.i_start(i2c_start_r),	// CDC flag
+	.o_fin(i2c_fin),		// CDC flag
 	.o_scl(o_I2C_SCLK),
 	.io_sda(io_I2C_SDAT)
 );
@@ -153,7 +169,7 @@ AudDSP dsp0(
 	.i_clk(i_clk),
 	.i_clear(dsp_clear),
 	.i_mode(mode_r),			// 0: play, 1:record
-	.i_speed(speed_r),			// 0: 1/8, 1: 1/7, ..., 7: 1, ..., 13: 7, 14: 8
+	.i_speed(speed_r),			// 1: 1/8, 2: 1/7, ..., 8: 1, ..., 14: 7, 15: 8
 	.i_interpol(interpol_r),	// 0: 0-order, 1: 1-order
 	// .i_lr(left_right),			// 0: left, 1: right
 	.i_start(dsp_start_r),
@@ -168,7 +184,8 @@ AudDSP dsp0(
 
 	// .i_adc_lrck(i_AUD_ADCLRCK),
 	.i_adc_data(adc_data),
-	.o_wdata(record_data)
+	.o_wdata(record_data),
+	.o_length(data_length_w)
 );
 
 // === AudPlayer ===
@@ -177,8 +194,8 @@ AudPlayer player0(
 	.i_rst_n(i_rst_n),
 	.i_bclk(i_AUD_BCLK),
 	.i_daclrck(i_AUD_DACLRCK),
-	.i_start(player_start_r),
-	.o_fin(player_fin),
+	.i_start(player_start_r),	// CDC flag
+	.o_fin(player_fin),			// CDC flag
 	.i_dac_data(dac_data),
 	.o_aud_dacdat(o_AUD_DACDAT)
 );
@@ -189,8 +206,8 @@ AudRecorder recorder0(
 	.i_rst_n(i_rst_n),
 	.i_bclk(i_AUD_BCLK),
 	.i_adclrck(i_AUD_ADCLRCK),
-	.i_start(recorder_start_r),
-	.o_fin(recoder_fin),
+	.i_start(recorder_start_r),	// CDC flag
+	.o_fin(recoder_fin),		// CDC flag
 	.i_aud_adcdat(i_AUD_ADCDAT),
 	.o_adc_data(adc_data)
 );
@@ -254,8 +271,8 @@ always_comb begin : FSM
 	endcase
 end
 
-always_comb begin
-	dsp_clear = 0;
+always_comb begin : CTRL_START
+	dsp_clear        = 0;
 	i2c_start_w      = i2c_start_r;
 	dsp_start_w      = 0;
 	player_start_w   = 0;
@@ -312,26 +329,35 @@ always_comb begin
 			end
 		end
 		default: begin
-			
+			dsp_clear        = 0;
+			i2c_start_w      = i2c_start_r;
+			dsp_start_w      = 0;
+			player_start_w   = 0;
+			recorder_start_w = 0;
 		end
 	endcase
 end
 
 always_ff @(posedge i_clk or negedge i_rst_n) begin
 	if (!i_rst_n) begin
+		key_2_r           <= 1'b0;
+		key_3_r           <= 1'b0;
 		state_r           <= S_INIT;
 		mode_r            <= M_RECD;
-		speed_r           <= 4'd7;
+		speed_r           <= 4'd8;
 		interpol_r        <= 1'b0;
 		i2c_start_r       <= 1'b0;
 		dsp_start_r       <= 1'b0;
 		player_start_r    <= 1'b0;
 		recorder_start_r  <= 1'b0;
 		play_data_ready_r <= 1'b0;
+		data_length_r     <= 1'b0;
 		ledg_r            <= 9'b0;
 		ledr_r            <= 18'b0;
 	end
 	else begin
+		key_2_r           <= key_2_w;
+		key_3_r           <= key_3_w;
 		state_r           <= state_w;
 		mode_r            <= mode_w;
 		speed_r           <= speed_w;
@@ -341,6 +367,7 @@ always_ff @(posedge i_clk or negedge i_rst_n) begin
 		player_start_r    <= player_start_w;
 		recorder_start_r  <= recorder_start_w;
 		play_data_ready_r <= play_data_ready_w;
+		data_length_r     <= data_length_w;
 		ledg_r            <= ledg_w;
 		ledr_r            <= ledr_w;
 	end
