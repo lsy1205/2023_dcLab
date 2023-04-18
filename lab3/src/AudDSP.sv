@@ -98,6 +98,7 @@ always_comb begin
 	div_3       = 0;
 	div_5       = 0;
 	div_7       = 0;
+	temp        = 0;
 	diff        = 0;
 
 	case (state_r)
@@ -179,6 +180,7 @@ always_comb begin
 			div_3       = 0;
 			div_5       = 0;
 			div_7       = 0;
+			temp        = 0;
 			diff        = 0;
 		end
 	endcase
