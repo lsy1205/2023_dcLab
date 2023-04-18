@@ -120,9 +120,9 @@ always_comb begin
 end
 
 always_ff @(posedge i_clk or negedge i_rst_n)begin
-	if(!i_rst_n || i_clear) begin
+	if (!i_rst_n) begin
 		state_r       <= S_IDLE;
-		data_length_r <= (i_clear) ? data_length_w : 0;
+		data_length_r <= 0;
 		addr_now_r    <= 21'h1fffff;
 		record_data_r <= 0;
 		play_data_r   <= 0;
@@ -131,14 +131,26 @@ always_ff @(posedge i_clk or negedge i_rst_n)begin
 		fin_r         <= 0;
 	end
 	else begin
-		state_r       <= state_w;
-		data_length_r <= data_length_w;
-		addr_now_r    <= addr_now_w;
-		record_data_r <= record_data_w;
-		play_data_r   <= play_data_w;
-		valid_r       <= valid_w;
-		we_n_r        <= we_n_w;
-		fin_r         <= fin_w;
+		if (i_clear) begin
+			state_r       <= S_IDLE;
+			data_length_r <= data_length_w;
+			addr_now_r    <= 21'h1fffff;
+			record_data_r <= 0;
+			play_data_r   <= 0;
+			valid_r       <= 0;
+			we_n_r        <= 1;
+			fin_r         <= 0;
+		end
+		else begin
+			state_r       <= state_w;
+			data_length_r <= data_length_w;
+			addr_now_r    <= addr_now_w;
+			record_data_r <= record_data_w;
+			play_data_r   <= play_data_w;
+			valid_r       <= valid_w;
+			we_n_r        <= we_n_w;
+			fin_r         <= fin_w;			
+		end
 	end
 end
     

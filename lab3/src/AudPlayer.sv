@@ -34,6 +34,9 @@ always_comb begin : FSM
 		S_SEND: begin
 			state_w = (counter_r == 15) ? S_IDLE : S_SEND;
 		end
+		default: begin
+			state_w = S_IDLE;
+		end
 	endcase
 end
 
@@ -57,6 +60,12 @@ always_comb begin
 			counter_w = counter_r + 1;
 			fin_w = (counter_r == 15)? 1 : 0;
 			record_data_w = (counter_r) ? record_data_r << 1 : record_data_r;
+		end
+		default: begin
+			counter_w = counter_r;
+			record_data_w = record_data_r;
+			record_lrc_w = record_lrc_r;
+			fin_w = 0;
 		end
 	endcase
 end

@@ -185,7 +185,7 @@ always_comb begin
 end
 
 always_ff @(posedge i_clk or negedge i_rst_n) begin
-	if (!i_rst_n || i_clear) begin
+	if (!i_rst_n) begin
 		state_r     <= S_IDLE;
 		counter_r   <= 0;
 		last_data_r <= 0;
@@ -196,14 +196,26 @@ always_ff @(posedge i_clk or negedge i_rst_n) begin
 		mem_start_r <= 0;
 	end
 	else begin
-		state_r     <= state_w;
-		counter_r   <= counter_w;
-		last_data_r <= last_data_w;
-		data_r      <= data_w;
-		delta_r     <= delta_w;
-		sign_r      <= sign_w;
-		fin_r       <= fin_w;
-		mem_start_r <= mem_start_w;
+		if (i_clear) begin
+			state_r     <= S_IDLE;
+			counter_r   <= 0;
+			last_data_r <= 0;
+			data_r      <= 0;
+			delta_r     <= 0;
+			sign_r      <= 0;
+			fin_r       <= 0;
+			mem_start_r <= 0;			
+		end
+		else begin
+			state_r     <= state_w;
+			counter_r   <= counter_w;
+			last_data_r <= last_data_w;
+			data_r      <= data_w;
+			delta_r     <= delta_w;
+			sign_r      <= sign_w;
+			fin_r       <= fin_w;
+			mem_start_r <= mem_start_w;			
+		end
 	end
 end
 endmodule
