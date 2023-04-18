@@ -95,10 +95,10 @@ always_comb begin
 	next_num_w  = next_num_r;
 	fin_w       = 0;
 	mem_start_w = 0;
-	div_3 = 0;
-	div_5 = 0;
-	div_7 = 0;
-	diff  = 0;
+	div_3       = 0;
+	div_5       = 0;
+	div_7       = 0;
+	diff        = 0;
 
 	case (state_r)
 		S_IDLE: begin
@@ -120,10 +120,10 @@ always_comb begin
 
 				if (!i_speed[3]) begin
 					counter_w = i_speed;
-					temp = i_rdata - data_r;
-					sign_w = temp[15];
-					diff = (i_interpol == 0) ? 0 :
-					       (temp[15]) ? data_r - i_rdata : temp;
+					temp      = i_rdata - data_r;
+					sign_w    = temp[15];
+					diff      = (i_interpol == 0) ? 0 :
+					            (temp[15]) ? data_r - i_rdata : temp;
 
 					case (i_speed[2:0])
 						3'd1: begin  // 1/8
@@ -176,10 +176,10 @@ always_comb begin
 			next_num_w  = next_num_r;
 			fin_w       = 0;
 			mem_start_w = 0;
-			div_3 = 0;
-			div_5 = 0;
-			div_7 = 0;
-			diff  = 0;
+			div_3       = 0;
+			div_5       = 0;
+			div_7       = 0;
+			diff        = 0;
 		end
 	endcase
 end
@@ -187,13 +187,13 @@ end
 always_ff @(posedge i_clk or negedge i_rst_n) begin
 	if (!i_rst_n || i_clear) begin
 		state_r     <= S_IDLE;
-		counter_r   <= 3'b0;
-		last_data_r <= 1'b0;
-		data_r      <= 16'b0;
-		delta_r     <= 16'b0;
-		sign_r      <= 1'b0;
-		fin_r       <= 1'b0;
-		mem_start_r <= 1'b0;
+		counter_r   <= 0;
+		last_data_r <= 0;
+		data_r      <= 0;
+		delta_r     <= 0;
+		sign_r      <= 0;
+		fin_r       <= 0;
+		mem_start_r <= 0;
 	end
 	else begin
 		state_r     <= state_w;

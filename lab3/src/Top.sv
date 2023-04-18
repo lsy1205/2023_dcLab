@@ -52,16 +52,16 @@ module Top (
 localparam S_IDLE  = 0;
 localparam S_INIT  = 1;
 localparam S_RESET = 2;
-localparam S_DSP_L = 3;
+localparam S_DSP   = 3;
 localparam S_WAT_L = 4;
-localparam S_DSP_R = 5;
-localparam S_WAT_R = 6;
-localparam S_PAUSE = 7;
+localparam S_WAT_R = 5;
+localparam S_PAUSE = 6;
 
 localparam M_PLAY = 0;
 localparam M_RECD = 1;
 
-
+logic        key_0_r, key_0_w;
+logic        key_1_r, key_1_w;
 logic        key_2_r, key_2_w;
 logic        key_3_r, key_3_w;
 
@@ -73,25 +73,24 @@ logic        change_en;
 logic        speed_up, speed_down;
 logic        mem_lim;
 
-logic [20:0] data_addr;
+logic  [2:0] next_num;
 logic [15:0] play_data, record_data;
+logic        mem_start, mem_fin, mem_valid;
 
 logic        i2c_start_r, i2c_start_w;
 logic        i2c_fin;
 
-logic        dsp_clear;
+logic        clear;
 logic        dsp_start_r, dsp_start_w;
 logic        dsp_fin;
 
 logic [15:0] dac_data;
-logic        play_data_ready_r, play_data_ready_w;
 logic        player_start_r, player_start_w;
 logic        player_fin;
 
 logic [15:0] adc_data;
 logic        recorder_start_r, recorder_start_w;
 logic        recorder_fin;
-logic        data_length_r, data_length_w;
 
 logic  [8:0] ledg_r, ledg_w;
 logic [17:0] ledr_r, ledr_w;
@@ -99,6 +98,8 @@ logic [17:0] ledr_r, ledr_w;
 
 assign change_en  = ( state_r == S_IDLE  || state_r == S_INIT  ||
                       state_r == S_RESET || state_r == S_WAT_R || state_r == S_PAUSE );
+assign key_0_w    = (change_en) ?   1'b0 : (i_key_0 | key_0_r);
+assign key_1_w    = (change_en) ?   1'b0 : (i_key_1 | key_1_r);
 assign key_2_w    = (change_en) ?   1'b0 : (i_key_2 | key_2_r);
 assign key_3_w    = (change_en) ?   1'b0 : (i_key_3 | key_3_r);
 assign mode_w     = (change_en) ? i_sw_0 : mode_r;
@@ -109,16 +110,7 @@ assign speed_down = (change_en) && ( (i_key_3 | key_3_r) && (speed_r !=  1) );
 assign speed_w    = (speed_up)   ? speed_r + 1 :
                     (speed_down) ? speed_r - 1 : speed_r;
 
-assign mem_lim     = data_addr[20];
-
-assign o_SRAM_ADDR = data_addr[19:0];
-assign io_SRAM_DQ  = (mode_r == M_RECD) ? record_data : 16'dz; // sram_dq as output
-assign play_data   = (mode_r == M_PLAY) ?  io_SRAM_DQ : 16'd0; // sram_dq as input
-assign o_SRAM_WE_N = (mode_r == M_RECD) ?        1'b0 :  1'b1;
-assign o_SRAM_CE_N = 1'b0;
-assign o_SRAM_OE_N = 1'b0;
-assign o_SRAM_LB_N = 1'b0;
-assign o_SRAM_UB_N = 1'b0;
+assign mem_lim     = (mem_fin && !mem_valid);
 
 assign o_LCD_DATA = 'b0;
 assign o_LCD_EN   = 'b1;
@@ -136,7 +128,7 @@ always_comb begin
 	ledg_w[1] = 0;
 
 	case (state_r)
-		S_DSP_L, S_WAT_L, S_DSP_R, S_WAT_R: begin
+		S_DSP, S_WAT_L, S_WAT_R: begin
 			ledg_w[0] = 1;
 			ledg_w[1] = 1;
 		end
@@ -149,6 +141,29 @@ always_comb begin
 		end
 	endcase
 end
+
+
+Mem mem0 (
+    .i_clk(i_clk),
+    .i_rst_n(i_rst_n),
+	.i_clear(clear),
+    .i_mode(mode_r), // 0: play(read), 1: record(write)
+    .i_next_num(next_num),
+    .i_start(mem_start),
+    .o_fin(mem_fin),
+
+    .o_SRAM_ADDR(o_SRAM_ADDR),
+	.io_SRAM_DQ(io_SRAM_DQ),
+	.o_SRAM_WE_N(o_SRAM_WE_N),
+	.o_SRAM_CE_N(o_SRAM_CE_N),
+	.o_SRAM_OE_N(o_SRAM_OE_N),
+	.o_SRAM_LB_N(o_SRAM_LB_N),
+	.o_SRAM_UB_N(o_SRAM_UB_N),
+
+    .o_vaild(mem_valid),
+    .o_r_data(play_data),
+    .i_w_data(record_data)
+);
 
 // === I2CInitializer ===
 // sequentially sent out settings to initialize WM8731 with I2C protocal
@@ -167,25 +182,22 @@ I2CInitializer init0(
 AudDSP dsp0(
 	.i_rst_n(i_rst_n),
 	.i_clk(i_clk),
-	.i_clear(dsp_clear),
+	.i_clear(clear),
 	.i_mode(mode_r),			// 0: play, 1:record
 	.i_speed(speed_r),			// 1: 1/8, 2: 1/7, ..., 8: 1, ..., 14: 7, 15: 8
 	.i_interpol(interpol_r),	// 0: 0-order, 1: 1-order
-	// .i_lr(left_right),			// 0: left, 1: right
 	.i_start(dsp_start_r),
 	.o_fin(dsp_fin),
-	
-	.o_data_addr(data_addr),
 
-	// .i_dac_lrck(i_AUD_DACLRCK),
-	.i_rdata_ready(play_data_ready_r),
+	.o_next_num(next_num),		// 0: nxt 1, 1: nxt 2, ..., 7: nxt 8
+	.o_mem_start(mem_start),
+	.i_mem_fin(mem_fin),
+
 	.i_rdata(play_data),
 	.o_dac_data(dac_data),
 
-	// .i_adc_lrck(i_AUD_ADCLRCK),
 	.i_adc_data(adc_data),
-	.o_wdata(record_data),
-	.o_length(data_length_w)
+	.o_wdata(record_data)
 );
 
 // === AudPlayer ===
@@ -226,34 +238,29 @@ always_comb begin : FSM
 		end 
 		S_RESET: begin
 			if (i_key_0) begin
-				state_w = S_DSP_L;
+				state_w = S_DSP;
 			end
 		end
-		S_DSP_L: begin
+		S_DSP: begin
 			if (dsp_fin) begin
 				state_w = S_WAT_L;
 			end
 		end
 		S_WAT_L: begin
-			if (player_fin || recoder_fin) begin
-				state_w = S_DSP_R;
-			end
-		end
-		S_DSP_R: begin
-			if (dsp_fin) begin
+			if (player_fin | recoder_fin) begin
 				state_w = S_WAT_R;
 			end
 		end
 		S_WAT_R: begin
-			if (player_fin || recoder_fin) begin
-				if (i_key_1 || mem_lim) begin
+			if (player_fin | recoder_fin) begin
+				if (mem_lim | i_key_1 | key_1_r) begin
 					state_w = S_RESET;
 				end
-				else if (i_key_0) begin
+				else if (i_key_0 | key_0_r) begin
 					state_w = S_PAUSE;
 				end
 				else begin
-					state_w = S_DSP_L;
+					state_w = S_DSP;
 				end
 			end
 		end
@@ -262,7 +269,7 @@ always_comb begin : FSM
 				state_w = S_RESET;
 			end
 			else if (i_key_0) begin
-				state_w = S_DSP_L;
+				state_w = S_DSP;
 			end
 		end
 		default: begin
@@ -272,7 +279,7 @@ always_comb begin : FSM
 end
 
 always_comb begin : CTRL_START
-	dsp_clear        = 0;
+	clear            = 0;
 	i2c_start_w      = i2c_start_r;
 	dsp_start_w      = 0;
 	player_start_w   = 0;
@@ -286,12 +293,12 @@ always_comb begin : CTRL_START
 			
 		end 
 		S_RESET: begin
-			dsp_clear = 1;
+			clear = 1;
 			if (i_key_0) begin
 				dsp_start_w = 1;
 			end
 		end
-		S_DSP_L: begin
+		S_DSP: begin
 			if (dsp_fin) begin
 				if (mode_r == M_RECD) begin
 					recorder_start_w = 1;
@@ -302,12 +309,7 @@ always_comb begin : CTRL_START
 			end
 		end
 		S_WAT_L: begin
-			if (player_fin || recoder_fin) begin
-				dsp_start_w = 1;
-			end
-		end
-		S_DSP_R: begin
-			if (dsp_fin) begin
+			if (player_fin | recoder_fin) begin
 				if (mode_r == M_RECD) begin
 					recorder_start_w = 1;
 				end
@@ -317,10 +319,8 @@ always_comb begin : CTRL_START
 			end
 		end
 		S_WAT_R: begin
-			if (player_fin || recoder_fin) begin
-				if (!i_key_1 && !mem_lim && !i_key_0) begin
-					dsp_start_w = 1;
-				end
+			if (player_fin | recoder_fin) begin
+				dsp_start_w = !(mem_lim | i_key_1 | key_1_r | i_key_0 | key_0_r);
 			end
 		end
 		S_PAUSE: begin
@@ -329,7 +329,7 @@ always_comb begin : CTRL_START
 			end
 		end
 		default: begin
-			dsp_clear        = 0;
+			clear            = 0;
 			i2c_start_w      = i2c_start_r;
 			dsp_start_w      = 0;
 			player_start_w   = 0;
@@ -340,36 +340,36 @@ end
 
 always_ff @(posedge i_clk or negedge i_rst_n) begin
 	if (!i_rst_n) begin
-		key_2_r           <= 1'b0;
-		key_3_r           <= 1'b0;
-		state_r           <= S_INIT;
-		mode_r            <= M_RECD;
-		speed_r           <= 4'd8;
-		interpol_r        <= 1'b0;
-		i2c_start_r       <= 1'b0;
-		dsp_start_r       <= 1'b0;
-		player_start_r    <= 1'b0;
-		recorder_start_r  <= 1'b0;
-		play_data_ready_r <= 1'b0;
-		data_length_r     <= 1'b0;
-		ledg_r            <= 9'b0;
-		ledr_r            <= 18'b0;
+		key_0_r          <= 1'b0;
+		key_1_r          <= 1'b0;
+		key_2_r          <= 1'b0;
+		key_3_r          <= 1'b0;
+		state_r          <= S_INIT;
+		mode_r           <= M_RECD;
+		speed_r          <= 4'd8;
+		interpol_r       <= 1'b0;
+		i2c_start_r      <= 1'b0;
+		dsp_start_r      <= 1'b0;
+		player_start_r   <= 1'b0;
+		recorder_start_r <= 1'b0;
+		ledg_r           <= 9'b0;
+		ledr_r           <= 18'b0;
 	end
 	else begin
-		key_2_r           <= key_2_w;
-		key_3_r           <= key_3_w;
-		state_r           <= state_w;
-		mode_r            <= mode_w;
-		speed_r           <= speed_w;
-		interpol_r        <= interpol_w;
-		i2c_start_r       <= i2c_start_w;
-		dsp_start_r       <= dsp_start_w;
-		player_start_r    <= player_start_w;
-		recorder_start_r  <= recorder_start_w;
-		play_data_ready_r <= play_data_ready_w;
-		data_length_r     <= data_length_w;
-		ledg_r            <= ledg_w;
-		ledr_r            <= ledr_w;
+		key_0_r          <= key_0_w;
+		key_1_r          <= key_1_w;
+		key_2_r          <= key_2_w;
+		key_3_r          <= key_3_w;
+		state_r          <= state_w;
+		mode_r           <= mode_w;
+		speed_r          <= speed_w;
+		interpol_r       <= interpol_w;
+		i2c_start_r      <= i2c_start_w;
+		dsp_start_r      <= dsp_start_w;
+		player_start_r   <= player_start_w;
+		recorder_start_r <= recorder_start_w;
+		ledg_r           <= ledg_w;
+		ledr_r           <= ledr_w;
 	end
 end
 

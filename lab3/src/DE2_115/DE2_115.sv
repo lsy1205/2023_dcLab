@@ -159,48 +159,48 @@ AltPLL pll0 (
 Debounce deb0(
 	.i_in(SW[0]), // Play=0/Record=1 mode
 	.i_rst_n(rst_n),
-	.i_clk(CLK_12M),
+	.i_clk(AUD_BCLK),
 	.o_debounced(sw0level)
 );
 
 Debounce deb1(
 	.i_in(SW[1]), // 0/1 order interpolation
 	.i_rst_n(rst_n),
-	.i_clk(CLK_12M),
+	.i_clk(AUD_BCLK),
 	.o_debounced(sw1level)
 );
 
 Debounce deb2(
 	.i_in(KEY[0]), // Start/Pause
 	.i_rst_n(rst_n),
-	.i_clk(CLK_12M),
+	.i_clk(AUD_BCLK),
 	.o_neg(key0down)
 );
 
 Debounce deb3(
 	.i_in(KEY[1]), // Stop
 	.i_rst_n(rst_n),
-	.i_clk(CLK_12M),
+	.i_clk(AUD_BCLK),
 	.o_neg(key1down)
 );
 
 Debounce deb4(
 	.i_in(KEY[2]), // Speed up
 	.i_rst_n(rst_n),
-	.i_clk(CLK_12M),
+	.i_clk(AUD_BCLK),
 	.o_neg(key2down)
 );
 
 Debounce deb5(
 	.i_in(KEY[3]), // Speed down
 	.i_rst_n(rst_n),
-	.i_clk(CLK_12M),
+	.i_clk(AUD_BCLK),
 	.o_neg(key3down)
 );
 
 Top top0(
 	.i_rst_n(rst_n),
-	.i_clk(CLK_12M),
+	.i_clk(AUD_BCLK),
 	.i_sw_0(sw0level),  // Play=0/Record=1 mode
 	.i_sw_1(sw1level),  // 0/1 order interpolation
 	.i_key_0(key0down), // Start/Pause
