@@ -136,64 +136,70 @@ module DE2_115 (
 	inout [6:0] EX_IO
 );
 
+logic sw0level, sw1level;
 logic key0down, key1down, key2down, key3down;
 logic CLK_12M, CLK_100K, CLK_800K;
+logic rst, rst_n;
+
+assign rst_n = SW[17];
+assign rst   = !rst_n;
 
 assign AUD_XCK = CLK_12M;
 
-Altpll pll0( // generate with qsys, please follow lab2 tutorials
-	.clk_clk(CLOCK_50),
-	.reset_reset_n(key3down),
-	.altpll_12m_clk(CLK_12M),
-	.altpll_100k_clk(CLK_100K),
-	.altpll_800k_clk(CLK_800K)
+AltPLL pll0 (
+	.i_clk_clk       (CLOCK_50),  //       i_clk.clk
+	.i_reset_reset   (rst),       //     i_reset.reset
+	.altpll_50m_clk  (),          //  altpll_50m.clk
+	.altpll_12m_clk  (CLK_12M),   //  altpll_12m.clk
+	.altpll_100k_clk (CLK_100K),  // altpll_100k.clk
+	.altpll_800k_clk (CLK_800K)   // altpll_800k.clk
 );
 
 // you can decide key down settings on your own, below is just an example
 Debounce deb0(
 	.i_in(SW[0]), // Play=0/Record=1 mode
-	.i_rst_n(SW[17]),
+	.i_rst_n(rst_n),
 	.i_clk(CLK_12M),
 	.o_debounced(sw0level)
 );
 
 Debounce deb1(
 	.i_in(SW[1]), // 0/1 order interpolation
-	.i_rst_n(SW[17]),
+	.i_rst_n(rst_n),
 	.i_clk(CLK_12M),
 	.o_debounced(sw1level)
 );
 
 Debounce deb2(
 	.i_in(KEY[0]), // Start/Pause
-	.i_rst_n(SW[17]),
+	.i_rst_n(rst_n),
 	.i_clk(CLK_12M),
 	.o_neg(key0down)
 );
 
 Debounce deb3(
 	.i_in(KEY[1]), // Stop
-	.i_rst_n(SW[17]),
+	.i_rst_n(rst_n),
 	.i_clk(CLK_12M),
 	.o_neg(key1down)
 );
 
 Debounce deb4(
 	.i_in(KEY[2]), // Speed up
-	.i_rst_n(SW[17]),
+	.i_rst_n(rst_n),
 	.i_clk(CLK_12M),
 	.o_neg(key2down)
 );
 
 Debounce deb5(
 	.i_in(KEY[3]), // Speed down
-	.i_rst_n(SW[17]),
+	.i_rst_n(rst_n),
 	.i_clk(CLK_12M),
 	.o_neg(key3down)
 );
 
 Top top0(
-	.i_rst_n(SW[17]),
+	.i_rst_n(rst_n),
 	.i_clk(CLK_12M),
 	.i_sw_0(sw0level),  // Play=0/Record=1 mode
 	.i_sw_1(sw1level),  // 0/1 order interpolation
