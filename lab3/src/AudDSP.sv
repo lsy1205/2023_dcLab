@@ -171,7 +171,7 @@ always_comb begin
 		end
 		S_INCR: begin
 			counter_w   = counter_r + 1;
-			last_data_w = last_data_r + delta_r;
+			last_data_w = (sign_r) ? last_data_r - delta_r : last_data_r + delta_r;
 			fin_w       = 1;
 		end
 		default: begin

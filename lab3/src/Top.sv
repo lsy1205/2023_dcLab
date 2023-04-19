@@ -97,7 +97,6 @@ logic        recorder_fin;
 logic  [8:0] ledg_r, ledg_w;
 logic [17:0] ledr_r, ledr_w;
 
-
 assign speed_up    = (i_key_2 | key_2_r) && (speed_r != 15);
 assign speed_down  = (i_key_3 | key_3_r) && (speed_r !=  1);
 assign mem_lim     = (mem_fin && !mem_valid);

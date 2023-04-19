@@ -53,6 +53,7 @@ always_comb begin
 			record_data_w = (i_start) ? i_dac_data : 0;
 		end
 		S_WAIT: begin
+			// record_data_w = (i_start) ? i_dac_data : 0;
 			counter_w = 0;
 			record_lrc_w = i_daclrck;
 		end
@@ -70,7 +71,7 @@ always_comb begin
 	endcase
 end
 
-always_ff @(posedge i_bclk or negedge i_rst_n) begin
+always_ff @(negedge i_bclk or negedge i_rst_n) begin
 	if (!i_rst_n) begin
 		state_r       <= S_IDLE;
 		counter_r     <= 0;

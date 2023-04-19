@@ -178,7 +178,7 @@ always_ff @( posedge i_clk or negedge i_rst_n) begin
 		counter_r     <= 0;
 		cmd_counter_r <= 0;
 		data_r        <= 0;
-		out_r         <= 0;
+		out_r         <= 1;
 		nack1_r       <= 0;
 		nack2_r       <= 0;
 		nack3_r       <= 0;

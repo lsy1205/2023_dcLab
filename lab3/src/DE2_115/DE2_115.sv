@@ -249,25 +249,27 @@ Top top0(
 	.o_ledr(LEDR) // [17:0]
 );
 
-SevenHexDecoder seven_dec0(
+SevenHexDecoder2 seven_dec0(
 	.i_hex(speed),
 	.o_seven_ten(HEX1),
 	.o_seven_one(HEX0)
 );
 
-SevenHexDecoder seven_dec1(
-	.i_hex(seg7),
-	.o_seven_ten(HEX5),
-	.o_seven_one(HEX4)
-);
+// SevenHexDecoder seven_dec1(
+// 	.i_hex(seg7),
+// 	.o_seven_ten(HEX5),
+// 	.o_seven_one(HEX4)
+// );
+
+assign GPIO = {SRAM_DQ[1:0], SRAM_ADDR[2:0], SRAM_WE_N, AUD_DACDAT, AUD_DACLRCK, AUD_ADCDAT, AUD_ADCLRCK, AUD_BCLK, CLK_12M, I2C_SDAT, I2C_SCLK};
 
 // comment those are use for display
 // assign HEX0 = '1;
 // assign HEX1 = '1;
 assign HEX2 = '1;
 assign HEX3 = '1;
-// assign HEX4 = '1;
-// assign HEX5 = '1;
+assign HEX4 = '1;
+assign HEX5 = '1;
 assign HEX6 = '1;
 assign HEX7 = '1;
 

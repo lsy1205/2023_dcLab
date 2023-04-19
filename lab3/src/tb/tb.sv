@@ -1,5 +1,5 @@
 `timescale 1ns/100ps
-`define DELAY 21
+`define DELAY 63
 
 module tb(
 	inout [15:0] SRAM_DQ
