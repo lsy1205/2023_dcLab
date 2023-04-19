@@ -224,7 +224,7 @@ always_ff @(posedge i_clk or negedge i_rst_n) begin
 			delta_r     <= delta_w;
 			sign_r      <= sign_w;
 			fin_r       <= fin_w;
-			next_num_r  <= 0;
+			next_num_r  <= next_num_w;
 			mem_start_r <= mem_start_w;			
 		end
 	end

@@ -1,4 +1,5 @@
 `timescale 1ns/100ps
+`define DELAY 21
 
 module tb(
 	inout [15:0] SRAM_DQ
@@ -93,8 +94,8 @@ initial begin
     CLK_100K = 0;
     CLK_800K = 0;
     AUD_BCLK = 1;
-	AUD_ADCLRCK = 0;
-	AUD_DACLRCK = 0;
+	AUD_ADCLRCK = 1;
+	AUD_DACLRCK = 1;
 	start = 0;
 
     #10  rst_n = 0;
@@ -104,15 +105,15 @@ end
 always_ff @(posedge CLK_12M) begin
 	key0 = ($random() % 10000) == 1532;
 	key1 = ($random() % 10000) == 7689;
-	key2 = ($random() % 10000) == 5443;
-	key3 = 0;//($random() % 10000) == 1457;
+	key2 = ($random() % 10000) == 543;
+	key3 = ($random() % 10000) == 1457;
 end
 
 always @(SRAM_ADDR) data = $random();
-always @(negedge AUD_BCLK) data_bit = $random(); 
+always @(negedge AUD_BCLK) data_bit = $random();
 
 always @(seg7[2:0]) begin
-	if (seg7[2:0] == 2 || seg7[2:0] == 6) begin
+	if (seg7[2:0] == 2 || seg7[2:0] == 7) begin
 		#(1000)
 		@(negedge CLK_12M)
 		start = 1;
@@ -124,9 +125,18 @@ end
 always #(   84/2) CLK_12M  = ~CLK_12M;
 always #(10000/2) CLK_100K = ~CLK_100K;
 always #( 1250/2) CLK_800K = ~CLK_800K;
-always #(   84/2) AUD_BCLK = ~AUD_BCLK;
-always #(31250/2) AUD_ADCLRCK = ~AUD_ADCLRCK;
-always #(31250/2) AUD_DACLRCK = ~AUD_DACLRCK;
+initial begin
+	#(`DELAY) AUD_BCLK = ~AUD_BCLK;
+	forever #(   84/2) AUD_BCLK = ~AUD_BCLK;
+end
+initial begin
+	#(`DELAY) AUD_ADCLRCK = ~AUD_ADCLRCK;
+	forever #(31248/2) AUD_ADCLRCK = ~AUD_ADCLRCK;
+end
+initial begin
+	#(`DELAY) AUD_DACLRCK = ~AUD_DACLRCK;
+	forever #(31248/2) AUD_DACLRCK = ~AUD_DACLRCK;
+end
 
 initial begin
     #(60000000)
