@@ -141,6 +141,8 @@ logic key0down, key1down, key2down, key3down;
 logic CLK_12M, CLK_100K, CLK_800K;
 logic rst, rst_n;
 
+logic [3:0] speed, seg7;
+
 assign rst_n = SW[17];
 assign rst   = !rst_n;
 
@@ -159,54 +161,54 @@ AltPLL pll0 (
 Debounce deb0(
 	.i_in(SW[0]), // Play=0/Record=1 mode
 	.i_rst_n(rst_n),
-	.i_clk(AUD_BCLK),
+	.i_clk(CLK_12M),
 	.o_debounced(sw0level)
 );
 
 Debounce deb1(
 	.i_in(SW[1]), // 0/1 order interpolation
 	.i_rst_n(rst_n),
-	.i_clk(AUD_BCLK),
+	.i_clk(CLK_12M),
 	.o_debounced(sw1level)
 );
 
 Debounce deb2(
 	.i_in(KEY[0]), // Start/Pause
 	.i_rst_n(rst_n),
-	.i_clk(AUD_BCLK),
+	.i_clk(CLK_12M),
 	.o_neg(key0down)
 );
 
 Debounce deb3(
 	.i_in(KEY[1]), // Stop
 	.i_rst_n(rst_n),
-	.i_clk(AUD_BCLK),
+	.i_clk(CLK_12M),
 	.o_neg(key1down)
 );
 
 Debounce deb4(
 	.i_in(KEY[2]), // Speed up
 	.i_rst_n(rst_n),
-	.i_clk(AUD_BCLK),
+	.i_clk(CLK_12M),
 	.o_neg(key2down)
 );
 
 Debounce deb5(
 	.i_in(KEY[3]), // Speed down
 	.i_rst_n(rst_n),
-	.i_clk(AUD_BCLK),
+	.i_clk(CLK_12M),
 	.o_neg(key3down)
 );
 
 Top top0(
 	.i_rst_n(rst_n),
-	.i_clk(AUD_BCLK),
+	.i_clk(CLK_12M),
 	.i_sw_0(sw0level),  // Play=0/Record=1 mode
 	.i_sw_1(sw1level),  // 0/1 order interpolation
 	.i_key_0(key0down), // Start/Pause
 	.i_key_1(key1down), // Stop
 	.i_key_2(key2down), // Speed up
-	.i_key_3(key2down), // Speed down
+	.i_key_3(key3down), // Speed down
 	
 	// AudDSP and SRAM
 	.o_SRAM_ADDR(SRAM_ADDR), // [19:0]
@@ -230,8 +232,8 @@ Top top0(
 	.o_AUD_DACDAT(AUD_DACDAT),
 
 	// SEVENDECODER (optional display)
-	// .o_record_time(recd_time),
-	// .o_play_time(play_time),
+	.o_speed(speed),
+	.o_seg7(seg7),
 
 	// LCD (optional display)
 	.i_clk_800k(CLK_800K),
@@ -247,25 +249,25 @@ Top top0(
 	.o_ledr(LEDR) // [17:0]
 );
 
-// SevenHexDecoder seven_dec0(
-// 	.i_num(play_time),
-// 	.o_seven_ten(HEX1),
-// 	.o_seven_one(HEX0)
-// );
+SevenHexDecoder seven_dec0(
+	.i_hex(speed),
+	.o_seven_ten(HEX1),
+	.o_seven_one(HEX0)
+);
 
-// SevenHexDecoder seven_dec1(
-// 	.i_num(recd_time),
-// 	.o_seven_ten(HEX5),
-// 	.o_seven_one(HEX4)
-// );
+SevenHexDecoder seven_dec1(
+	.i_hex(seg7),
+	.o_seven_ten(HEX5),
+	.o_seven_one(HEX4)
+);
 
 // comment those are use for display
-assign HEX0 = '1;
-assign HEX1 = '1;
+// assign HEX0 = '1;
+// assign HEX1 = '1;
 assign HEX2 = '1;
 assign HEX3 = '1;
-assign HEX4 = '1;
-assign HEX5 = '1;
+// assign HEX4 = '1;
+// assign HEX5 = '1;
 assign HEX6 = '1;
 assign HEX7 = '1;
 

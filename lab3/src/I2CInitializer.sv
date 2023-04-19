@@ -5,7 +5,6 @@ module I2CInitializer (
 	output o_fin,
 	inout  io_sda,
 	output o_scl
-	// output o_oen // you are outputing (you are not outputing only when you are "ack"ing.)
 );
 
 // state
@@ -31,13 +30,13 @@ logic  [2:0] cmd_counter_r, cmd_counter_w;
 logic  [4:0] counter_r, counter_w;
 logic [27:0] data_r, data_w;
 logic        out_r, out_w;
-logic        o_fin_r, o_fin_w;
+logic        fin_r, fin_w;
 logic        nack;
 logic        nack1_r, nack1_w, nack2_r, nack2_w, nack3_r, nack3_w;
 
 assign io_sda = out_r ? 1'bz : 1'b0;
 assign o_scl  = (state_r == S_TRANS || state_r == S_ACK || state_r == S_TER) ? ~i_clk : 1;
-assign o_fin  = o_fin_r;
+assign o_fin  = fin_r;
 assign nack   = nack1_r | nack2_r | nack3_r;
 
 always_comb begin: FSM
@@ -79,8 +78,9 @@ always_comb begin
 	nack1_w       = nack1_r;
 	nack2_w       = nack2_r;
 	nack3_w       = nack3_r;
+	fin_w         = fin_r;
 	out_w         = 1;
-	o_fin_w       = o_fin_r;
+
 	case (state_r)
 		S_IDLE: begin
 			out_w         = 1;
@@ -154,7 +154,7 @@ always_comb begin
 			cmd_counter_w = cmd_counter_r + 1;
 			counter_w     = 0;
 			out_w         = 1;
-			o_fin_w = (cmd_counter_r == 6);
+			fin_w         = (cmd_counter_r == 6);
 		end
 		S_FIN: begin
 			
@@ -167,7 +167,7 @@ always_comb begin
 			nack2_w       = nack2_r;
 			nack3_w       = nack3_r;
 			out_w         = 1;
-			o_fin_w       = 0;
+			fin_w         = 0;
 		end
 	endcase
 end
@@ -182,7 +182,7 @@ always_ff @( posedge i_clk or negedge i_rst_n) begin
 		nack1_r       <= 0;
 		nack2_r       <= 0;
 		nack3_r       <= 0;
-		o_fin_r       <= 0;
+		fin_r         <= 0;
 	end
 	else begin
 		state_r       <= state_w;
@@ -193,7 +193,7 @@ always_ff @( posedge i_clk or negedge i_rst_n) begin
 		nack1_r       <= nack1_w;
 		nack2_r       <= nack2_w;
 		nack3_r       <= nack3_w;
-		o_fin_r       <= o_fin_w;
+		fin_r         <= fin_w;
 	end
 end
 

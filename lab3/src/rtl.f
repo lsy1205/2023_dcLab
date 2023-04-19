@@ -1,12 +1,5 @@
-// option
--full64
--R
--debug_access+all
--sverilog
-+v2k
-
 // tb
-
+tb/tb.sv
 
 // design
 Top.sv

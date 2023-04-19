@@ -23,15 +23,15 @@ module Top (
 	inout  io_I2C_SDAT,
 
 	// I2S
-	inout  i_AUD_BCLK,
-	inout  i_AUD_ADCLRCK,
+	input  i_AUD_BCLK,
+	input  i_AUD_ADCLRCK,
 	input  i_AUD_ADCDAT,
-	inout  i_AUD_DACLRCK,
+	input  i_AUD_DACLRCK,
 	output o_AUD_DACDAT,
 
 	// SEVENDECODER (optional display)
-	// output [5:0] o_record_time,
-	// output [5:0] o_play_time,
+	output [3:0] o_speed,
+	output [3:0] o_seg7,
 
 	// LCD (optional display)
 	input        i_clk_800k,
@@ -67,6 +67,7 @@ logic        key_3_r, key_3_w;
 
 logic  [2:0] state_r, state_w;
 logic        mode_r, mode_w;			// 0: play, 1:record
+logic        mode_changed_r, mode_changed_w;
 logic  [3:0] speed_r, speed_w;			// 1: 1/8, 2: 1/7, ..., 8: 1, ..., 14: 7, 15: 8
 logic        interpol_r, interpol_w;	// 0: 0-order, 1: 1-order
 logic        change_en;
@@ -96,10 +97,11 @@ logic  [8:0] ledg_r, ledg_w;
 logic [17:0] ledr_r, ledr_w;
 
 
-assign change_en  = ( state_r == S_IDLE  || state_r == S_INIT  ||
-                      state_r == S_RESET || state_r == S_WAT_R || state_r == S_PAUSE );
-assign key_0_w    = (change_en) ?   1'b0 : (i_key_0 | key_0_r);
-assign key_1_w    = (change_en) ?   1'b0 : (i_key_1 | key_1_r);
+assign key_0_w    = (state_r == S_RESET || state_r == S_PAUSE) ?   1'b0 : (i_key_0 | key_0_r);
+assign key_1_w    = (state_r == S_RESET || state_r == S_PAUSE) ?   1'b0 : (i_key_1 | key_1_r);
+
+assign change_en  = (state_r == S_IDLE  || state_r == S_INIT  ||
+                     state_r == S_RESET || state_r == S_WAT_R || state_r == S_PAUSE);
 assign key_2_w    = (change_en) ?   1'b0 : (i_key_2 | key_2_r);
 assign key_3_w    = (change_en) ?   1'b0 : (i_key_3 | key_3_r);
 assign mode_w     = (change_en) ? i_sw_0 : mode_r;
@@ -119,10 +121,16 @@ assign o_LCD_RW   = 'bz;
 assign o_LCD_ON   = 'b0;  // 'b1;
 assign o_LCD_BLON = 'b0;
 
+assign o_seg7  = {1'b0, state_r};
+assign o_speed = speed_r;
+
 assign o_ledg = ledg_r;
 assign o_ledr = ledr_r;
 
-assign ledr_w[0] = (mode_r == M_RECD);
+assign ledr_w[ 0] = (mode_r == M_RECD);
+assign ledr_w[ 1] = interpol_r;
+assign ledr_w[17] = i_rst_n;
+
 always_comb begin
 	ledg_w[0] = 0;
 	ledg_w[1] = 0;
@@ -169,7 +177,7 @@ Mem mem0 (
 // sequentially sent out settings to initialize WM8731 with I2C protocal
 I2CInitializer init0(
 	.i_rst_n(i_rst_n),
-	.i_clk(i_clk_100K),
+	.i_clk(i_clk_100k),
 	.i_start(i2c_start_r),	// CDC flag
 	.o_fin(i2c_fin),		// CDC flag
 	.o_scl(o_I2C_SCLK),
@@ -219,7 +227,7 @@ AudRecorder recorder0(
 	.i_bclk(i_AUD_BCLK),
 	.i_adclrck(i_AUD_ADCLRCK),
 	.i_start(recorder_start_r),	// CDC flag
-	.o_fin(recoder_fin),		// CDC flag
+	.o_fin(recorder_fin),		// CDC flag
 	.i_aud_adcdat(i_AUD_ADCDAT),
 	.o_adc_data(adc_data)
 );
@@ -242,18 +250,21 @@ always_comb begin : FSM
 			end
 		end
 		S_DSP: begin
+			if (mem_lim) begin
+				state_w = S_RESET;
+			end
 			if (dsp_fin) begin
 				state_w = S_WAT_L;
 			end
 		end
 		S_WAT_L: begin
-			if (player_fin | recoder_fin) begin
+			if (player_fin | recorder_fin) begin
 				state_w = S_WAT_R;
 			end
 		end
 		S_WAT_R: begin
-			if (player_fin | recoder_fin) begin
-				if (mem_lim | i_key_1 | key_1_r) begin
+			if (player_fin | recorder_fin) begin
+				if (mode_changed_r | i_key_1 | key_1_r) begin
 					state_w = S_RESET;
 				end
 				else if (i_key_0 | key_0_r) begin
@@ -265,7 +276,7 @@ always_comb begin : FSM
 			end
 		end
 		S_PAUSE: begin
-			if (i_key_1) begin
+			if (i_key_1 || mode_r != mode_w) begin
 				state_w = S_RESET;
 			end
 			else if (i_key_0) begin
@@ -279,6 +290,7 @@ always_comb begin : FSM
 end
 
 always_comb begin : CTRL_START
+	mode_changed_w   = mode_changed_r;
 	clear            = 0;
 	i2c_start_w      = i2c_start_r;
 	dsp_start_w      = 0;
@@ -309,7 +321,7 @@ always_comb begin : CTRL_START
 			end
 		end
 		S_WAT_L: begin
-			if (player_fin | recoder_fin) begin
+			if (player_fin | recorder_fin) begin
 				if (mode_r == M_RECD) begin
 					recorder_start_w = 1;
 				end
@@ -319,8 +331,10 @@ always_comb begin : CTRL_START
 			end
 		end
 		S_WAT_R: begin
-			if (player_fin | recoder_fin) begin
-				dsp_start_w = !(mem_lim | i_key_1 | key_1_r | i_key_0 | key_0_r);
+			mode_changed_w = (mode_r != mode_w) | mode_changed_r;
+			if (player_fin | recorder_fin) begin
+				mode_changed_w = 0;
+				dsp_start_w    = !(i_key_1 | key_1_r | i_key_0 | key_0_r);
 			end
 		end
 		S_PAUSE: begin
@@ -329,6 +343,7 @@ always_comb begin : CTRL_START
 			end
 		end
 		default: begin
+			mode_changed_w   = mode_changed_r;
 			clear            = 0;
 			i2c_start_w      = i2c_start_r;
 			dsp_start_w      = 0;
@@ -344,8 +359,9 @@ always_ff @(posedge i_clk or negedge i_rst_n) begin
 		key_1_r          <= 1'b0;
 		key_2_r          <= 1'b0;
 		key_3_r          <= 1'b0;
-		state_r          <= S_INIT;
+		state_r          <= S_IDLE;
 		mode_r           <= M_RECD;
+		mode_changed_r   <= 1'b0;
 		speed_r          <= 4'd8;
 		interpol_r       <= 1'b0;
 		i2c_start_r      <= 1'b0;
@@ -362,6 +378,7 @@ always_ff @(posedge i_clk or negedge i_rst_n) begin
 		key_3_r          <= key_3_w;
 		state_r          <= state_w;
 		mode_r           <= mode_w;
+		mode_changed_r   <= mode_changed_w;
 		speed_r          <= speed_w;
 		interpol_r       <= interpol_w;
 		i2c_start_r      <= i2c_start_w;
