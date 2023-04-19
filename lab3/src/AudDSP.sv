@@ -104,14 +104,20 @@ always_comb begin
 	case (state_r)
 		S_IDLE: begin
 			if (i_start) begin
-				mem_start_w = (!i_mode && !counter_r);
-				next_num_w  = (!i_mode && i_speed[3]) ? i_speed[2:0] : 0;
+				if (i_mode) begin	// record
+					mem_start_w = 1;
+					data_w      = i_adc_data;
+				end
+				else begin			// play
+					mem_start_w = (counter_r == 0);
+					next_num_w  = (i_speed[3]) ? i_speed[2:0] : 0;
+				end
 			end
 		end
 		S_SAVE: begin
-			data_w      = i_adc_data;
-			fin_w       = 1;
-			mem_start_w = 1;
+			if (i_mem_fin) begin
+				fin_w = 1;
+			end
 		end
 		S_CALC: begin
 			if (i_mem_fin) begin
@@ -195,6 +201,7 @@ always_ff @(posedge i_clk or negedge i_rst_n) begin
 		delta_r     <= 0;
 		sign_r      <= 0;
 		fin_r       <= 0;
+		next_num_r  <= 0;
 		mem_start_r <= 0;
 	end
 	else begin
@@ -206,6 +213,7 @@ always_ff @(posedge i_clk or negedge i_rst_n) begin
 			delta_r     <= 0;
 			sign_r      <= 0;
 			fin_r       <= 0;
+			next_num_r  <= 0;
 			mem_start_r <= 0;			
 		end
 		else begin
@@ -216,6 +224,7 @@ always_ff @(posedge i_clk or negedge i_rst_n) begin
 			delta_r     <= delta_w;
 			sign_r      <= sign_w;
 			fin_r       <= fin_w;
+			next_num_r  <= next_num_w;
 			mem_start_r <= mem_start_w;			
 		end
 	end

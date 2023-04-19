@@ -69,7 +69,7 @@ module tb_player;
 	// WM8731
 	initial begin
 		bclk = 1;
-		#($random($stime)%`PERIOD) bclk = ~bclk;
+		#(`DELAY) bclk = ~bclk;
 		while (1) begin
 			#(`HPERIOD) bclk = ~bclk;
 		end

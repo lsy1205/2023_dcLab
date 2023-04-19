@@ -34,13 +34,17 @@ logic [15:0] play_data_r, play_data_w;
 logic [15:0] record_data_r, record_data_w;
 
 assign o_SRAM_ADDR = addr_now_r[19:0];
-assign io_SRAM_DQ  = (i_mode) ? record_data_r : 16'dz; // sram_dq as output
+assign io_SRAM_DQ  = (we_n_r) ? 16'dz : record_data_r; // sram_dq as output
 assign o_r_data    = play_data_r;
+// assign o_r_data    = addr_now_r[2] ? 16'hffff : 16'h0000;
 assign o_SRAM_WE_N = we_n_r;
 assign o_SRAM_CE_N = 1'b0;
 assign o_SRAM_OE_N = 1'b0;
 assign o_SRAM_LB_N = 1'b0;
 assign o_SRAM_UB_N = 1'b0;
+
+assign o_fin   = fin_r;
+assign o_vaild = valid_r;
 
 always_comb begin
 	state_w = state_r;
@@ -72,8 +76,8 @@ always_comb begin
 		S_IDLE: begin 
 			valid_w = 0;
 			if (i_start) begin
-				addr_now_w = (addr_now_r + 1) + 
-							 (!i_mode && addr_now_r != 21'h1fffff) ? i_next_num : 0;
+				addr_now_w = ( addr_now_r + 1 ) + 
+							 ( (!i_mode && addr_now_r != 21'h1fffff) ? i_next_num : 0 );
 				
 				if (i_mode) begin                 // write to memory
 					if (addr_now_w[20]) begin

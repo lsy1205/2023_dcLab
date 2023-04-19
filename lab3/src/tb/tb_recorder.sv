@@ -45,14 +45,14 @@ module tb_player;
 				error++;
 			end
 			#(3*`PERIOD);
-			@(posedge clk) start = 1;
-			@(posedge clk) start = 0;
-			wait(fin);
-			if (adc_data !== wm8731_data) begin
-				$display("Error right! correct data: %b , received data: %b", adc_data, wm8731_data);
-				error++;
-			end	
-			#(3*`PERIOD);
+			// @(posedge clk) start = 1;
+			// @(posedge clk) start = 0;
+			// wait(fin);
+			// if (adc_data !== wm8731_data) begin
+			// 	$display("Error right! correct data: %b , received data: %b", adc_data, wm8731_data);
+			// 	error++;
+			// end	
+			// #(3*`PERIOD);
 		end
 
 		if(error) begin
@@ -97,14 +97,14 @@ module tb_player;
 				end
 			end
 
-			@(posedge adclrck);
-			wm8731_data = $random($stime);
-			#(`HPERIOD)
-			for (int i = 0; i < 16; i++) begin
-				@(negedge bclk) begin
-					aud_adcdat = wm8731_data[15-i];
-				end
-			end
+			// @(posedge adclrck);
+			// wm8731_data = $random($stime);
+			// #(`HPERIOD)
+			// for (int i = 0; i < 16; i++) begin
+			// 	@(negedge bclk) begin
+			// 		aud_adcdat = wm8731_data[15-i];
+			// 	end
+			// end
 		end
 	end
 

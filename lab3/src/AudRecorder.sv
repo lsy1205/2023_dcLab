@@ -29,7 +29,7 @@ always_comb begin : FSM
 			state_w = (i_start) ? S_WAIT : S_IDLE;
 		end
 		S_WAIT: begin
-			state_w = (record_lrc_r != i_adclrck) ? S_GET : S_WAIT;
+			state_w = (record_lrc_r && !i_adclrck) ? S_GET : S_WAIT;// (record_lrc_r != i_adclrck) ? S_GET : S_WAIT;
 		end
 		S_GET: begin
 			state_w = (counter_r == 15) ? S_IDLE : S_GET;
