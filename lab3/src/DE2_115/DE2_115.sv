@@ -237,7 +237,7 @@ Top top0(
 
 	// LCD (optional display)
 	.i_clk_800k(CLK_800K),
-	.o_LCD_DATA(LCD_DATA), // [7:0]
+	.io_LCD_DATA(LCD_DATA), // [7:0]
 	.o_LCD_EN(LCD_EN),
 	.o_LCD_RS(LCD_RS),
 	.o_LCD_RW(LCD_RW),
@@ -261,7 +261,8 @@ SevenHexDecoder2 seven_dec0(
 // 	.o_seven_one(HEX4)
 // );
 
-assign GPIO = {SRAM_DQ[1:0], SRAM_ADDR[2:0], SRAM_WE_N, AUD_DACDAT, AUD_DACLRCK, AUD_ADCDAT, AUD_ADCLRCK, AUD_BCLK, CLK_12M, I2C_SDAT, I2C_SCLK};
+// assign GPIO = {SRAM_DQ[1:0], SRAM_ADDR[2:0], SRAM_WE_N, AUD_DACDAT, AUD_DACLRCK, AUD_ADCDAT, AUD_ADCLRCK, AUD_BCLK, CLK_12M, I2C_SDAT, I2C_SCLK};
+assign GPIO = {CLK_800K, seg7[3], LCD_RS, LCD_RW, LCD_DATA};
 
 // comment those are use for display
 // assign HEX0 = '1;

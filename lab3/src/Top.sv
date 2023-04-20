@@ -35,7 +35,7 @@ module Top (
 
 	// LCD (optional display)
 	input        i_clk_800k,
-	inout  [7:0] o_LCD_DATA,
+	inout  [7:0] io_LCD_DATA,
 	output       o_LCD_EN,
 	output       o_LCD_RS,
 	output       o_LCD_RW,
@@ -74,6 +74,7 @@ logic        interpol_r, interpol_w;		// 0: 0-order, 1: 1-order
 logic        change_en;
 logic        speed_up, speed_down;
 logic        mem_lim;
+logic        pause, stop;
 
 logic  [2:0] next_num;
 logic [15:0] play_data, record_data;
@@ -94,21 +95,22 @@ logic [15:0] adc_data_r, adc_data_w, new_adcdat;
 logic        recorder_start_r, recorder_start_w;
 logic        recorder_fin;
 
+logic        lcd_start;
+
 logic  [8:0] ledg_r, ledg_w;
 logic [17:0] ledr_r, ledr_w;
 
-assign speed_up    = (i_key_2 | key_2_r) && (speed_r != 15);
-assign speed_down  = (i_key_3 | key_3_r) && (speed_r !=  1);
-assign mem_lim     = (mem_fin && !mem_valid);
+assign speed_up   = (i_key_2 | key_2_r) && (speed_r != 15);
+assign speed_down = (i_key_3 | key_3_r) && (speed_r !=  1);
+assign mem_lim    = (mem_fin && !mem_valid);
+assign pause      = (state_r == S_PAUSE);
+assign stop       = (state_r == S_RESET);
 
-assign o_LCD_DATA = 'b0;
-assign o_LCD_EN   = 'b1;
-assign o_LCD_RS   = 'bz;
-assign o_LCD_RW   = 'bz;
-assign o_LCD_ON   = 'b0;  // 'b1;
-assign o_LCD_BLON = 'b0;
+assign lcd_start  = 1'b1;
+assign o_LCD_ON   = 1'b1;
+assign o_LCD_BLON = 1'b0;
 
-assign o_seg7  = {1'b0, state_r};
+assign o_seg7  = {lcd_valid, state_r};
 assign o_speed = speed_r;
 
 assign o_ledg = ledg_r;
@@ -215,6 +217,21 @@ AudRecorder recorder0(
 	.o_fin(recorder_fin),		// CDC flag
 	.i_aud_adcdat(i_AUD_ADCDAT),
 	.o_adc_data(new_adcdat)
+);
+
+LCD lcd0 (
+    .i_clk(i_clk_800k),
+    .i_rst_n(i_rst_n),
+	.i_mode(mode_r),
+    .i_speed(speed_r),
+	.i_pau(pause),
+	.i_sto(stop),
+	.o_valid(lcd_valid),
+
+	.io_LCD_DATA(io_LCD_DATA),
+	.o_LCD_EN(o_LCD_EN),
+	.o_LCD_RS(o_LCD_RS),
+	.o_LCD_RW(o_LCD_RW)
 );
 
 always_comb begin : FSM

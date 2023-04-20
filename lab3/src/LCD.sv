@@ -1,7 +1,6 @@
 module LCD (
     input        i_clk,
     input        i_rst_n,
-    input        i_start,
 	input        i_mode,
     input        i_speed,
 	input        i_str,
@@ -15,22 +14,23 @@ module LCD (
 	output       o_LCD_RW
 );
 
-// INITIALIZE
-localparam INSTRUCT_0 = 10'b000011_0000;
-localparam INSTRUCT_1 = 10'b000011_1000;
-localparam INSTRUCT_2 = 10'b000000_1100;
-localparam INSTRUCT_3 = 10'b000000_0001;
-localparam INSTRUCT_4 = 10'b000000_0110;
-
-localparam WAIT      = 15360;
-
 // STATE
-localparam S_IDLE     = 0;  
-localparam S_INIT     = 1;  // init LCD
-localparam S_BF       = 2;  // check busy flag
-localparam S_SHIFT    = 3;  // shift cursor
-localparam S_WRITE    = 4;  // write display data
-localparam S_WAIT     = 5;	// wait new display
+localparam S_INIT  = 0;  // init LCD
+localparam S_FETCH = 1;
+localparam S_BUSY  = 2;  // check busy flag
+localparam S_WRITE = 3;  // write display data
+localparam S_WAIT  = 4;	 // wait new display
+
+// control
+localparam CTRL_START = 0;
+localparam CTRL_PAUSE = 1;
+localparam CTRL_STOP  = 2;
+
+// INITIALIZE
+localparam INSTRUCT_0 = 10'b000011_1000;
+localparam INSTRUCT_1 = 10'b000000_1100;
+localparam INSTRUCT_2 = 10'b000000_0001;
+localparam INSTRUCT_3 = 10'b000000_0110;
 
 
 // INSTRUCTION SET (AC-address counter)
@@ -57,215 +57,156 @@ localparam WRITE_DATA = 2'b10;
 localparam READ_DATA = 2'b11;
 	// 後面 8bit 為讀取 AC 位址資訊
 
-// string
-localparam LINE_DEFAULT = "RECPLY STRPAUSTO                ";
-
+// string           "0123456789ABCDEF"
+localparam LINE_1 = "  RECORD PLAY   ";
+localparam LINE_2 = "START PAUSE STOP";
 
 // == regs and wires  == //
 logic   [2:0] state_r, state_w;
-logic   [2:0] init_stage_r, init_stage_w; 
-
-logic  [13:0] counter_r, counter_w;
-logic   [7:0] instruct_counter_r, instruct_counter_w; // instruct transmit
+logic  [20:0] counter_r, counter_w;
 
 logic         mode_now_r, mode_now_w;   // 0: play 1: record
 logic   [3:0] speed_now_r, speed_now_w; //  1: 1/8, 2: 1/7, ..., 8: 1, ..., 14: 7, 15: 8
-logic   [1:0] control_now_r, control_now_w; // 00:pause 01:start 1x: stop
+logic   [1:0] control_now_r, control_now_w; // 00:start, 01:pause, 1x: stop
+logic         new_data;
 
 logic   [9:0] out_r, out_w;
-logic [255:0] writedata_r, writedata_w;
+logic [255:0] write_data_r, write_data_w;
+logic  [31:0] data_mask_r, data_mask_w;
 
-assign o_vaild = init_stage_r[2];
-assign {o_LCD_RS, o_LCD_RW, io_LCD_DATA} = (state_r == S_BF && state_r == S_WAIT) ? {BUSY, 8'bz} :  out_r;
+assign o_valid = (counter_r[1:0] == 2'b11);
+assign {o_LCD_RS, o_LCD_RW, io_LCD_DATA} = out_r;
+assign o_LCD_EN = 1'b1;
+
+assign new_data = (mode_now_r != mode_now_w) || (speed_now_r != speed_now_w);
 
 always_comb begin: FSM 
 	state_w = state_r;
-	case (state_r) 
-	S_IDLE: begin
-		if(i_start) state_w = S_INIT;
-		else        state_w = S_IDLE;
-	end    
-	S_INIT: begin
-		if(!init_stage_r[2]) state_w = S_INIT;
-		else                 state_w = S_BF;
-	end    
-	S_BF: begin
-		if(!io_LCD_DATA[7]) state_w = (!instruct_counter_r[0]) ? S_SHIFT : S_WRITE;
-		else                state_w = S_BF;
-	end
-	S_SHIFT: begin
-		state_w = S_BF;
-	end
-	S_WRITE: begin
-		state_w = (!instruct_counter_r[6]) ? S_BF : S_WAIT;
-	end
-	S_WAIT: begin
-		if((mode_now_r == mode_now_w) && (speed_now_r == speed_now_w)) state_w = S_WAIT;
-		else state_w = S_BF;
-	end
-	default: begin
-		state_w = S_IDLE;
-	end   
+
+	case (state_r)
+		S_INIT: begin
+			state_w = (counter_r == 20'hfffff) ? S_FETCH : S_INIT;
+		end
+		S_FETCH: begin
+			state_w = S_BUSY;
+		end
+		S_BUSY: begin
+			state_w = (io_LCD_DATA[7]) ? S_BUSY : S_WRITE;
+		end
+		S_WRITE: begin
+			state_w = (counter_r[6]) ? S_WAIT : S_BUSY;
+		end
+		S_WAIT: begin
+			state_w = (new_data) ? S_FETCH : S_WAIT;
+		end
+		default: begin
+			state_w = S_INIT;
+		end
 	endcase
 end
 
 always_comb begin
-	mode_now_w         = i_mode;
-	speed_now_w        = i_speed;
-	control_now_w      = {i_sto, ~i_pau};
-	init_stage_w       = init_stage_r;
-	writedata_w        = writedata_r;
-	counter_w          = counter_r;
-	instruct_counter_w = instruct_counter_r;
-	out_w              = out_r;
+	counter_w     = counter_r;
+	mode_now_w    = i_mode;
+	speed_now_w   = i_speed;
+	control_now_w = {i_sto, i_pau};
+	write_data_w  = write_data_r;
+	data_mask_w   = 0;
+	out_w         = out_r;
 
-	case (state_r) 
-	S_IDLE: begin
-		out_w        = INSTRUCT_0;
-		init_stage_w = 0;
-		writedata_w  = 0;
-	end    
-	S_INIT: begin
-		counter_w = counter_r + 1;
-		if (!(counter_r > WAIT)) begin
-			out_w = INSTRUCT_0;
-		end
-		else begin
-			case (init_stage_r)
-			0: begin
-				out_w = INSTRUCT_1;
-			end
-			1: begin
-				out_w = INSTRUCT_2;
-			end
-			2: begin
-				out_w = INSTRUCT_3;
-			end
-			3: begin
-				out_w = INSTRUCT_4;
-			end
-			4: begin
-				instruct_counter_w = 0;
-				writedata_w = LINE_DEFAULT;
-				case (control_now_r)
-				00: begin
-					writedata_w[199-:24] = "   ";
-					writedata_w[151-:24] = "   ";
-				end
-				01: writedata_w[175-:48] = "      ";
-				10: writedata_w[199-:48] = "      ";
-				11: writedata_w[199-:48] = "      ";
-				default: begin
-					writedata_w = writedata_r;
-				end
-				endcase
-				if(mode_now_w) begin  // record
-					writedata_w[231-:24] = "   ";
-				end
-				else begin  // play
-					writedata_w[255-:24] = "   ";
-					if(speed_now_r[3]) begin
-						writedata_w[71-:8] = "+";
-						writedata_w[63-:8] = 8'h30+(speed_now_r-8'h07);
-					end
-					else begin
-						writedata_w[71-:8] = "-";
-						writedata_w[63-:8] = 8'h30+(8'h09-speed_now_r);
-					end
-				end
-			end
-			default: begin
-				out_w = out_r;
-			end
-			endcase
-			init_stage_w = init_stage_r + 1;
-		end
-	end
-	S_BF: begin
-		instruct_counter_w = instruct_counter_r + 1;
-		if(!instruct_counter_r[0]) begin  // 進 shift
-			if(instruct_counter_r == 7'd32) begin
-				out_w = {DDRAM, 7'h40};
+	case (state_r)
+		S_INIT: begin
+			counter_w = counter_r + 1;
+
+			if (counter_r < 20'hffffc) begin		// 1111_1111_1111_1111_1100
+				out_w = INSTRUCT_0;
 			end
 			else begin
-				out_w = {CURSOR_DISPLAY_SHIFT};
+				case (counter_r[1:0])
+					2'b00: begin
+						out_w = INSTRUCT_1;
+					end
+					2'b01: begin
+						out_w = INSTRUCT_2;
+					end
+					2'b10: begin
+						out_w = INSTRUCT_3;
+					end
+					default: begin
+						out_w = {BUSY, 8'bz};
+					end
+				endcase
 			end
 		end
-		else begin                        // 進 write
-			out_w = {WRITE_DATA, writedata_r[255-:8]};
-			writedata_w = writedata_r << 8;
-		end             
-	end
-	S_SHIFT: begin
-		
-	end
-	S_WRITE: begin
-		
-	end
-	S_WAIT: begin
-		if((mode_now_r != mode_now_w) || (speed_now_r != speed_now_w)) begin
-			instruct_counter_w = 0;
-			writedata_w = LINE_DEFAULT;
-			case (control_now_r)
-			00: begin
-				writedata_w[199-:24] = "   ";
-				writedata_w[151-:24] = "   ";
-			end
-			01: writedata_w[175-:48] = "      ";
-			10: writedata_w[199-:48] = "      ";
-			11: writedata_w[199-:48] = "      ";
-			default: begin
-				writedata_w = writedata_r;
-			end
-			endcase
-			if(mode_now_w) begin  // record
-				writedata_w[231-:24] = "   ";
-			end
-			else begin  // play
-				writedata_w[255-:24] = "   ";
-				if(speed_now_r[3]) begin
-					writedata_w[71-:8] = "+";
-					writedata_w[63-:8] = 8'h30+(speed_now_r-8'h07);
-				end
-				else begin
-					writedata_w[71-:8] = "-";
-					writedata_w[63-:8] = 8'h30+(8'h09-speed_now_r);
-				end
-			end
-		end
-		else begin
-			
-		end
-	end
-	default: begin
+		S_FETCH: begin
+			counter_w = 0;
+			write_data_w = {LINE_1, LINE_2};
 
-	end   
+			data_mask_w[31:16] = (mode_now_r) ? 16'h3f00 : 16'h0078;
+
+			case (control_now_r)
+				CTRL_START: data_mask_w[15:0] = 16'hf800;
+				CTRL_PAUSE: data_mask_w[15:0] = 16'h03e0;
+				CTRL_STOP : data_mask_w[15:0] = 16'h000f;
+				default   : data_mask_w[15:0] = 16'h0000;
+			endcase
+
+			// begin  // play
+			// 	write_data_w[255-:24] = "   ";
+			// 	if(speed_now_r[3]) begin
+			// 		write_data_w[71-:8] = "+";
+			// 		write_data_w[63-:8] = speed_now_r + 8'h29;  // 8'h30+(speed_now_r-8'h07);
+			// 	end
+			// 	else begin
+			// 		write_data_w[71-:8] = "-";
+			// 		write_data_w[63-:8] = 8'h39 - speed_now_r;  // 8'h30+(8'h09-speed_now_r);
+			// 	end
+			// end
+		end
+		S_BUSY: begin
+			out_w = {BUSY, 8'bz};
+		end
+		S_WRITE: begin
+			counter_w = counter_r + 1;
+			if(counter_r[0]) begin     // 進 write
+				out_w = {WRITE_DATA, (data_mask_r[31]) ? write_data_r[255-:8] : 8'b0};
+				write_data_w = write_data_r << 8;
+				data_mask_w  = data_mask_r  << 1;
+			end
+			else begin  // 進 shift
+				out_w = {DDRAM, (counter_r[5]) ? 3'h4 : 3'h0, counter_r[4:1]};
+			end
+		end
+		S_WAIT: begin
+			out_w = {BUSY, 8'bz};
+		end
+		default: begin
+			out_w = {BUSY, 8'bz};
+		end
 	endcase
 end
 
 
 always_ff @(posedge i_clk or negedge i_rst_n)begin
 	if(!i_rst_n) begin
-		state_r            <= S_IDLE;
-		init_stage_r       <= 0; 
-		counter_r          <= 0;
-		instruct_counter_r <= 0;
-		mode_now_r         <= i_mode;
-		speed_now_r        <= i_speed;
-		control_now_r      <= {i_sto, ~i_pau};
-		out_r              <= 0;
-		writedata_r        <= 0;
+		state_r       <= S_INIT;
+		counter_r     <= 0;
+		mode_now_r    <= 0;
+		speed_now_r   <= 0;
+		control_now_r <= 0;
+		write_data_r  <= 0;
+		data_mask_r   <= 0;
+		out_r         <= 0;
 	end
 	else begin
-		state_r            <= state_w;
-		init_stage_r       <= init_stage_w; 
-		counter_r          <= counter_w;
-		instruct_counter_r <= instruct_counter_w;
-		mode_now_r         <= mode_now_w;
-		speed_now_r        <= speed_now_w;
-		control_now_r      <= control_now_w;
-		out_r              <= out_w;
-		writedata_r        <= writedata_w;	
+		state_r       <= state_w;
+		counter_r     <= counter_w;
+		mode_now_r    <= mode_now_w;
+		speed_now_r   <= speed_now_w;
+		control_now_r <= control_now_w;
+		write_data_r  <= write_data_w;
+		data_mask_r   <= data_mask_w;
+		out_r         <= out_w;
 	end
 end
 endmodule
