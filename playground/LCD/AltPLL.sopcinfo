@@ -1,150 +1,98 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<EnsembleReport name="AltPLL" kind="system" version="15.0" fabric="QSYS">
+<EnsembleReport name="AltPLL" kind="AltPLL" version="1.0" fabric="QSYS">
  <!-- Format version 15.0 145 (Future versions may contain additional information.) -->
- <!-- 2023.04.18.18:37:30 -->
+ <!-- 2023.04.22.00:11:01 -->
  <!-- A collection of modules and connections -->
- <parameter name="clockCrossingAdapter">
-  <type>com.altera.sopcmodel.ensemble.EClockAdapter</type>
-  <value>HANDSHAKE</value>
+ <parameter name="AUTO_GENERATION_ID">
+  <type>java.lang.Integer</type>
+  <value>1682093461</value>
   <derived>false</derived>
   <enabled>true</enabled>
-  <visible>true</visible>
+  <visible>false</visible>
   <valid>true</valid>
+  <sysinfo_type>GENERATION_ID</sysinfo_type>
  </parameter>
- <parameter name="device">
+ <parameter name="AUTO_UNIQUE_ID">
   <type>java.lang.String</type>
-  <value>EP4CE115F29C7</value>
+  <value></value>
   <derived>false</derived>
   <enabled>true</enabled>
-  <visible>true</visible>
+  <visible>false</visible>
   <valid>true</valid>
+  <sysinfo_type>UNIQUE_ID</sysinfo_type>
  </parameter>
- <parameter name="deviceFamily">
+ <parameter name="AUTO_DEVICE_FAMILY">
   <type>java.lang.String</type>
   <value>CYCLONEIVE</value>
   <derived>false</derived>
   <enabled>true</enabled>
-  <visible>true</visible>
+  <visible>false</visible>
   <valid>true</valid>
+  <sysinfo_type>DEVICE_FAMILY</sysinfo_type>
  </parameter>
- <parameter name="deviceSpeedGrade">
+ <parameter name="AUTO_DEVICE">
+  <type>java.lang.String</type>
+  <value>EP4CE115F29C7</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+  <sysinfo_type>DEVICE</sysinfo_type>
+ </parameter>
+ <parameter name="AUTO_DEVICE_SPEEDGRADE">
   <type>java.lang.String</type>
   <value>7</value>
   <derived>false</derived>
   <enabled>true</enabled>
   <visible>false</visible>
   <valid>true</valid>
+  <sysinfo_type>DEVICE_SPEEDGRADE</sysinfo_type>
  </parameter>
- <parameter name="fabricMode">
-  <type>com.altera.sopcmodel.ensemble.Ensemble$EFabricMode</type>
-  <value>QSYS</value>
+ <parameter name="AUTO_I_CLK_CLOCK_RATE">
+  <type>java.lang.Long</type>
+  <value>-1</value>
   <derived>false</derived>
   <enabled>true</enabled>
   <visible>false</visible>
   <valid>true</valid>
+  <sysinfo_type>CLOCK_RATE</sysinfo_type>
+  <sysinfo_arg>i_clk</sysinfo_arg>
+ </parameter>
+ <parameter name="AUTO_I_CLK_CLOCK_DOMAIN">
+  <type>java.lang.Integer</type>
+  <value>-1</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+  <sysinfo_type>CLOCK_DOMAIN</sysinfo_type>
+  <sysinfo_arg>i_clk</sysinfo_arg>
+ </parameter>
+ <parameter name="AUTO_I_CLK_RESET_DOMAIN">
+  <type>java.lang.Integer</type>
+  <value>-1</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+  <sysinfo_type>RESET_DOMAIN</sysinfo_type>
+  <sysinfo_arg>i_clk</sysinfo_arg>
+ </parameter>
+ <parameter name="deviceFamily">
+  <type>java.lang.String</type>
+  <value>Cyclone IV E</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+  <sysinfo_type>DEVICE_FAMILY</sysinfo_type>
  </parameter>
  <parameter name="generateLegacySim">
   <type>boolean</type>
   <value>false</value>
   <derived>false</derived>
   <enabled>true</enabled>
-  <visible>false</visible>
-  <valid>true</valid>
- </parameter>
- <parameter name="generationId">
-  <type>int</type>
-  <value>1681814245</value>
-  <derived>false</derived>
-  <enabled>true</enabled>
   <visible>true</visible>
-  <valid>true</valid>
- </parameter>
- <parameter name="globalResetBus">
-  <type>boolean</type>
-  <value>false</value>
-  <derived>false</derived>
-  <enabled>true</enabled>
-  <visible>false</visible>
-  <valid>true</valid>
- </parameter>
- <parameter name="hdlLanguage">
-  <type>com.altera.entityinterfaces.moduleext.IModuleGenerateHDL$HDLLanguage</type>
-  <value>VERILOG</value>
-  <derived>false</derived>
-  <enabled>false</enabled>
-  <visible>false</visible>
-  <valid>true</valid>
- </parameter>
- <parameter name="hideFromIPCatalog">
-  <type>boolean</type>
-  <value>false</value>
-  <derived>false</derived>
-  <enabled>true</enabled>
-  <visible>true</visible>
-  <valid>true</valid>
- </parameter>
- <parameter name="lockedInterfaceDefinition">
-  <type>com.altera.sopcmodel.definition.BoundaryDefinition</type>
-  <value></value>
-  <derived>false</derived>
-  <enabled>true</enabled>
-  <visible>false</visible>
-  <valid>true</valid>
- </parameter>
- <parameter name="maxAdditionalLatency">
-  <type>int</type>
-  <value>1</value>
-  <derived>false</derived>
-  <enabled>true</enabled>
-  <visible>true</visible>
-  <valid>true</valid>
- </parameter>
- <parameter name="projectName">
-  <type>java.lang.String</type>
-  <value></value>
-  <derived>false</derived>
-  <enabled>true</enabled>
-  <visible>false</visible>
-  <valid>true</valid>
- </parameter>
- <parameter name="sopcBorderPoints">
-  <type>boolean</type>
-  <value>false</value>
-  <derived>false</derived>
-  <enabled>true</enabled>
-  <visible>false</visible>
-  <valid>true</valid>
- </parameter>
- <parameter name="systemHash">
-  <type>long</type>
-  <value>0</value>
-  <derived>false</derived>
-  <enabled>true</enabled>
-  <visible>false</visible>
-  <valid>true</valid>
- </parameter>
- <parameter name="testBenchDutName">
-  <type>java.lang.String</type>
-  <value></value>
-  <derived>false</derived>
-  <enabled>true</enabled>
-  <visible>false</visible>
-  <valid>true</valid>
- </parameter>
- <parameter name="timeStamp">
-  <type>long</type>
-  <value>0</value>
-  <derived>false</derived>
-  <enabled>true</enabled>
-  <visible>false</visible>
-  <valid>true</valid>
- </parameter>
- <parameter name="useTestBenchNamingPattern">
-  <type>boolean</type>
-  <value>false</value>
-  <derived>false</derived>
-  <enabled>true</enabled>
-  <visible>false</visible>
   <valid>true</valid>
  </parameter>
  <module name="altpll_0" kind="altpll" version="15.0" path="altpll_0">
@@ -1621,7 +1569,7 @@ parameters are a RESULT of the module parameters. -->
     <value>DYNAMIC</value>
     <derived>false</derived>
     <enabled>true</enabled>
-    <visible>true</visible>
+    <visible>false</visible>
     <valid>true</valid>
    </parameter>
    <parameter name="addressGroup">
@@ -1669,7 +1617,7 @@ parameters are a RESULT of the module parameters. -->
     <value>inclk_interface_reset</value>
     <derived>false</derived>
     <enabled>true</enabled>
-    <visible>false</visible>
+    <visible>true</visible>
     <valid>true</valid>
    </parameter>
    <parameter name="bitsPerSymbol">
@@ -1677,7 +1625,7 @@ parameters are a RESULT of the module parameters. -->
     <value>8</value>
     <derived>false</derived>
     <enabled>true</enabled>
-    <visible>false</visible>
+    <visible>true</visible>
     <valid>true</valid>
    </parameter>
    <parameter name="bridgedAddressOffset">
@@ -1709,7 +1657,7 @@ parameters are a RESULT of the module parameters. -->
     <value>WORDS</value>
     <derived>false</derived>
     <enabled>true</enabled>
-    <visible>false</visible>
+    <visible>true</visible>
     <valid>true</valid>
    </parameter>
    <parameter name="constantBurstBehavior">
@@ -1765,7 +1713,7 @@ parameters are a RESULT of the module parameters. -->
     <value>false</value>
     <derived>false</derived>
     <enabled>true</enabled>
-    <visible>true</visible>
+    <visible>false</visible>
     <valid>true</valid>
    </parameter>
    <parameter name="isNonVolatileStorage">
@@ -1773,7 +1721,7 @@ parameters are a RESULT of the module parameters. -->
     <value>false</value>
     <derived>false</derived>
     <enabled>true</enabled>
-    <visible>true</visible>
+    <visible>false</visible>
     <valid>true</valid>
    </parameter>
    <parameter name="linewrapBursts">
@@ -1813,7 +1761,7 @@ parameters are a RESULT of the module parameters. -->
     <value>false</value>
     <derived>false</derived>
     <enabled>true</enabled>
-    <visible>true</visible>
+    <visible>false</visible>
     <valid>true</valid>
    </parameter>
    <parameter name="readLatency">
@@ -2422,5 +2370,5 @@ parameters are a RESULT of the module parameters. -->
   <version>15.0</version>
  </plugin>
  <reportVersion>15.0 145</reportVersion>
- <uniqueIdentifier>0C9D925D8AC30000018793F0D0AE</uniqueIdentifier>
+ <uniqueIdentifier></uniqueIdentifier>
 </EnsembleReport>

@@ -3,7 +3,7 @@ module Top (
 	input        i_clk,
 
 	// SEVENDECODER (optional display)
-	output       o_display,
+	output [4:0] o_display,
 
 	// LCD (optional display)
 	input        i_clk_50,
@@ -19,9 +19,6 @@ module Top (
 	output [17:0] o_ledr  // [17:0]
 );
 
-assign o_ledg = 0;
-assign o_ledr = 0;
-assign o_display = state_r;
 
 localparam S_IDLE = 0;
 localparam S_INIT = 1;
@@ -30,6 +27,10 @@ localparam S_SHOW = 2;
 logic       lcd_init_start_r, lcd_init_start_w;
 logic       lcd_init_fin;
 logic [1:0] state_r, state_w;
+
+assign o_ledg = 0;
+assign o_ledr = 0;
+assign o_display = state_r;
 
 always_comb begin:FSM
 	case (state_r)
@@ -97,6 +98,7 @@ end
 
 LCD_top LCD_top0(
     .CLOCK_50(i_clk_50),   
+	.i_rst_n(i_rst_n),
     .LCD_ON(o_LCD_ON),     
     .LCD_BLON(o_LCD_BLON),   
     .LCD_RW(o_LCD_RW),     

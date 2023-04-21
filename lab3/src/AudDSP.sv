@@ -41,7 +41,7 @@ logic        sign_r, sign_w;
 logic        div_3, div_5, div_7;
 
 
-assign o_fin      = fin_r;
+assign o_fin = fin_r;
 
 assign o_next_num  = next_num_r;
 assign o_mem_start = mem_start_r;

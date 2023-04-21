@@ -76,24 +76,16 @@ always_ff @(negedge i_bclk or negedge i_rst_n) begin
 		state_r       <= S_IDLE;
 		counter_r     <= 0;
 		record_lrc_r  <= 0;
+		record_data_r <= 0;
 		fin_r         <= 0;
 	end
 	else begin
 		state_r       <= state_w;
 		counter_r     <= counter_w;
 		record_lrc_r  <= record_lrc_w;
+		record_data_r <= record_data_w;
 		fin_r         <= fin_w;
 	end
 end
-
-always_ff @(negedge i_bclk or negedge i_rst_n) begin
-	if (!i_rst_n) begin
-		record_data_r <= 0;
-	end
-	else begin
-		record_data_r <= record_data_w;
-	end
-end
-
 
 endmodule

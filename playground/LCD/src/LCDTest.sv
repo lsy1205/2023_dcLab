@@ -1,5 +1,6 @@
 module LCD_top(
     CLOCK_50,                   //    50 MHz
+    i_rst_n,
     LCD_ON,                     //    LCD Power ON/OFF
     LCD_BLON,                   //    LCD Back Light ON/OFF
     LCD_RW,                     //    LCD Read/Write Select, 0 = Write, 1 = Read
@@ -7,8 +8,9 @@ module LCD_top(
     LCD_RS,                     //    LCD Command/Data Select, 0 = Command, 1 = Data
     LCD_DATA                    //    LCD Data bus 8 bits
 );
-                 
+
 input             CLOCK_50;     //    50 MHz
+input             i_rst_n;
 inout    [7:0]    LCD_DATA;     //    LCD Data bus 8 bits
 output            LCD_ON;       //    LCD Power ON/OFF
 output            LCD_BLON;     //    LCD Back Light ON/OFF
@@ -24,6 +26,7 @@ wire        DLY_RST;
  
 Reset_Delay r0(
     .iCLK(CLOCK_50),
+    .i_rst_n(i_rst_n),
     .oRESET(DLY_RST)
 );
  
@@ -67,7 +70,7 @@ parameter    LCD_INTIAL    =    0;
 parameter    LCD_LINE1    =    5;
 parameter    LCD_CH_LINE    =    LCD_LINE1+16;
 parameter    LCD_LINE2    =    LCD_LINE1+16+1;
-parameter    LUT_SIZE    =    LCD_LINE1+32+1;
+parameter    LUT_SIZE    =    LCD_LINE1+32+1 -16;
   
 always@(posedge iCLK or negedge iRST_N) begin
     if(!iRST_N)
@@ -115,12 +118,12 @@ always@(posedge iCLK or negedge iRST_N) begin
       end
   end
   
-  always
+  always@(*)
   begin
     case(LUT_INDEX)
     //    Initial
     LCD_INTIAL+0:    LUT_DATA    <=    9'h038; //Fun set
-    LCD_INTIAL+1:    LUT_DATA    <=    9'h00C; //dis on
+    LCD_INTIAL+1:    LUT_DATA    <=    9'h00F; //dis on
     LCD_INTIAL+2:    LUT_DATA    <=    9'h001; //clr dis
     LCD_INTIAL+3:    LUT_DATA    <=    9'h006; //Ent mode
     LCD_INTIAL+4:    LUT_DATA    <=    9'h080; //set ddram address
@@ -142,7 +145,7 @@ always@(posedge iCLK or negedge iRST_N) begin
     LCD_LINE1+14:    LUT_DATA    <=    9'h166; // f
     LCD_LINE1+15:    LUT_DATA    <=    9'h165; // e
     //    Change Line
-    LCD_CH_LINE:     LUT_DATA    <=    9'h0C0;
+    LCD_CH_LINE:     LUT_DATA    <=    9'h0C1;
     //    Line 2
     LCD_LINE2+0:     LUT_DATA    <=    9'h12E;    // .
     LCD_LINE2+1:     LUT_DATA    <=    9'h163; // c
@@ -264,16 +267,21 @@ end
 endmodule
 
 module Reset_Delay(
-    iCLK,oRESET
+    iCLK,
+    i_rst_n,
+    oRESET
 );
 
 input         iCLK;
+input         i_rst_n;
 output reg    oRESET;
 reg    [19:0] Cont;
 
-always@(posedge iCLK)
+always@(posedge iCLK or negedge i_rst_n)
 begin
-    if(Cont!=20'hFFFFF)   //21ms
+    if(!i_rst_n)
+        Cont <= 0;
+    else if(Cont!=20'hFFFFF)   //21ms
     begin
         Cont    <=    Cont+1;
         oRESET  <=    1'b0;

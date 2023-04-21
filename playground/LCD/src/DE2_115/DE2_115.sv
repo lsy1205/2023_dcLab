@@ -186,8 +186,8 @@ Top top0(
 
 SevenHexDecoder seven_dec1(
 	.i_hex(num),
-	.o_seven_ten(HEX5),
-	.o_seven_one(HEX4)
+	.o_seven_ten(HEX1),
+	.o_seven_one(HEX0)
 );
 
 assign GPIO = {SRAM_DQ[1:0], SRAM_ADDR[2:0], SRAM_WE_N, AUD_DACDAT, AUD_DACLRCK, AUD_ADCDAT, AUD_ADCLRCK, AUD_BCLK, CLK_12M, I2C_SDAT, I2C_SCLK};

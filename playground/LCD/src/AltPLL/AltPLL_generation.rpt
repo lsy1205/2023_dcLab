@@ -1,5 +1,5 @@
 Info: Starting: Create block symbol file (.bsf)
-Info: qsys-generate C:\Users\user\Documents\2023spring\2023_dcLab\lab3\AltPLL\AltPLL.qsys --block-symbol-file --output-directory=C:\Users\user\Documents\2023spring\2023_dcLab\lab3\AltPLL\AltPLL --family="Cyclone IV E" --part=EP4CE115F29C7
+Info: qsys-generate C:\Users\user\Documents\2023spring\2023_dcLab\playground\LCD\src\AltPLL\AltPLL.qsys --block-symbol-file --output-directory=C:\Users\user\Documents\2023spring\2023_dcLab\playground\LCD\src\AltPLL --family="Cyclone IV E" --part=EP4CE115F29C7
 Progress: Loading AltPLL/AltPLL.qsys
 Progress: Reading input file
 Progress: Adding altpll_0 [altpll 15.0]
@@ -16,7 +16,7 @@ Info: ip-generate succeeded.
 Info: Finished: Create block symbol file (.bsf)
 Info: 
 Info: Starting: Create HDL design files for synthesis
-Info: qsys-generate C:\Users\user\Documents\2023spring\2023_dcLab\lab3\AltPLL\AltPLL.qsys --synthesis=VERILOG --output-directory=C:\Users\user\Documents\2023spring\2023_dcLab\lab3\AltPLL\AltPLL\synthesis --family="Cyclone IV E" --part=EP4CE115F29C7
+Info: qsys-generate C:\Users\user\Documents\2023spring\2023_dcLab\playground\LCD\src\AltPLL\AltPLL.qsys --synthesis=VERILOG --output-directory=C:\Users\user\Documents\2023spring\2023_dcLab\playground\LCD\src\AltPLL\synthesis --family="Cyclone IV E" --part=EP4CE115F29C7
 Progress: Loading AltPLL/AltPLL.qsys
 Progress: Reading input file
 Progress: Adding altpll_0 [altpll 15.0]
