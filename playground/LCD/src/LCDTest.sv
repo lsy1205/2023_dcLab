@@ -70,7 +70,7 @@ parameter    LCD_INTIAL    =    0;
 parameter    LCD_LINE1    =    5;
 parameter    LCD_CH_LINE    =    LCD_LINE1+16;
 parameter    LCD_LINE2    =    LCD_LINE1+16+1;
-parameter    LUT_SIZE    =    LCD_LINE1+32+1 -16;
+parameter    LUT_SIZE    =    LCD_LINE1+32+1;
   
 always@(posedge iCLK or negedge iRST_N) begin
     if(!iRST_N)
@@ -123,7 +123,7 @@ always@(posedge iCLK or negedge iRST_N) begin
     case(LUT_INDEX)
     //    Initial
     LCD_INTIAL+0:    LUT_DATA    <=    9'h038; //Fun set
-    LCD_INTIAL+1:    LUT_DATA    <=    9'h00F; //dis on
+    LCD_INTIAL+1:    LUT_DATA    <=    9'h00C; //dis on
     LCD_INTIAL+2:    LUT_DATA    <=    9'h001; //clr dis
     LCD_INTIAL+3:    LUT_DATA    <=    9'h006; //Ent mode
     LCD_INTIAL+4:    LUT_DATA    <=    9'h080; //set ddram address
@@ -145,7 +145,7 @@ always@(posedge iCLK or negedge iRST_N) begin
     LCD_LINE1+14:    LUT_DATA    <=    9'h166; // f
     LCD_LINE1+15:    LUT_DATA    <=    9'h165; // e
     //    Change Line
-    LCD_CH_LINE:     LUT_DATA    <=    9'h0C1;
+    LCD_CH_LINE:     LUT_DATA    <=    9'h0C0;
     //    Line 2
     LCD_LINE2+0:     LUT_DATA    <=    9'h12E;    // .
     LCD_LINE2+1:     LUT_DATA    <=    9'h163; // c
