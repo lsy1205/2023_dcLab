@@ -1,0 +1,620 @@
+Analysis & Synthesis report for DE2_115_CAMERA
+Thu May 04 22:36:10 2023
+Quartus II 64-Bit Version 15.0.0 Build 145 04/22/2015 SJ Full Version
+
+
+---------------------
+; Table of Contents ;
+---------------------
+  1. Legal Notice
+  2. Analysis & Synthesis Summary
+  3. Analysis & Synthesis Settings
+  4. Parallel Compilation
+  5. Analysis & Synthesis IP Cores Summary
+  6. Analysis & Synthesis Messages
+  7. Analysis & Synthesis Suppressed Messages
+
+
+
+----------------
+; Legal Notice ;
+----------------
+Copyright (C) 1991-2015 Altera Corporation. All rights reserved.
+Your use of Altera Corporation's design tools, logic functions 
+and other software and tools, and its AMPP partner logic 
+functions, and any output files from any of the foregoing 
+(including device programming or simulation files), and any 
+associated documentation or information are expressly subject 
+to the terms and conditions of the Altera Program License 
+Subscription Agreement, the Altera Quartus II License Agreement,
+the Altera MegaCore Function License Agreement, or other 
+applicable license agreement, including, without limitation, 
+that your use is for the sole purpose of programming logic 
+devices manufactured by Altera and sold by Altera or its 
+authorized distributors.  Please refer to the applicable 
+agreement for further details.
+
+
+
++----------------------------------------------------------------------------------+
+; Analysis & Synthesis Summary                                                     ;
++------------------------------------+---------------------------------------------+
+; Analysis & Synthesis Status        ; Failed - Thu May 04 22:36:10 2023           ;
+; Quartus II 64-Bit Version          ; 15.0.0 Build 145 04/22/2015 SJ Full Version ;
+; Revision Name                      ; DE2_115_CAMERA                              ;
+; Top-level Entity Name              ; DE2_115_CAMERA                              ;
+; Family                             ; Cyclone IV E                                ;
+; Total logic elements               ; N/A until Partition Merge                   ;
+;     Total combinational functions  ; N/A until Partition Merge                   ;
+;     Dedicated logic registers      ; N/A until Partition Merge                   ;
+; Total registers                    ; N/A until Partition Merge                   ;
+; Total pins                         ; N/A until Partition Merge                   ;
+; Total virtual pins                 ; N/A until Partition Merge                   ;
+; Total memory bits                  ; N/A until Partition Merge                   ;
+; Embedded Multiplier 9-bit elements ; N/A until Partition Merge                   ;
+; Total PLLs                         ; N/A until Partition Merge                   ;
++------------------------------------+---------------------------------------------+
+
+
++----------------------------------------------------------------------------------------------------------------------+
+; Analysis & Synthesis Settings                                                                                        ;
++----------------------------------------------------------------------------+--------------------+--------------------+
+; Option                                                                     ; Setting            ; Default Value      ;
++----------------------------------------------------------------------------+--------------------+--------------------+
+; Device                                                                     ; EP4CE115F29C7      ;                    ;
+; Top-level entity name                                                      ; DE2_115_CAMERA     ; DE2_115_CAMERA     ;
+; Family name                                                                ; Cyclone IV E       ; Stratix II         ;
+; Use smart compilation                                                      ; Off                ; Off                ;
+; Enable parallel Assembler and TimeQuest Timing Analyzer during compilation ; On                 ; On                 ;
+; Enable compact report table                                                ; Off                ; Off                ;
+; Restructure Multiplexers                                                   ; Auto               ; Auto               ;
+; Create Debugging Nodes for IP Cores                                        ; Off                ; Off                ;
+; Preserve fewer node names                                                  ; On                 ; On                 ;
+; Disable OpenCore Plus hardware evaluation                                  ; Off                ; Off                ;
+; Verilog Version                                                            ; Verilog_2001       ; Verilog_2001       ;
+; VHDL Version                                                               ; VHDL_1993          ; VHDL_1993          ;
+; State Machine Processing                                                   ; Auto               ; Auto               ;
+; Safe State Machine                                                         ; Off                ; Off                ;
+; Extract Verilog State Machines                                             ; On                 ; On                 ;
+; Extract VHDL State Machines                                                ; On                 ; On                 ;
+; Ignore Verilog initial constructs                                          ; Off                ; Off                ;
+; Iteration limit for constant Verilog loops                                 ; 5000               ; 5000               ;
+; Iteration limit for non-constant Verilog loops                             ; 250                ; 250                ;
+; Add Pass-Through Logic to Inferred RAMs                                    ; On                 ; On                 ;
+; Infer RAMs from Raw Logic                                                  ; On                 ; On                 ;
+; Parallel Synthesis                                                         ; On                 ; On                 ;
+; DSP Block Balancing                                                        ; Auto               ; Auto               ;
+; NOT Gate Push-Back                                                         ; On                 ; On                 ;
+; Power-Up Don't Care                                                        ; On                 ; On                 ;
+; Remove Redundant Logic Cells                                               ; Off                ; Off                ;
+; Remove Duplicate Registers                                                 ; On                 ; On                 ;
+; Ignore CARRY Buffers                                                       ; Off                ; Off                ;
+; Ignore CASCADE Buffers                                                     ; Off                ; Off                ;
+; Ignore GLOBAL Buffers                                                      ; Off                ; Off                ;
+; Ignore ROW GLOBAL Buffers                                                  ; Off                ; Off                ;
+; Ignore LCELL Buffers                                                       ; Off                ; Off                ;
+; Ignore SOFT Buffers                                                        ; On                 ; On                 ;
+; Limit AHDL Integers to 32 Bits                                             ; Off                ; Off                ;
+; Optimization Technique                                                     ; Balanced           ; Balanced           ;
+; Carry Chain Length                                                         ; 70                 ; 70                 ;
+; Auto Carry Chains                                                          ; On                 ; On                 ;
+; Auto Open-Drain Pins                                                       ; On                 ; On                 ;
+; Perform WYSIWYG Primitive Resynthesis                                      ; Off                ; Off                ;
+; Auto ROM Replacement                                                       ; On                 ; On                 ;
+; Auto RAM Replacement                                                       ; On                 ; On                 ;
+; Auto DSP Block Replacement                                                 ; On                 ; On                 ;
+; Auto Shift Register Replacement                                            ; Auto               ; Auto               ;
+; Allow Shift Register Merging across Hierarchies                            ; Auto               ; Auto               ;
+; Auto Clock Enable Replacement                                              ; On                 ; On                 ;
+; Strict RAM Replacement                                                     ; Off                ; Off                ;
+; Allow Synchronous Control Signals                                          ; On                 ; On                 ;
+; Force Use of Synchronous Clear Signals                                     ; Off                ; Off                ;
+; Auto RAM Block Balancing                                                   ; On                 ; On                 ;
+; Auto RAM to Logic Cell Conversion                                          ; Off                ; Off                ;
+; Auto Resource Sharing                                                      ; Off                ; Off                ;
+; Allow Any RAM Size For Recognition                                         ; Off                ; Off                ;
+; Allow Any ROM Size For Recognition                                         ; Off                ; Off                ;
+; Allow Any Shift Register Size For Recognition                              ; Off                ; Off                ;
+; Use LogicLock Constraints during Resource Balancing                        ; On                 ; On                 ;
+; Ignore translate_off and synthesis_off directives                          ; Off                ; Off                ;
+; Timing-Driven Synthesis                                                    ; On                 ; On                 ;
+; Report Parameter Settings                                                  ; On                 ; On                 ;
+; Report Source Assignments                                                  ; On                 ; On                 ;
+; Report Connectivity Checks                                                 ; On                 ; On                 ;
+; Ignore Maximum Fan-Out Assignments                                         ; Off                ; Off                ;
+; Synchronization Register Chain Length                                      ; 2                  ; 2                  ;
+; PowerPlay Power Optimization During Synthesis                              ; Normal compilation ; Normal compilation ;
+; HDL message level                                                          ; Level2             ; Level2             ;
+; Suppress Register Optimization Related Messages                            ; Off                ; Off                ;
+; Number of Removed Registers Reported in Synthesis Report                   ; 5000               ; 5000               ;
+; Number of Swept Nodes Reported in Synthesis Report                         ; 5000               ; 5000               ;
+; Number of Inverted Registers Reported in Synthesis Report                  ; 100                ; 100                ;
+; Clock MUX Protection                                                       ; On                 ; On                 ;
+; Auto Gated Clock Conversion                                                ; Off                ; Off                ;
+; Block Design Naming                                                        ; Auto               ; Auto               ;
+; SDC constraint protection                                                  ; Off                ; Off                ;
+; Synthesis Effort                                                           ; Auto               ; Auto               ;
+; Shift Register Replacement - Allow Asynchronous Clear Signal               ; On                 ; On                 ;
+; Pre-Mapping Resynthesis Optimization                                       ; Off                ; Off                ;
+; Analysis & Synthesis Message Level                                         ; Medium             ; Medium             ;
+; Disable Register Merging Across Hierarchies                                ; Auto               ; Auto               ;
+; Resource Aware Inference For Block RAM                                     ; On                 ; On                 ;
+; Synthesis Seed                                                             ; 1                  ; 1                  ;
++----------------------------------------------------------------------------+--------------------+--------------------+
+
+
++------------------------------------------+
+; Parallel Compilation                     ;
++----------------------------+-------------+
+; Processors                 ; Number      ;
++----------------------------+-------------+
+; Number detected on machine ; 12          ;
+; Maximum allowed            ; 6           ;
+;                            ;             ;
+; Average used               ; 1.00        ;
+; Maximum used               ; 1           ;
+;                            ;             ;
+; Usage by Processor         ; % Time Used ;
+;     Processor 1            ; 100.0%      ;
+;     Processors 2-12        ;   0.0%      ;
++----------------------------+-------------+
+
+
++----------------------------------------------------------------------------------------------------------------+
+; Analysis & Synthesis IP Cores Summary                                                                          ;
++--------+--------------+---------+--------------+--------------+------------------------------+-----------------+
+; Vendor ; IP Core Name ; Version ; Release Date ; License Type ; Entity Instance              ; IP Include File ;
++--------+--------------+---------+--------------+--------------+------------------------------+-----------------+
+; Altera ; ALTPLL       ; 16.0    ; N/A          ; N/A          ; |DE2_115_CAMERA|sdram_pll:u6 ; v/sdram_pll.v   ;
++--------+--------------+---------+--------------+--------------+------------------------------+-----------------+
+
+
++-------------------------------+
+; Analysis & Synthesis Messages ;
++-------------------------------+
+Info: *******************************************************************
+Info: Running Quartus II 64-Bit Analysis & Synthesis
+    Info: Version 15.0.0 Build 145 04/22/2015 SJ Full Version
+    Info: Processing started: Thu May 04 22:35:58 2023
+Info: Command: quartus_map --read_settings_files=on --write_settings_files=off DE2_115_CAMERA -c DE2_115_CAMERA
+Info (11104): Parallel Compilation has detected 12 hyper-threaded processors. However, the extra hyper-threaded processors will not be used by default. Parallel Compilation will use 6 of the 6 physical processors detected instead.
+Info (12021): Found 1 design units, including 1 entities, in source file sdram_control/command.v
+    Info (12023): Found entity 1: command
+Info (12021): Found 1 design units, including 1 entities, in source file sdram_control/control_interface.v
+    Info (12023): Found entity 1: control_interface
+Warning (10229): Verilog HDL Expression warning at sdr_data_path.v(68): truncated literal to match 1 bits
+Info (12021): Found 1 design units, including 1 entities, in source file sdram_control/sdr_data_path.v
+    Info (12023): Found entity 1: sdr_data_path
+Info (12021): Found 1 design units, including 1 entities, in source file sdram_control/sdram_control.v
+    Info (12023): Found entity 1: Sdram_Control
+Info (12021): Found 1 design units, including 1 entities, in source file sdram_control/sdram_rd_fifo.v
+    Info (12023): Found entity 1: Sdram_RD_FIFO
+Info (12021): Found 1 design units, including 1 entities, in source file sdram_control/sdram_wr_fifo.v
+    Info (12023): Found entity 1: Sdram_WR_FIFO
+Info (12021): Found 1 design units, including 1 entities, in source file v/ccd_capture.v
+    Info (12023): Found entity 1: CCD_Capture
+Info (12021): Found 1 design units, including 1 entities, in source file v/i2c_ccd_config.v
+    Info (12023): Found entity 1: I2C_CCD_Config
+Info (12021): Found 1 design units, including 1 entities, in source file v/i2c_controller.v
+    Info (12023): Found entity 1: I2C_Controller
+Info (12021): Found 1 design units, including 1 entities, in source file v/raw2rgb.v
+    Info (12023): Found entity 1: RAW2RGB
+Info (12021): Found 1 design units, including 1 entities, in source file v/reset_delay.v
+    Info (12023): Found entity 1: Reset_Delay
+Info (12021): Found 1 design units, including 1 entities, in source file v/seg7_lut.v
+    Info (12023): Found entity 1: SEG7_LUT
+Info (12021): Found 1 design units, including 1 entities, in source file v/seg7_lut_8.v
+    Info (12023): Found entity 1: SEG7_LUT_8
+Warning (12019): Can't analyze file -- file v/Stack_RAM.v is missing
+Info (12021): Found 1 design units, including 1 entities, in source file v/vga_controller.v
+    Info (12023): Found entity 1: VGA_Controller
+Info (12021): Found 1 design units, including 1 entities, in source file v/sdram_pll.v
+    Info (12023): Found entity 1: sdram_pll
+Warning (12019): Can't analyze file -- file v/touch_tcon.v is missing
+Warning (12019): Can't analyze file -- file v/VGA_Param.v is missing
+Info (12021): Found 1 design units, including 1 entities, in source file de2_115_camera.v
+    Info (12023): Found entity 1: DE2_115_CAMERA
+Warning (10236): Verilog HDL Implicit Net warning at DE2_115_CAMERA.v(475): created implicit net for "VGA_CTRL_CLK"
+Info (12127): Elaborating entity "DE2_115_CAMERA" for the top level hierarchy
+Warning (10230): Verilog HDL assignment warning at DE2_115_CAMERA.v(478): truncated value with size 16 to match size of target (9)
+Warning (10034): Output port "ENET0_TX_DATA" at DE2_115_CAMERA.v(345) has no driver
+Warning (10034): Output port "ENET1_TX_DATA" at DE2_115_CAMERA.v(364) has no driver
+Warning (10034): Output port "OTG_ADDR" at DE2_115_CAMERA.v(376) has no driver
+Warning (10034): Output port "OTG_DACK_N" at DE2_115_CAMERA.v(378) has no driver
+Warning (10034): Output port "SRAM_ADDR" at DE2_115_CAMERA.v(404) has no driver
+Warning (10034): Output port "FL_ADDR" at DE2_115_CAMERA.v(413) has no driver
+Warning (10034): Output port "SMA_CLKOUT" at DE2_115_CAMERA.v(254) has no driver
+Warning (10034): Output port "LCD_BLON" at DE2_115_CAMERA.v(280) has no driver
+Warning (10034): Output port "LCD_EN" at DE2_115_CAMERA.v(282) has no driver
+Warning (10034): Output port "LCD_ON" at DE2_115_CAMERA.v(283) has no driver
+Warning (10034): Output port "LCD_RS" at DE2_115_CAMERA.v(284) has no driver
+Warning (10034): Output port "LCD_RW" at DE2_115_CAMERA.v(285) has no driver
+Warning (10034): Output port "UART_CTS" at DE2_115_CAMERA.v(288) has no driver
+Warning (10034): Output port "SD_CLK" at DE2_115_CAMERA.v(300) has no driver
+Warning (10034): Output port "AUD_DACDAT" at DE2_115_CAMERA.v(319) has no driver
+Warning (10034): Output port "AUD_XCK" at DE2_115_CAMERA.v(321) has no driver
+Warning (10034): Output port "EEP_I2C_SCLK" at DE2_115_CAMERA.v(324) has no driver
+Warning (10034): Output port "I2C_SCLK" at DE2_115_CAMERA.v(328) has no driver
+Warning (10034): Output port "ENET0_GTX_CLK" at DE2_115_CAMERA.v(332) has no driver
+Warning (10034): Output port "ENET0_MDC" at DE2_115_CAMERA.v(335) has no driver
+Warning (10034): Output port "ENET0_RST_N" at DE2_115_CAMERA.v(337) has no driver
+Warning (10034): Output port "ENET0_TX_EN" at DE2_115_CAMERA.v(346) has no driver
+Warning (10034): Output port "ENET0_TX_ER" at DE2_115_CAMERA.v(347) has no driver
+Warning (10034): Output port "ENET1_GTX_CLK" at DE2_115_CAMERA.v(351) has no driver
+Warning (10034): Output port "ENET1_MDC" at DE2_115_CAMERA.v(354) has no driver
+Warning (10034): Output port "ENET1_RST_N" at DE2_115_CAMERA.v(356) has no driver
+Warning (10034): Output port "ENET1_TX_EN" at DE2_115_CAMERA.v(365) has no driver
+Warning (10034): Output port "ENET1_TX_ER" at DE2_115_CAMERA.v(366) has no driver
+Warning (10034): Output port "TD_RESET_N" at DE2_115_CAMERA.v(372) has no driver
+Warning (10034): Output port "OTG_CS_N" at DE2_115_CAMERA.v(377) has no driver
+Warning (10034): Output port "OTG_RD_N" at DE2_115_CAMERA.v(384) has no driver
+Warning (10034): Output port "OTG_RST_N" at DE2_115_CAMERA.v(385) has no driver
+Warning (10034): Output port "OTG_WE_N" at DE2_115_CAMERA.v(386) has no driver
+Warning (10034): Output port "SRAM_CE_N" at DE2_115_CAMERA.v(405) has no driver
+Warning (10034): Output port "SRAM_LB_N" at DE2_115_CAMERA.v(407) has no driver
+Warning (10034): Output port "SRAM_OE_N" at DE2_115_CAMERA.v(408) has no driver
+Warning (10034): Output port "SRAM_UB_N" at DE2_115_CAMERA.v(409) has no driver
+Warning (10034): Output port "SRAM_WE_N" at DE2_115_CAMERA.v(410) has no driver
+Warning (10034): Output port "FL_CE_N" at DE2_115_CAMERA.v(414) has no driver
+Warning (10034): Output port "FL_OE_N" at DE2_115_CAMERA.v(416) has no driver
+Warning (10034): Output port "FL_RST_N" at DE2_115_CAMERA.v(417) has no driver
+Warning (10034): Output port "FL_WE_N" at DE2_115_CAMERA.v(419) has no driver
+Warning (10034): Output port "FL_WP_N" at DE2_115_CAMERA.v(420) has no driver
+Info (12128): Elaborating entity "Reset_Delay" for hierarchy "Reset_Delay:u2"
+Info (12128): Elaborating entity "CCD_Capture" for hierarchy "CCD_Capture:u3"
+Warning (10036): Verilog HDL or VHDL warning at CCD_Capture.v(166): object "ifval_fedge" assigned a value but never read
+Warning (10036): Verilog HDL or VHDL warning at CCD_Capture.v(167): object "y_cnt_d" assigned a value but never read
+Warning (10230): Verilog HDL assignment warning at CCD_Capture.v(127): truncated value with size 32 to match size of target (16)
+Warning (10230): Verilog HDL assignment warning at CCD_Capture.v(131): truncated value with size 32 to match size of target (16)
+Warning (10230): Verilog HDL assignment warning at CCD_Capture.v(187): truncated value with size 32 to match size of target (1)
+Info (12128): Elaborating entity "RAW2RGB" for hierarchy "RAW2RGB:u4"
+Info (12128): Elaborating entity "SEG7_LUT_8" for hierarchy "SEG7_LUT_8:u5"
+Info (12128): Elaborating entity "SEG7_LUT" for hierarchy "SEG7_LUT_8:u5|SEG7_LUT:u0"
+Info (12128): Elaborating entity "sdram_pll" for hierarchy "sdram_pll:u6"
+Info (12128): Elaborating entity "altpll" for hierarchy "sdram_pll:u6|altpll:altpll_component"
+Info (12130): Elaborated megafunction instantiation "sdram_pll:u6|altpll:altpll_component"
+Info (12133): Instantiated megafunction "sdram_pll:u6|altpll:altpll_component" with the following parameter:
+    Info (12134): Parameter "bandwidth_type" = "AUTO"
+    Info (12134): Parameter "clk0_divide_by" = "1"
+    Info (12134): Parameter "clk0_duty_cycle" = "50"
+    Info (12134): Parameter "clk0_multiply_by" = "2"
+    Info (12134): Parameter "clk0_phase_shift" = "0"
+    Info (12134): Parameter "clk1_divide_by" = "1"
+    Info (12134): Parameter "clk1_duty_cycle" = "50"
+    Info (12134): Parameter "clk1_multiply_by" = "2"
+    Info (12134): Parameter "clk1_phase_shift" = "-3000"
+    Info (12134): Parameter "clk2_divide_by" = "2"
+    Info (12134): Parameter "clk2_duty_cycle" = "50"
+    Info (12134): Parameter "clk2_multiply_by" = "1"
+    Info (12134): Parameter "clk2_phase_shift" = "0"
+    Info (12134): Parameter "clk3_divide_by" = "2"
+    Info (12134): Parameter "clk3_duty_cycle" = "50"
+    Info (12134): Parameter "clk3_multiply_by" = "1"
+    Info (12134): Parameter "clk3_phase_shift" = "0"
+    Info (12134): Parameter "clk4_divide_by" = "5"
+    Info (12134): Parameter "clk4_duty_cycle" = "50"
+    Info (12134): Parameter "clk4_multiply_by" = "4"
+    Info (12134): Parameter "clk4_phase_shift" = "0"
+    Info (12134): Parameter "compensate_clock" = "CLK0"
+    Info (12134): Parameter "inclk0_input_frequency" = "20000"
+    Info (12134): Parameter "intended_device_family" = "Cyclone IV E"
+    Info (12134): Parameter "lpm_type" = "altpll"
+    Info (12134): Parameter "operation_mode" = "NORMAL"
+    Info (12134): Parameter "pll_type" = "AUTO"
+    Info (12134): Parameter "port_activeclock" = "PORT_UNUSED"
+    Info (12134): Parameter "port_areset" = "PORT_UNUSED"
+    Info (12134): Parameter "port_clkbad0" = "PORT_UNUSED"
+    Info (12134): Parameter "port_clkbad1" = "PORT_UNUSED"
+    Info (12134): Parameter "port_clkloss" = "PORT_UNUSED"
+    Info (12134): Parameter "port_clkswitch" = "PORT_UNUSED"
+    Info (12134): Parameter "port_configupdate" = "PORT_UNUSED"
+    Info (12134): Parameter "port_fbin" = "PORT_UNUSED"
+    Info (12134): Parameter "port_inclk0" = "PORT_USED"
+    Info (12134): Parameter "port_inclk1" = "PORT_UNUSED"
+    Info (12134): Parameter "port_locked" = "PORT_UNUSED"
+    Info (12134): Parameter "port_pfdena" = "PORT_UNUSED"
+    Info (12134): Parameter "port_phasecounterselect" = "PORT_UNUSED"
+    Info (12134): Parameter "port_phasedone" = "PORT_UNUSED"
+    Info (12134): Parameter "port_phasestep" = "PORT_UNUSED"
+    Info (12134): Parameter "port_phaseupdown" = "PORT_UNUSED"
+    Info (12134): Parameter "port_pllena" = "PORT_UNUSED"
+    Info (12134): Parameter "port_scanaclr" = "PORT_UNUSED"
+    Info (12134): Parameter "port_scanclk" = "PORT_UNUSED"
+    Info (12134): Parameter "port_scanclkena" = "PORT_UNUSED"
+    Info (12134): Parameter "port_scandata" = "PORT_UNUSED"
+    Info (12134): Parameter "port_scandataout" = "PORT_UNUSED"
+    Info (12134): Parameter "port_scandone" = "PORT_UNUSED"
+    Info (12134): Parameter "port_scanread" = "PORT_UNUSED"
+    Info (12134): Parameter "port_scanwrite" = "PORT_UNUSED"
+    Info (12134): Parameter "port_clk0" = "PORT_USED"
+    Info (12134): Parameter "port_clk1" = "PORT_USED"
+    Info (12134): Parameter "port_clk2" = "PORT_USED"
+    Info (12134): Parameter "port_clk3" = "PORT_USED"
+    Info (12134): Parameter "port_clk4" = "PORT_USED"
+    Info (12134): Parameter "port_clk5" = "PORT_UNUSED"
+    Info (12134): Parameter "port_clkena0" = "PORT_UNUSED"
+    Info (12134): Parameter "port_clkena1" = "PORT_UNUSED"
+    Info (12134): Parameter "port_clkena2" = "PORT_UNUSED"
+    Info (12134): Parameter "port_clkena3" = "PORT_UNUSED"
+    Info (12134): Parameter "port_clkena4" = "PORT_UNUSED"
+    Info (12134): Parameter "port_clkena5" = "PORT_UNUSED"
+    Info (12134): Parameter "port_extclk0" = "PORT_UNUSED"
+    Info (12134): Parameter "port_extclk1" = "PORT_UNUSED"
+    Info (12134): Parameter "port_extclk2" = "PORT_UNUSED"
+    Info (12134): Parameter "port_extclk3" = "PORT_UNUSED"
+    Info (12134): Parameter "width_clock" = "5"
+Info (12021): Found 1 design units, including 1 entities, in source file db/altpll_f423.tdf
+    Info (12023): Found entity 1: altpll_f423
+Info (12128): Elaborating entity "altpll_f423" for hierarchy "sdram_pll:u6|altpll:altpll_component|altpll_f423:auto_generated"
+Info (12128): Elaborating entity "Sdram_Control" for hierarchy "Sdram_Control:u7"
+Warning (10230): Verilog HDL assignment warning at Sdram_Control.v(385): truncated value with size 32 to match size of target (10)
+Warning (10240): Verilog HDL Always Construct warning at Sdram_Control.v(423): inferring latch(es) for variable "rWR1_MAX_ADDR", which holds its previous value in one or more paths through the always construct
+Warning (10240): Verilog HDL Always Construct warning at Sdram_Control.v(423): inferring latch(es) for variable "rWR2_MAX_ADDR", which holds its previous value in one or more paths through the always construct
+Warning (10240): Verilog HDL Always Construct warning at Sdram_Control.v(423): inferring latch(es) for variable "rRD1_MAX_ADDR", which holds its previous value in one or more paths through the always construct
+Warning (10240): Verilog HDL Always Construct warning at Sdram_Control.v(423): inferring latch(es) for variable "rRD2_MAX_ADDR", which holds its previous value in one or more paths through the always construct
+Warning (10240): Verilog HDL Always Construct warning at Sdram_Control.v(423): inferring latch(es) for variable "rWR1_LENGTH", which holds its previous value in one or more paths through the always construct
+Warning (10240): Verilog HDL Always Construct warning at Sdram_Control.v(423): inferring latch(es) for variable "rWR2_LENGTH", which holds its previous value in one or more paths through the always construct
+Warning (10240): Verilog HDL Always Construct warning at Sdram_Control.v(423): inferring latch(es) for variable "rRD1_LENGTH", which holds its previous value in one or more paths through the always construct
+Warning (10240): Verilog HDL Always Construct warning at Sdram_Control.v(423): inferring latch(es) for variable "rRD2_LENGTH", which holds its previous value in one or more paths through the always construct
+Info (10041): Inferred latch for "rRD2_LENGTH[0]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD2_LENGTH[1]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD2_LENGTH[2]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD2_LENGTH[3]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD2_LENGTH[4]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD2_LENGTH[5]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD2_LENGTH[6]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD2_LENGTH[7]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD1_LENGTH[0]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD1_LENGTH[1]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD1_LENGTH[2]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD1_LENGTH[3]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD1_LENGTH[4]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD1_LENGTH[5]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD1_LENGTH[6]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD1_LENGTH[7]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR2_LENGTH[0]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR2_LENGTH[1]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR2_LENGTH[2]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR2_LENGTH[3]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR2_LENGTH[4]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR2_LENGTH[5]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR2_LENGTH[6]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR2_LENGTH[7]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR1_LENGTH[0]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR1_LENGTH[1]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR1_LENGTH[2]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR1_LENGTH[3]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR1_LENGTH[4]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR1_LENGTH[5]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR1_LENGTH[6]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR1_LENGTH[7]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD2_MAX_ADDR[0]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD2_MAX_ADDR[1]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD2_MAX_ADDR[2]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD2_MAX_ADDR[3]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD2_MAX_ADDR[4]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD2_MAX_ADDR[5]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD2_MAX_ADDR[6]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD2_MAX_ADDR[7]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD2_MAX_ADDR[8]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD2_MAX_ADDR[9]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD2_MAX_ADDR[10]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD2_MAX_ADDR[11]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD2_MAX_ADDR[12]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD2_MAX_ADDR[13]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD2_MAX_ADDR[14]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD2_MAX_ADDR[15]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD2_MAX_ADDR[16]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD2_MAX_ADDR[17]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD2_MAX_ADDR[18]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD2_MAX_ADDR[19]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD2_MAX_ADDR[20]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD2_MAX_ADDR[21]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD2_MAX_ADDR[22]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD1_MAX_ADDR[0]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD1_MAX_ADDR[1]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD1_MAX_ADDR[2]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD1_MAX_ADDR[3]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD1_MAX_ADDR[4]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD1_MAX_ADDR[5]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD1_MAX_ADDR[6]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD1_MAX_ADDR[7]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD1_MAX_ADDR[8]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD1_MAX_ADDR[9]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD1_MAX_ADDR[10]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD1_MAX_ADDR[11]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD1_MAX_ADDR[12]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD1_MAX_ADDR[13]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD1_MAX_ADDR[14]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD1_MAX_ADDR[15]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD1_MAX_ADDR[16]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD1_MAX_ADDR[17]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD1_MAX_ADDR[18]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD1_MAX_ADDR[19]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD1_MAX_ADDR[20]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD1_MAX_ADDR[21]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rRD1_MAX_ADDR[22]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR2_MAX_ADDR[0]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR2_MAX_ADDR[1]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR2_MAX_ADDR[2]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR2_MAX_ADDR[3]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR2_MAX_ADDR[4]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR2_MAX_ADDR[5]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR2_MAX_ADDR[6]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR2_MAX_ADDR[7]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR2_MAX_ADDR[8]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR2_MAX_ADDR[9]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR2_MAX_ADDR[10]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR2_MAX_ADDR[11]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR2_MAX_ADDR[12]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR2_MAX_ADDR[13]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR2_MAX_ADDR[14]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR2_MAX_ADDR[15]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR2_MAX_ADDR[16]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR2_MAX_ADDR[17]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR2_MAX_ADDR[18]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR2_MAX_ADDR[19]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR2_MAX_ADDR[20]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR2_MAX_ADDR[21]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR2_MAX_ADDR[22]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR1_MAX_ADDR[0]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR1_MAX_ADDR[1]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR1_MAX_ADDR[2]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR1_MAX_ADDR[3]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR1_MAX_ADDR[4]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR1_MAX_ADDR[5]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR1_MAX_ADDR[6]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR1_MAX_ADDR[7]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR1_MAX_ADDR[8]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR1_MAX_ADDR[9]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR1_MAX_ADDR[10]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR1_MAX_ADDR[11]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR1_MAX_ADDR[12]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR1_MAX_ADDR[13]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR1_MAX_ADDR[14]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR1_MAX_ADDR[15]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR1_MAX_ADDR[16]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR1_MAX_ADDR[17]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR1_MAX_ADDR[18]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR1_MAX_ADDR[19]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR1_MAX_ADDR[20]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR1_MAX_ADDR[21]" at Sdram_Control.v(423)
+Info (10041): Inferred latch for "rWR1_MAX_ADDR[22]" at Sdram_Control.v(423)
+Info (12128): Elaborating entity "control_interface" for hierarchy "Sdram_Control:u7|control_interface:u_control_interface"
+Warning (10230): Verilog HDL assignment warning at control_interface.v(162): truncated value with size 32 to match size of target (16)
+Warning (10230): Verilog HDL assignment warning at control_interface.v(167): truncated value with size 32 to match size of target (16)
+Warning (10230): Verilog HDL assignment warning at control_interface.v(192): truncated value with size 32 to match size of target (16)
+Info (12128): Elaborating entity "command" for hierarchy "Sdram_Control:u7|command:u_command"
+Warning (10240): Verilog HDL Always Construct warning at command.v(275): inferring latch(es) for variable "oe_shift", which holds its previous value in one or more paths through the always construct
+Warning (10240): Verilog HDL Always Construct warning at command.v(275): inferring latch(es) for variable "oe1", which holds its previous value in one or more paths through the always construct
+Warning (10240): Verilog HDL Always Construct warning at command.v(275): inferring latch(es) for variable "oe2", which holds its previous value in one or more paths through the always construct
+Info (12128): Elaborating entity "sdr_data_path" for hierarchy "Sdram_Control:u7|sdr_data_path:u_sdr_data_path"
+Warning (10230): Verilog HDL assignment warning at sdr_data_path.v(68): truncated value with size 32 to match size of target (4)
+Info (12128): Elaborating entity "Sdram_WR_FIFO" for hierarchy "Sdram_Control:u7|Sdram_WR_FIFO:u_write1_fifo"
+Info (12128): Elaborating entity "dcfifo_mixed_widths" for hierarchy "Sdram_Control:u7|Sdram_WR_FIFO:u_write1_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component"
+Info (12130): Elaborated megafunction instantiation "Sdram_Control:u7|Sdram_WR_FIFO:u_write1_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component"
+Info (12133): Instantiated megafunction "Sdram_Control:u7|Sdram_WR_FIFO:u_write1_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component" with the following parameter:
+    Info (12134): Parameter "intended_device_family" = "Cyclone IV E"
+    Info (12134): Parameter "lpm_numwords" = "512"
+    Info (12134): Parameter "lpm_showahead" = "OFF"
+    Info (12134): Parameter "lpm_type" = "dcfifo"
+    Info (12134): Parameter "lpm_width" = "16"
+    Info (12134): Parameter "lpm_widthu" = "9"
+    Info (12134): Parameter "lpm_widthu_r" = "8"
+    Info (12134): Parameter "lpm_width_r" = "32"
+    Info (12134): Parameter "overflow_checking" = "ON"
+    Info (12134): Parameter "rdsync_delaypipe" = "4"
+    Info (12134): Parameter "underflow_checking" = "ON"
+    Info (12134): Parameter "use_eab" = "ON"
+    Info (12134): Parameter "write_aclr_synch" = "OFF"
+    Info (12134): Parameter "wrsync_delaypipe" = "4"
+Info (12021): Found 1 design units, including 1 entities, in source file db/dcfifo_lhh1.tdf
+    Info (12023): Found entity 1: dcfifo_lhh1
+Info (12128): Elaborating entity "dcfifo_lhh1" for hierarchy "Sdram_Control:u7|Sdram_WR_FIFO:u_write1_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component|dcfifo_lhh1:auto_generated"
+Info (12021): Found 1 design units, including 1 entities, in source file db/a_gray2bin_ugb.tdf
+    Info (12023): Found entity 1: a_gray2bin_ugb
+Info (12128): Elaborating entity "a_gray2bin_ugb" for hierarchy "Sdram_Control:u7|Sdram_WR_FIFO:u_write1_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component|dcfifo_lhh1:auto_generated|a_gray2bin_ugb:rdptr_g_gray2bin"
+Info (12021): Found 1 design units, including 1 entities, in source file db/a_graycounter_t57.tdf
+    Info (12023): Found entity 1: a_graycounter_t57
+Info (12128): Elaborating entity "a_graycounter_t57" for hierarchy "Sdram_Control:u7|Sdram_WR_FIFO:u_write1_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component|dcfifo_lhh1:auto_generated|a_graycounter_t57:rdptr_g1p"
+Info (12021): Found 1 design units, including 1 entities, in source file db/a_graycounter_ojc.tdf
+    Info (12023): Found entity 1: a_graycounter_ojc
+Info (12128): Elaborating entity "a_graycounter_ojc" for hierarchy "Sdram_Control:u7|Sdram_WR_FIFO:u_write1_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component|dcfifo_lhh1:auto_generated|a_graycounter_ojc:wrptr_g1p"
+Info (12021): Found 1 design units, including 1 entities, in source file db/altsyncram_rj31.tdf
+    Info (12023): Found entity 1: altsyncram_rj31
+Info (12128): Elaborating entity "altsyncram_rj31" for hierarchy "Sdram_Control:u7|Sdram_WR_FIFO:u_write1_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component|dcfifo_lhh1:auto_generated|altsyncram_rj31:fifo_ram"
+Info (12021): Found 1 design units, including 1 entities, in source file db/dffpipe_gd9.tdf
+    Info (12023): Found entity 1: dffpipe_gd9
+Info (12128): Elaborating entity "dffpipe_gd9" for hierarchy "Sdram_Control:u7|Sdram_WR_FIFO:u_write1_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component|dcfifo_lhh1:auto_generated|dffpipe_gd9:rs_brp"
+Info (12021): Found 1 design units, including 1 entities, in source file db/alt_synch_pipe_ikd.tdf
+    Info (12023): Found entity 1: alt_synch_pipe_ikd
+Info (12128): Elaborating entity "alt_synch_pipe_ikd" for hierarchy "Sdram_Control:u7|Sdram_WR_FIFO:u_write1_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component|dcfifo_lhh1:auto_generated|alt_synch_pipe_ikd:rs_dgwp"
+Info (12021): Found 1 design units, including 1 entities, in source file db/dffpipe_hd9.tdf
+    Info (12023): Found entity 1: dffpipe_hd9
+Info (12128): Elaborating entity "dffpipe_hd9" for hierarchy "Sdram_Control:u7|Sdram_WR_FIFO:u_write1_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component|dcfifo_lhh1:auto_generated|alt_synch_pipe_ikd:rs_dgwp|dffpipe_hd9:dffpipe13"
+Info (12021): Found 1 design units, including 1 entities, in source file db/alt_synch_pipe_jkd.tdf
+    Info (12023): Found entity 1: alt_synch_pipe_jkd
+Info (12128): Elaborating entity "alt_synch_pipe_jkd" for hierarchy "Sdram_Control:u7|Sdram_WR_FIFO:u_write1_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component|dcfifo_lhh1:auto_generated|alt_synch_pipe_jkd:ws_dgrp"
+Info (12021): Found 1 design units, including 1 entities, in source file db/dffpipe_id9.tdf
+    Info (12023): Found entity 1: dffpipe_id9
+Info (12128): Elaborating entity "dffpipe_id9" for hierarchy "Sdram_Control:u7|Sdram_WR_FIFO:u_write1_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component|dcfifo_lhh1:auto_generated|alt_synch_pipe_jkd:ws_dgrp|dffpipe_id9:dffpipe16"
+Info (12021): Found 1 design units, including 1 entities, in source file db/cmpr_f66.tdf
+    Info (12023): Found entity 1: cmpr_f66
+Info (12128): Elaborating entity "cmpr_f66" for hierarchy "Sdram_Control:u7|Sdram_WR_FIFO:u_write1_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component|dcfifo_lhh1:auto_generated|cmpr_f66:rdempty_eq_comp"
+Info (12021): Found 1 design units, including 1 entities, in source file db/cntr_54e.tdf
+    Info (12023): Found entity 1: cntr_54e
+Info (12128): Elaborating entity "cntr_54e" for hierarchy "Sdram_Control:u7|Sdram_WR_FIFO:u_write1_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component|dcfifo_lhh1:auto_generated|cntr_54e:cntr_b"
+Info (12128): Elaborating entity "Sdram_RD_FIFO" for hierarchy "Sdram_Control:u7|Sdram_RD_FIFO:u_read1_fifo"
+Info (12128): Elaborating entity "dcfifo_mixed_widths" for hierarchy "Sdram_Control:u7|Sdram_RD_FIFO:u_read1_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component"
+Info (12130): Elaborated megafunction instantiation "Sdram_Control:u7|Sdram_RD_FIFO:u_read1_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component"
+Info (12133): Instantiated megafunction "Sdram_Control:u7|Sdram_RD_FIFO:u_read1_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component" with the following parameter:
+    Info (12134): Parameter "intended_device_family" = "Cyclone IV E"
+    Info (12134): Parameter "lpm_numwords" = "256"
+    Info (12134): Parameter "lpm_showahead" = "OFF"
+    Info (12134): Parameter "lpm_type" = "dcfifo"
+    Info (12134): Parameter "lpm_width" = "32"
+    Info (12134): Parameter "lpm_widthu" = "8"
+    Info (12134): Parameter "lpm_widthu_r" = "9"
+    Info (12134): Parameter "lpm_width_r" = "16"
+    Info (12134): Parameter "overflow_checking" = "ON"
+    Info (12134): Parameter "rdsync_delaypipe" = "4"
+    Info (12134): Parameter "underflow_checking" = "ON"
+    Info (12134): Parameter "use_eab" = "ON"
+    Info (12134): Parameter "write_aclr_synch" = "OFF"
+    Info (12134): Parameter "wrsync_delaypipe" = "4"
+Info (12021): Found 1 design units, including 1 entities, in source file db/dcfifo_dih1.tdf
+    Info (12023): Found entity 1: dcfifo_dih1
+Info (12128): Elaborating entity "dcfifo_dih1" for hierarchy "Sdram_Control:u7|Sdram_RD_FIFO:u_read1_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component|dcfifo_dih1:auto_generated"
+Info (12021): Found 1 design units, including 1 entities, in source file db/a_graycounter_s57.tdf
+    Info (12023): Found entity 1: a_graycounter_s57
+Info (12128): Elaborating entity "a_graycounter_s57" for hierarchy "Sdram_Control:u7|Sdram_RD_FIFO:u_read1_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component|dcfifo_dih1:auto_generated|a_graycounter_s57:rdptr_g1p"
+Info (12021): Found 1 design units, including 1 entities, in source file db/a_graycounter_pjc.tdf
+    Info (12023): Found entity 1: a_graycounter_pjc
+Info (12128): Elaborating entity "a_graycounter_pjc" for hierarchy "Sdram_Control:u7|Sdram_RD_FIFO:u_read1_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component|dcfifo_dih1:auto_generated|a_graycounter_pjc:wrptr_g1p"
+Info (12021): Found 1 design units, including 1 entities, in source file db/altsyncram_sj31.tdf
+    Info (12023): Found entity 1: altsyncram_sj31
+Info (12128): Elaborating entity "altsyncram_sj31" for hierarchy "Sdram_Control:u7|Sdram_RD_FIFO:u_read1_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component|dcfifo_dih1:auto_generated|altsyncram_sj31:fifo_ram"
+Info (12021): Found 1 design units, including 1 entities, in source file db/alt_synch_pipe_kkd.tdf
+    Info (12023): Found entity 1: alt_synch_pipe_kkd
+Info (12128): Elaborating entity "alt_synch_pipe_kkd" for hierarchy "Sdram_Control:u7|Sdram_RD_FIFO:u_read1_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component|dcfifo_dih1:auto_generated|alt_synch_pipe_kkd:rs_dgwp"
+Info (12021): Found 1 design units, including 1 entities, in source file db/dffpipe_jd9.tdf
+    Info (12023): Found entity 1: dffpipe_jd9
+Info (12128): Elaborating entity "dffpipe_jd9" for hierarchy "Sdram_Control:u7|Sdram_RD_FIFO:u_read1_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component|dcfifo_dih1:auto_generated|alt_synch_pipe_kkd:rs_dgwp|dffpipe_jd9:dffpipe12"
+Info (12021): Found 1 design units, including 1 entities, in source file db/alt_synch_pipe_lkd.tdf
+    Info (12023): Found entity 1: alt_synch_pipe_lkd
+Info (12128): Elaborating entity "alt_synch_pipe_lkd" for hierarchy "Sdram_Control:u7|Sdram_RD_FIFO:u_read1_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component|dcfifo_dih1:auto_generated|alt_synch_pipe_lkd:ws_dgrp"
+Info (12021): Found 1 design units, including 1 entities, in source file db/dffpipe_kd9.tdf
+    Info (12023): Found entity 1: dffpipe_kd9
+Info (12128): Elaborating entity "dffpipe_kd9" for hierarchy "Sdram_Control:u7|Sdram_RD_FIFO:u_read1_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component|dcfifo_dih1:auto_generated|alt_synch_pipe_lkd:ws_dgrp|dffpipe_kd9:dffpipe15"
+Info (12128): Elaborating entity "I2C_CCD_Config" for hierarchy "I2C_CCD_Config:u8"
+Warning (10230): Verilog HDL assignment warning at I2C_CCD_Config.v(126): truncated value with size 32 to match size of target (1)
+Warning (10230): Verilog HDL assignment warning at I2C_CCD_Config.v(127): truncated value with size 32 to match size of target (1)
+Warning (10230): Verilog HDL assignment warning at I2C_CCD_Config.v(149): truncated value with size 32 to match size of target (25)
+Warning (10230): Verilog HDL assignment warning at I2C_CCD_Config.v(154): truncated value with size 32 to match size of target (1)
+Warning (10230): Verilog HDL assignment warning at I2C_CCD_Config.v(179): truncated value with size 32 to match size of target (16)
+Warning (10230): Verilog HDL assignment warning at I2C_CCD_Config.v(229): truncated value with size 32 to match size of target (6)
+Info (12128): Elaborating entity "I2C_Controller" for hierarchy "I2C_CCD_Config:u8|I2C_Controller:u0"
+Warning (10230): Verilog HDL assignment warning at I2C_Controller.v(71): truncated value with size 32 to match size of target (1)
+Warning (10230): Verilog HDL assignment warning at I2C_Controller.v(70): truncated value with size 32 to match size of target (1)
+Warning (10230): Verilog HDL assignment warning at I2C_Controller.v(83): truncated value with size 32 to match size of target (7)
+Info (12128): Elaborating entity "VGA_Controller" for hierarchy "VGA_Controller:u1"
+Warning (10230): Verilog HDL assignment warning at VGA_Controller.v(138): truncated value with size 32 to match size of target (10)
+Warning (10230): Verilog HDL assignment warning at VGA_Controller.v(141): truncated value with size 32 to match size of target (10)
+Warning (10230): Verilog HDL assignment warning at VGA_Controller.v(144): truncated value with size 32 to match size of target (10)
+Warning (10230): Verilog HDL assignment warning at VGA_Controller.v(201): truncated value with size 32 to match size of target (13)
+Warning (10230): Verilog HDL assignment warning at VGA_Controller.v(227): truncated value with size 32 to match size of target (13)
+Error (12006): Node instance "L1" instantiates undefined entity "Line_Buffer" File: C:/Users/user/Documents/2023spring/2023_dcLab/playground/CAMERA_VGA/v/RAW2RGB.v Line: 185
+Info (144001): Generated suppressed messages file C:/Users/user/Documents/2023spring/2023_dcLab/playground/CAMERA_VGA/DE2_115_CAMERA.map.smsg
+Error: Quartus II 64-Bit Analysis & Synthesis was unsuccessful. 1 error, 84 warnings
+    Error: Peak virtual memory: 4811 megabytes
+    Error: Processing ended: Thu May 04 22:36:10 2023
+    Error: Elapsed time: 00:00:12
+    Error: Total CPU time (on all processors): 00:00:17
+
+
++------------------------------------------+
+; Analysis & Synthesis Suppressed Messages ;
++------------------------------------------+
+The suppressed messages can be found in C:/Users/user/Documents/2023spring/2023_dcLab/playground/CAMERA_VGA/DE2_115_CAMERA.map.smsg.
+
+
