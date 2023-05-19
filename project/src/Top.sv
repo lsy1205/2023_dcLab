@@ -388,6 +388,7 @@ wire			sdram_ctrl_clk;
 wire	[9:0]	oVGA_R;   				//	VGA Red[9:0]
 wire	[9:0]	oVGA_G;	 				//	VGA Green[9:0]
 wire	[9:0]	oVGA_B;   				//	VGA Blue[9:0]
+wire            Threshold;
 
 //power on start
 wire             auto_start;
@@ -452,7 +453,8 @@ RAW2RGB				u4	(	.iCLK(D5M_PIXLCLK),
 							.oDval(sCCD_DVAL),
 							.iZoom(SW[16]),
 							.iX_Cont(X_Cont),
-							.iY_Cont(Y_Cont)
+							.iY_Cont(Y_Cont),
+							.oThreshold(Threshold)
 						);
 //Frame count display
 SEG7_LUT_8 			u5	(	.oSEG0(HEX0),.oSEG1(HEX1),

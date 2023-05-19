@@ -49,7 +49,8 @@ module	RAW2RGB				(	iCLK,iRST_n,
 								oDval,
 								iZoom,
 								iX_Cont,
-								iY_Cont
+								iY_Cont,
+								oThreshold
 							);
 
 
@@ -63,6 +64,7 @@ output			oDval;
 input	[1:0]	iZoom;
 input	[15:0]	iX_Cont;
 input	[15:0]	iY_Cont;
+output          oThreshold;
 
 wire	[11:0]	wData0;
 wire	[11:0]	wData1;
@@ -84,6 +86,7 @@ reg				dval_ctrl_en;
 assign	oRed	=	rRed;
 assign	oGreen	=	rGreen[12:1];
 assign	oBlue	=	rBlue;
+assign  oThreshold = (((rRed + rGreen + rGreen + rBlue) >> 2) > 128) ? 1 : 0; 
 
 Line_Buffer	L1	(
 					.clken(iDval),
