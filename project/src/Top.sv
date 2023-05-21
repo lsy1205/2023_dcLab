@@ -555,4 +555,39 @@ VGA_Controller		u1	(	//	Host Side
 							.iZOOM_MODE_SW(SW[16])
 						);
 
+Image_Loader img_loader (
+							.i_clk(),
+							.data(),
+							.valid(),
+							.avm_clk(),
+							.avm_rst_n(),
+							.avm_address(),
+							.avm_read(),
+							.avm_readdata(),
+							.avm_write(),
+							.avm_waitrequest()
+						);
+
+Sram_Contoller sram_ctrl(
+							i_clk(),
+							i_rst_n(),
+							i_clear(),
+							i_mode, // 0: read, 1: write
+							i_start(),
+							o_fin(),
+
+							o_SRAM_ADDR(),
+							io_SRAM_DQ(),
+							o_SRAM_WE_N(),
+							o_SRAM_CE_N(),
+							o_SRAM_OE_N(),
+							o_SRAM_LB_N(),
+							o_SRAM_UB_N(),
+
+							o_vaild(),
+							o_r_data(),
+							i_w_data()
+)
+
+
 endmodule
