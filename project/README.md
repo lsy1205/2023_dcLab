@@ -25,6 +25,11 @@
 
 * threshold on B channel to extract the rectangle
 
+### VGA
+
+* Clock: 40 MHz
+* get data when oRequest is high
+
 ### Useful Link for PnP
 
 https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=1217599
