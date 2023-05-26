@@ -569,25 +569,31 @@ Image_Loader img_loader (
 						);
 
 Sram_Contoller sram_ctrl(
-							i_clk(),
-							i_rst_n(),
-							i_clear(),
-							i_mode, // 0: read, 1: write
-							i_start(),
-							o_fin(),
+							.i_clk(),
+							.i_rst_n(),
+							.i_write(),
+							.i_read(),
+							.o_fin(),
+							//SRAM
+							.o_SRAM_ADDR(),
+							.io_SRAM_DQ(),
+							.o_SRAM_WE_N(),
+							.o_SRAM_CE_N(),
+							.o_SRAM_OE_N(),
+							.o_SRAM_LB_N(),
+							.o_SRAM_UB_N(),
+							//DATA
+							.o_vaild(),
+							.o_r_data(),
+							.i_w_data()
+);
 
-							o_SRAM_ADDR(),
-							io_SRAM_DQ(),
-							o_SRAM_WE_N(),
-							o_SRAM_CE_N(),
-							o_SRAM_OE_N(),
-							o_SRAM_LB_N(),
-							o_SRAM_UB_N(),
-
-							o_vaild(),
-							o_r_data(),
-							i_w_data()
-)
+Image_Generator img_gen(
+							.i_clk(),
+							.i_rst_n(),
+							.o_read(), // to sram i_read
+							.i_sram_data()
+);
 
 
 endmodule
