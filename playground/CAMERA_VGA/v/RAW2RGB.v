@@ -72,9 +72,12 @@ reg		[12:0]	mCCD_G;
 reg		[11:0]	mCCD_B;
 reg				mDVAL;
 
-assign	oRed	=	mCCD_R[11:0];
-assign	oGreen	=	mCCD_G[12:1];
-assign	oBlue	=	mCCD_B[11:0];
+wire    threshold;
+//out
+assign  threshold = (((rRed + rGreen + rGreen + rBlue) >> 2) > 128) ? 1 : 0; 
+assign	oRed	=	(threshold) ? 255 : 0;//rRed;
+assign	oGreen	=	(threshold) ? 255 : 0;//rGreen[12:1];
+assign	oBlue	=	(threshold) ? 255 : 0;//rBlue;
 assign	oDVAL	=	mDVAL;
 
 Line_Buffer1 	u0	(	.clken(iDVAL),
