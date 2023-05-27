@@ -86,7 +86,7 @@ reg				dval_ctrl_en;
 assign	oRed	=	rRed;
 assign	oGreen	=	rGreen[12:1];
 assign	oBlue	=	rBlue;
-assign  oThreshold = (((rRed + rGreen + rGreen + rBlue) >> 2) > 128) ? 1 : 0; 
+assign  oThreshold = ( (((rRed + rBlue) + rGreen) >> 2) > 128) ? 1 : 0; 
 
 Line_Buffer	L1	(
 					.clken(iDval),
@@ -256,4 +256,3 @@ always@(posedge iCLK or negedge iRST_n)
 
 
 endmodule
-
