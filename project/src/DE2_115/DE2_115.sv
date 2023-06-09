@@ -142,106 +142,106 @@ module DE2_115 (
 // Debounce deb0 ();
 
 Top top0(
-	.i_clk(),
-	.i_rst_n(),
+	.i_clk(CLOCK_50),
+	.i_rst_n(KEY[0]),
 
 	//////////// LED //////////
-	.LEDG(),
-	.LEDR(),
+	.LEDG(LEDG),
+	.LEDR(LEDR),
 
 	//////////// KEY //////////
-	.KEY(),
+	.KEY(KEY),
 
 	//////////// SW //////////
-	.SW(),
+	.SW(SW),
 
 	//////////// SEG7 //////////
-	.HEX0(),
-	.HEX1(),
-	.HEX2(),
-	.HEX3(),
-	.HEX4(),
-	.HEX5(),
-	.HEX6(),
-	.HEX7(),
+	.HEX0(HEX0),
+	.HEX1(HEX1),
+	.HEX2(HEX2),
+	.HEX3(HEX3),
+	.HEX4(HEX4),
+	.HEX5(HEX5),
+	.HEX6(HEX6),
+	.HEX7(HEX7),
 
 	//////////// LCD //////////
-	.LCD_BLON(),
-	.LCD_DATA(),
-	.LCD_EN(),
-	.LCD_ON(),
-	.LCD_RS(),
-	.LCD_RW(),
+	.LCD_BLON(LCD_BLON),
+	.LCD_DATA(LCD_DATA),
+	.LCD_EN(LCD_EN),
+	.LCD_ON(LCD_ON),
+	.LCD_RS(LCD_RS),
+	.LCD_RW(LCD_RW),
 
 	//////////// RS232 //////////
-	.UART_CTS(),
-	.UART_RTS(),
-	.UART_RXD(),
-	.UART_TXD(),
+	.UART_CTS(UART_CTS),
+	.UART_RTS(UART_RTS),
+	.UART_RXD(UART_RXD),
+	.UART_TXD(UART_TXD),
 
 	//////////// SDCARD //////////
-	.SD_CLK(),
-	.SD_CMD(),
-	.SD_DAT(),
-	.SD_WP_N(),
+	.SD_CLK(SD_CLK),
+	.SD_CMD(SD_CMD),
+	.SD_DAT(SD_DAT),
+	.SD_WP_N(SD_WP_N),
 
 	//////////// VGA //////////
-	.VGA_B(),
-	.VGA_BLANK_N(),
-	.VGA_CLK(),
-	.VGA_G(),
-	.VGA_HS(),
-	.VGA_R(),
-	.VGA_SYNC_N(),
-	.VGA_VS(),
+	.VGA_B(VGA_B),
+	.VGA_BLANK_N(VGA_BLANK_N),
+	.VGA_CLK(VGA_CLK),
+	.VGA_G(VGA_G),
+	.VGA_HS(VGA_HS),
+	.VGA_R(VGA_R),
+	.VGA_SYNC_N(VGA_SYNC_N),
+	.VGA_VS(VGA_VS),
 
 	//////////// Audio //////////
-	.AUD_ADCDAT(),
-	.AUD_ADCLRCK(),
-	.AUD_BCLK(),
-	.AUD_DACDAT(),
-	.AUD_DACLRCK(),
-	.AUD_XCK(),
+	.AUD_ADCDAT(AUD_ADCDAT),
+	.AUD_ADCLRCK(AUD_ADCLRCK),
+	.AUD_BCLK(AUD_BCLK),
+	.AUD_DACDAT(AUD_DACDAT),
+	.AUD_DACLRCK(AUD_DACLRCK),
+	.AUD_XCK(AUD_XCK),
 
 	//////////// I2C for Audio Tv-Decoder  //////////
-	.I2C_SCLK(),
-	.I2C_SDAT(),
+	.I2C_SCLK(I2C_SCLK),
+	.I2C_SDAT(I2C_SDAT),
 
 	//////////// IR Receiver //////////
-	.IRDA_RXD(),
+	.IRDA_RXD(IRDA_RXD),
 
 	//////////// SDRAM //////////
-	.DRAM_ADDR(),
-	.DRAM_BA(),
-	.DRAM_CAS_N(),
-	.DRAM_CKE(),
-	.DRAM_CLK(),
-	.DRAM_CS_N(),
-	.DRAM_DQ(),
-	.DRAM_DQM(),
-	.DRAM_RAS_N(),
-	.DRAM_WE_N(),
+	.DRAM_ADDR(DRAM_ADDR),
+	.DRAM_BA(DRAM_BA),
+	.DRAM_CAS_N(DRAM_CAS_N),
+	.DRAM_CKE(DRAM_CKE),
+	.DRAM_CLK(DRAM_CLK),
+	.DRAM_CS_N(DRAM_CS_N),
+	.DRAM_DQ(DRAM_DQ),
+	.DRAM_DQM(DRAM_DQM),
+	.DRAM_RAS_N(DRAM_RAS_N),
+	.DRAM_WE_N(DRAM_WE_N),
 
 	//////////// SRAM //////////
-	.SRAM_ADDR(),
-	.SRAM_CE_N(),
-	.SRAM_DQ(),
-	.SRAM_LB_N(),
-	.SRAM_OE_N(),
-	.SRAM_UB_N(),
-	.SRAM_WE_N(),
+	.SRAM_ADDR(SRAM_ADDR),
+	.SRAM_CE_N(SRAM_CE_N),
+	.SRAM_DQ(SRAM_DQ),
+	.SRAM_LB_N(SRAM_LB_N),
+	.SRAM_OE_N(SRAM_OE_N),
+	.SRAM_UB_N(SRAM_UB_N),
+	.SRAM_WE_N(SRAM_WE_N),
 
 	//////////// GPIO, GPIO connect to D5M - 5M Pixel Camera //////////
-	.D5M_D(),
-	.D5M_FVAL(),
-	.D5M_LVAL(),
-	.D5M_PIXLCLK(),
-	.D5M_RESET_N(),
-	.D5M_SCLK(),
-	.D5M_SDATA(),
-	.D5M_STROBE(),
-	.D5M_TRIGGER(),
-	.D5M_XCLKIN() 
+	.D5M_D(D5M_D),
+	.D5M_FVAL(D5M_FVAL),
+	.D5M_LVAL(D5M_LVAL),
+	.D5M_PIXLCLK(D5M_PIXLCLK),
+	.D5M_RESET_N(D5M_RESET_N),
+	.D5M_SCLK(D5M_SCLK),
+	.D5M_SDATA(D5M_SDATA),
+	.D5M_STROBE(D5M_STROBE),
+	.D5M_TRIGGER(D5M_TRIGGER),
+	.D5M_XCLKIN(D5M_XCLKIN) 
 );
 
 // SevenHexDecoder2 seven_dec0 ();

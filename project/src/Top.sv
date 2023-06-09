@@ -444,8 +444,8 @@ Sram_Contoller sram_ctrl(
 );
 
 Image_Generator img_gen(
-                            .i_clk(),
-                            .i_rst_n(),
+                            .i_clk(D5M_PIXLCLK),
+                            .i_rst_n(i_rst_n),
                             .o_read(), // to sram i_read
                             .i_sram_data()
 );
