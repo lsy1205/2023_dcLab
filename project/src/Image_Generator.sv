@@ -5,10 +5,9 @@ module Image_Generator (
 
     input         i_row, // row of center  picture is 128*128
     input         i_col, // col of center
-    input  [31:0] i_data, // {2'b0, R, G, B}
+    input  [31:0] i_data, // {8'b0, R, G, B}
     output        o_vaild,
     output [31:0] o_data
-    
 );
     logic [9:0]  row_counter_r, row_counter_w;
     logic [9:0]  col_counter_r, col_counter_w;
@@ -26,7 +25,7 @@ module Image_Generator (
     
         if (row_counter_r > (i_row - 64) && row_counter_r < (i_row + 65) &&
             col_counter_r > (i_col - 64) && col_counter_r < (i_col + 65)) begin
-            out_data_w = {22'b0, 10'b1};
+            out_data_w = 32'h000000ff; // Blue
         end 
         else begin
             out_data_w = i_data;

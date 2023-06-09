@@ -15,18 +15,19 @@
 * SDRAM: working memory
   * Camera (write)
     * 2x800x600x24 bit = 960,000x24 bit
-    * 2x480,000x15 Hz = 14 MHz
-  * Preload image (read)
+    * 480,000x30 Hz = 14 MHz
+  * Img Generator (read)
+    * 480,000x30 Hz = 14 MHz
+  * Preload image (random read)
     * 100x100x24 bit = 10,000x24 bit
-    * 10,000x15 Hz = 0.15 MHz
+    * 14 MHz
 * SRAM: graphical memory
-  * Img Generator (write)
-    * 800x600x16 bit = 480,000x16 bit
-    * 480,000x15 Hz = 7.2 MHz
   * VGA (read)
-    * 800x600x16 bit = 480,000x16 bit
+    * 2x800x600x16 bit = 960,000x16 bit
     * 480,000x60 Hz = 28.8 MHz
-  * Binary image (read/write)
+  * Img Generator (write)
+    * 480,000x30 Hz = 14 MHz
+  * Binary image (read/write) (suspended)
     * 800x600x1 bit = 30,000x16 bit
     * 2x30,000x15 Hz = 0.9 MHz
 
@@ -41,11 +42,17 @@
   * $DB[4:0] = Diff[2][6:2]$
 * [Deprecated] RGBGray8888: SDRAM
   * $G = (G_1+G_2) / 2$
-  * $Gray = (R+G_1+G_2+B) / 4$
 
-## Blue Square
-
+## Green Square
+* threshold 
+  * $gray = (R+G_1+G_2+B) / 4$
+  * green = $gray + 300$
+  * red = $gray$
+  * blue = $gray$
 * threshold on B channel to extract the rectangle
+
+## Image Generator
+* i_data = {8'b0, R, G, B}
 
 ## VGA
 

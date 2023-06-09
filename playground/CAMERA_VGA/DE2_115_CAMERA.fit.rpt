@@ -1,5 +1,5 @@
 Fitter report for DE2_115_CAMERA
-Thu May 04 22:32:26 2023
+Fri Jun 09 16:35:21 2023
 Quartus II 64-Bit Version 15.0.0 Build 145 04/22/2015 SJ Full Version
 
 
@@ -72,7 +72,7 @@ agreement for further details.
 +----------------------------------------------------------------------------------+
 ; Fitter Summary                                                                   ;
 +------------------------------------+---------------------------------------------+
-; Fitter Status                      ; Successful - Thu May 04 22:32:26 2023       ;
+; Fitter Status                      ; Successful - Fri Jun 09 16:35:20 2023       ;
 ; Quartus II 64-Bit Version          ; 15.0.0 Build 145 04/22/2015 SJ Full Version ;
 ; Revision Name                      ; DE2_115_CAMERA                              ;
 ; Top-level Entity Name              ; DE2_115_CAMERA                              ;
@@ -97,6 +97,8 @@ agreement for further details.
 ; Option                                                                     ; Setting                               ; Default Value                         ;
 +----------------------------------------------------------------------------+---------------------------------------+---------------------------------------+
 ; Device                                                                     ; EP4CE115F29C7                         ;                                       ;
+; Minimum Core Junction Temperature                                          ; 0                                     ;                                       ;
+; Maximum Core Junction Temperature                                          ; 85                                    ;                                       ;
 ; Fit Attempts to Skip                                                       ; 0                                     ; 0.0                                   ;
 ; Use smart compilation                                                      ; Off                                   ; Off                                   ;
 ; Enable parallel Assembler and TimeQuest Timing Analyzer during compilation ; On                                    ; On                                    ;
@@ -155,12 +157,12 @@ agreement for further details.
 ; Number detected on machine ; 12          ;
 ; Maximum allowed            ; 6           ;
 ;                            ;             ;
-; Average used               ; 2.05        ;
+; Average used               ; 1.43        ;
 ; Maximum used               ; 6           ;
 ;                            ;             ;
 ; Usage by Processor         ; % Time Used ;
 ;     Processor 1            ; 100.0%      ;
-;     Processors 2-6         ;  21.1%      ;
+;     Processors 2-6         ;   8.7%      ;
 ;     Processors 7-12        ;   0.0%      ;
 +----------------------------+-------------+
 
@@ -4296,8 +4298,8 @@ Note: This table only shows the top 16 path(s) that have the largest delay added
 +-----------------+
 Info (11104): Parallel Compilation has detected 12 hyper-threaded processors. However, the extra hyper-threaded processors will not be used by default. Parallel Compilation will use 6 of the 6 physical processors detected instead.
 Info (119006): Selected device EP4CE115F29C7 for design "DE2_115_CAMERA"
-Info (21076): High junction temperature operating condition is not set. Assuming a default value of '85'.
-Info (21076): Low junction temperature operating condition is not set. Assuming a default value of '0'.
+Info (21077): Low junction temperature is 0 degrees C
+Info (21077): High junction temperature is 85 degrees C
 Warning (15536): Implemented PLL "sdram_pll:u6|altpll:altpll_component|altpll_f423:auto_generated|pll1" as Cyclone IV E PLL type, but with warnings
     Warning (15559): Can't achieve requested value -108.0 degrees for clock output sdram_pll:u6|altpll:altpll_component|altpll_f423:auto_generated|clk[1] of parameter phase shift -- achieved value of -105.0 degrees
     Info (15099): Implementing clock multiplication of 2, clock division of 1, and phase shift of 0 degrees (0 ps) for sdram_pll:u6|altpll:altpll_component|altpll_f423:auto_generated|clk[0] port
@@ -4393,10 +4395,10 @@ Info (176235): Finished register packing
 Warning (15064): PLL "sdram_pll:u6|altpll:altpll_component|altpll_f423:auto_generated|pll1" output port clk[1] feeds output pin "DRAM_CLK~output" via non-dedicated routing -- jitter performance depends on switching rate of other design elements. Use PLL dedicated clock outputs to ensure jitter performance
 Warning (15064): PLL "sdram_pll:u6|altpll:altpll_component|altpll_f423:auto_generated|pll1" output port clk[2] feeds output pin "D5M_XCLKIN~output" via non-dedicated routing -- jitter performance depends on switching rate of other design elements. Use PLL dedicated clock outputs to ensure jitter performance
 Warning (15064): PLL "sdram_pll:u6|altpll:altpll_component|altpll_f423:auto_generated|pll1" output port clk[4] feeds output pin "VGA_CLK~output" via non-dedicated routing -- jitter performance depends on switching rate of other design elements. Use PLL dedicated clock outputs to ensure jitter performance
-Info (171121): Fitter preparation operations ending: elapsed time is 00:00:03
+Info (171121): Fitter preparation operations ending: elapsed time is 00:00:06
 Info (14896): Fitter has disabled Advanced Physical Optimization because it is not supported for the current family.
 Info (170189): Fitter placement preparation operations beginning
-Info (170190): Fitter placement preparation operations ending: elapsed time is 00:00:00
+Info (170190): Fitter placement preparation operations ending: elapsed time is 00:00:01
 Info (170191): Fitter placement operations beginning
 Info (170137): Fitter placement was successful
 Info (170192): Fitter placement operations ending: elapsed time is 00:00:03
@@ -4406,7 +4408,7 @@ Info (170195): Router estimated average interconnect usage is 0% of the availabl
 Info (170194): Fitter routing operations ending: elapsed time is 00:00:02
 Info (170199): The Fitter performed an Auto Fit compilation.  Optimizations were skipped to reduce compilation time.
     Info (170201): Optimizations that may affect the design's routability were skipped
-Info (11888): Total time spent on timing analysis during the Fitter is 1.40 seconds.
+Info (11888): Total time spent on timing analysis during the Fitter is 1.43 seconds.
 Info (334003): Started post-fitting delay annotation
 Info (334004): Delay annotation completed successfully
 Info (334003): Started post-fitting delay annotation
@@ -4659,9 +4661,9 @@ Warning (169064): Following 73 pins have no output enable or a GND or VCC output
     Info (169065): Pin FL_DQ[7] has a permanently disabled output enable
 Info (144001): Generated suppressed messages file C:/Users/user/Documents/2023spring/2023_dcLab/playground/CAMERA_VGA/DE2_115_CAMERA.fit.smsg
 Info: Quartus II 64-Bit Fitter was successful. 0 errors, 11 warnings
-    Info: Peak virtual memory: 6032 megabytes
-    Info: Processing ended: Thu May 04 22:32:27 2023
-    Info: Elapsed time: 00:00:24
+    Info: Peak virtual memory: 6038 megabytes
+    Info: Processing ended: Fri Jun 09 16:35:21 2023
+    Info: Elapsed time: 00:00:29
     Info: Total CPU time (on all processors): 00:00:32
 
 
