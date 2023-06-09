@@ -245,6 +245,8 @@ wire    [9:0]    oVGA_G;                     //    VGA Green[9:0]
 wire    [9:0]    oVGA_B;                   //    VGA Blue[9:0]
 wire            Threshold;
 
+wire    [15:0]   write_1, write_2;
+
 //power on start
 wire             auto_start;
 //=======================================================
@@ -274,6 +276,11 @@ end
 
 //auto start when power on
 assign auto_start = ((KEY[0])&&(DLY_RST_3)&&(!DLY_RST_4))? 1'b1:1'b0;
+
+//test
+assign write_1 = Threshold ? {1'b0, 15'b1} : {1'b0, 15'b0};
+assign write_2 = Threshold ? {1'b0, 15'b1} : {1'b0, 15'b0};
+
 //Reset module
 Reset_Delay            u2    (    .iCLK(CLOCK2_50),
                             .iRST(KEY[0]),
@@ -333,7 +340,7 @@ Sdram_Control    u7    (    //    HOST Side
                             .CLK(sdram_ctrl_clk),
 
                             //    FIFO Write Side 1
-                            .WR1_DATA({1'b0,sCCD_G[11:7],sCCD_B[11:2]}),
+                            .WR1_DATA(write_1), // original {1'b0,sCCD_G[11:7],sCCD_B[11:2]}
                             .WR1(sCCD_DVAL),
                             .WR1_ADDR(0),
                             .WR1_MAX_ADDR(800*600/2),
@@ -342,7 +349,7 @@ Sdram_Control    u7    (    //    HOST Side
                             .WR1_CLK(D5M_PIXLCLK),
 
                             //    FIFO Write Side 2
-                            .WR2_DATA({1'b0,sCCD_G[6:2],sCCD_R[11:2]}),
+                            .WR2_DATA(write_2), // original {1'b0,sCCD_G[6:2],sCCD_R[11:2]}
                             .WR2(sCCD_DVAL),
                             .WR2_ADDR(23'h100000),
                             .WR2_MAX_ADDR(23'h100000+800*600/2),
@@ -410,45 +417,45 @@ VGA_Controller        u1    (    //    Host Side
                             .iZOOM_MODE_SW(SW[16])
                         );
 
-Image_Loader img_loader (
-                            .i_clk(),
-                            .data(),
-                            .valid(),
-                            .avm_clk(),
-                            .avm_rst_n(),
-                            .avm_address(),
-                            .avm_read(),
-                            .avm_readdata(),
-                            .avm_write(),
-                            .avm_waitrequest()
-                        );
+// Image_Loader img_loader (
+//                             .i_clk(),
+//                             .data(),
+//                             .valid(),
+//                             .avm_clk(),
+//                             .avm_rst_n(),
+//                             .avm_address(),
+//                             .avm_read(),
+//                             .avm_readdata(),
+//                             .avm_write(),
+//                             .avm_waitrequest()
+//                         );
 
-Sram_Contoller sram_ctrl(
-                            .i_clk(),
-                            .i_rst_n(),
-                            .i_write(),
-                            .i_read(),
-                            .o_fin(),
-                            //SRAM
-                            .o_SRAM_ADDR(),
-                            .io_SRAM_DQ(),
-                            .o_SRAM_WE_N(),
-                            .o_SRAM_CE_N(),
-                            .o_SRAM_OE_N(),
-                            .o_SRAM_LB_N(),
-                            .o_SRAM_UB_N(),
-                            //DATA
-                            .o_vaild(),
-                            .o_r_data(),
-                            .i_w_data()
-);
+// Sram_Contoller sram_ctrl(
+//                             .i_clk(),
+//                             .i_rst_n(),
+//                             .i_write(),
+//                             .i_read(),
+//                             .o_fin(),
+//                             //SRAM
+//                             .o_SRAM_ADDR(),
+//                             .io_SRAM_DQ(),
+//                             .o_SRAM_WE_N(),
+//                             .o_SRAM_CE_N(),
+//                             .o_SRAM_OE_N(),
+//                             .o_SRAM_LB_N(),
+//                             .o_SRAM_UB_N(),
+//                             //DATA
+//                             .o_vaild(),
+//                             .o_r_data(),
+//                             .i_w_data()
+// );
 
-Image_Generator img_gen(
-                            .i_clk(D5M_PIXLCLK),
-                            .i_rst_n(i_rst_n),
-                            .o_read(), // to sram i_read
-                            .i_sram_data()
-);
+// Image_Generator img_gen(
+//                             .i_clk(D5M_PIXLCLK),
+//                             .i_rst_n(i_rst_n),
+//                             .o_read(), // to sram i_read
+//                             .i_sram_data()
+// );
 
 
 endmodule
