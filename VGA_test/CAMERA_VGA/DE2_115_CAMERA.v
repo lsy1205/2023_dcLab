@@ -466,8 +466,13 @@ wire	[9:0]	oVGA_B;   				//	VGA Blue[9:0]
 
 wire            Threshold;
 wire    [15:0]  write_1, write_2;
-wire            o_gen_valid;
-wire    [31:0]  o_gen_data;
+wire            gen_valid;
+wire    [31:0]  gen_data;
+wire            medi, medi_val;
+wire            corner_val;
+wire    [19:0]  ul_addr, ur_addr, dl_addr, dr_addr;
+wire            corner_found;
+
 //power on start
 wire             auto_start;
 //=======================================================
@@ -487,8 +492,8 @@ assign  VGA_R = oVGA_R[9:2];
 assign  VGA_G = oVGA_G[9:2];
 assign  VGA_B = oVGA_B[9:2];
 
-assign write_1 = Threshold ? 16'h7fff : 16'b0;
-assign write_2 = Threshold ? 16'h7fff : 16'b0;
+assign write_1 = medi ? 16'h7fff : 16'b0;
+assign write_2 = medi ? 16'h7fff : 16'b0;
 
 //D5M read 
 always@(posedge D5M_PIXLCLK)
@@ -578,8 +583,12 @@ Sdram_Control	u7	(	//	HOST Side
 							.CLK(sdram_ctrl_clk),
 
 							//	FIFO Write Side 1
-							.WR1_DATA({1'b0, o_gen_data[19:15], o_gen_data[9:0]}), // {1'b0,sCCD_G[11:7],sCCD_B[11:2]}
-							.WR1(o_gen_valid), // sCCD_DVAL
+							// .WR1_DATA({1'b0,sCCD_G[11:7],sCCD_B[11:2]}),
+							.WR1_DATA({1'b0, gen_data[19:15], gen_data[9:0]}), // {1'b0,sCCD_G[11:7],sCCD_B[11:2]}
+							// .WR1_DATA(write_1),
+							.WR1(gen_valid),
+							// .WR1(sCCD_DVAL),
+							// .WR1(medi_val),
 							.WR1_ADDR(0),
 `ifdef VGA_640x480p60
 						    .WR1_MAX_ADDR(640*480/2),
@@ -592,8 +601,12 @@ Sdram_Control	u7	(	//	HOST Side
 							.WR1_CLK(D5M_PIXLCLK),
 
 							//	FIFO Write Side 2
-							.WR2_DATA({1'b0, o_gen_data[14:10], o_gen_data[29:20]}), // {1'b0,sCCD_G[6:2],sCCD_R[11:2]}
-							.WR2(o_gen_data), // sCCD_DVAL
+							// .WR2_DATA({1'b0,sCCD_G[6:2],sCCD_R[11:2]}),
+							.WR2_DATA({1'b0, gen_data[14:10], gen_data[29:20]}), // {1'b0,sCCD_G[6:2],sCCD_R[11:2]}
+							// .WR2_DATA(write_2),
+							.WR2(gen_valid),
+							// .WR2(sCCD_DVAL),
+							// .WR2(medi_val),
 							.WR2_ADDR(23'h100000),
 `ifdef VGA_640x480p60
 						    .WR2_MAX_ADDR(23'h100000+640*480/2),
@@ -676,14 +689,40 @@ VGA_Controller		u1	(	//	Host Side
 						);
 
 Image_Generator     img_gen (
-							.i_clk(CLOCK2_50),
-							.i_rst_n(DLY_RST_2),
+							.i_clk(D5M_PIXLCLK),
+							.i_rst_n(DLY_RST_1),
 							.i_valid(sCCD_DVAL),
-							.i_row(300),
-							.i_col(400),
+							.i_enable(corner_found),
+							.i_addr_valid(corner_val),
+							.i_ul_addr(ul_addr),
+							.i_ur_addr(ur_addr),
+							.i_dl_addr(dl_addr),
+							.i_dr_addr(dr_addr),
 							.i_data({2'b0, sCCD_R[11:2], sCCD_G[11:2], sCCD_B[11:2]}),
-							.o_vaild(o_gen_valid),
-							.o_data(o_gen_data)
-)
+							.o_vaild(gen_valid),
+							.o_data(gen_data)
+);
+
+Median_Filter       medium_filter (
+							.i_clk(D5M_PIXLCLK),
+							.i_rst_n(DLY_RST_1),
+							.i_valid(sCCD_DVAL),
+							.i_data(Threshold),
+							.o_valid(medi_val),
+							.o_data(medi)
+);
+
+Corner_Finder       corner_finder (
+							.i_clk(D5M_PIXLCLK),
+							.i_rst_n(DLY_RST_1),
+							.i_valid(medi_val),
+							.i_data(medi),
+							.o_valid(corner_val),
+							.o_success(corner_found),
+							.o_ul_addr(ul_addr),
+							.o_ur_addr(ur_addr),
+							.o_dl_addr(dl_addr),
+							.o_dr_addr(dr_addr),
+);
 
 endmodule

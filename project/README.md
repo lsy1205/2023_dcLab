@@ -73,6 +73,7 @@
 * averaged gray pixel store in SDRAM
 * $Avg_{i,j} = (Gray_{i-1,j-1} + Gray_{i-1,j} + Gray_{i,j-1} + Gray_{i,j}) / 4$  
 
+## Need frame synchronization signal for everyone !!!!!!!!
 ## Useful Link for PnP
 
 https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=1217599

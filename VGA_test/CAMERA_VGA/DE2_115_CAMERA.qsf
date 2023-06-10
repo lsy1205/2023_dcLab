@@ -1006,6 +1006,9 @@ set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
 set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
 set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name SYSTEMVERILOG_FILE v/Corner_Finder.sv
+set_global_assignment -name SYSTEMVERILOG_FILE v/Median_Filter.sv
+set_global_assignment -name SYSTEMVERILOG_FILE v/Image_Generator.sv
 set_global_assignment -name VERILOG_FILE v/Line_Buffer1.v
 set_global_assignment -name VERILOG_FILE v/Line_Buffer.v
 set_global_assignment -name QIP_FILE v/Line_Buffer1.qip

@@ -26,7 +26,7 @@ always_comb begin
     column_cntr_w = column_cntr_r;
     buffer_w = buffer_r;
     valid_w = 0;
-    data_w = (sum > 4) ? 1 : 0;
+    data_w = (sum > 6) ? 1 : 0;
 
     if (i_valid || column_cntr_r == 800 || column_cntr_r == 801 || row_cntr_r == 600) begin
         buffer_w[BUFFER_SIZE - 1:1] = buffer_r[BUFFER_SIZE - 2:0];
@@ -56,8 +56,8 @@ always_ff @(posedge i_clk or negedge i_rst_n) begin
         row_cntr_r    <= row_cntr_w;
         column_cntr_r <= column_cntr_w;
         data_r        <= data_w;
-        // valid_r       <= valid_w;
-        valid_r       <= i_valid;
+        valid_r       <= valid_w;
+        // valid_r       <= i_valid;
     end
 end
 endmodule

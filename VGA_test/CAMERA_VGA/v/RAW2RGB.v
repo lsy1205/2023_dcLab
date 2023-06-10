@@ -86,16 +86,16 @@ reg				dval_ctrl_en;
 wire    [12:0]  red_th, blue_th, green_th;
 wire    [13:0]  gray;
 //out
-assign	oRed	=   0;// oThreshold ? rRed : 0;
-assign	oGreen	=	(rGreen[12:1] > green_th) ? rGreen[12:1] - gray : 0;// oThreshold ? rGreen[12:1] : 0;
-assign	oBlue	=	0;// oThreshold ? rBlue : 0;
+assign	oRed	=   rRed; // 0; // oThreshold ? rRed : 0;
+assign	oGreen	=	rGreen[12:1]; // (rGreen[12:1] > green_th) ? rGreen[12:1] - gray + 2048 : 0;// oThreshold ? rGreen[12:1] : 0;
+assign	oBlue	=	rBlue; // 0; // oThreshold ? rBlue : 0;
 assign  red_th  =   gray - 0;
 assign  blue_th =   gray - 0;
 assign  green_th =  gray + 300;
 assign  gray    =   (rRed + rBlue + rGreen) >> 2;
 
-// assign  oThreshold = ( $signed(rGreen[12:1]) > $signed(green_th)) ? 1 : 0; 
-assign  oThreshold = ( $signed(rGreen[12:1]) > $signed(green_th) && $signed(rRed) < $signed(red_th) && $signed(rBlue) < $signed(blue_th)) ? 1 : 0; 
+assign  oThreshold = ( rGreen[12:1] > green_th) ? 1 : 0; 
+// assign  oThreshold = ( $signed(rGreen[12:1]) > $signed(green_th) && $signed(rRed) < $signed(red_th) && $signed(rBlue) < $signed(blue_th)) ? 1 : 0; 
 
 Line_Buffer	L1	(
 					.clken(iDval),
