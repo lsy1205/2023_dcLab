@@ -465,7 +465,9 @@ wire	[9:0]	oVGA_G;	 				//	VGA Green[9:0]
 wire	[9:0]	oVGA_B;   				//	VGA Blue[9:0]
 
 wire            Threshold;
-wire    [15:0]   write_1, write_2;
+wire    [15:0]  write_1, write_2;
+wire            o_gen_valid;
+wire    [31:0]  o_gen_data;
 //power on start
 wire             auto_start;
 //=======================================================
@@ -576,8 +578,8 @@ Sdram_Control	u7	(	//	HOST Side
 							.CLK(sdram_ctrl_clk),
 
 							//	FIFO Write Side 1
-							.WR1_DATA({1'b0,sCCD_G[11:7],sCCD_B[11:2]}),
-							.WR1(sCCD_DVAL),
+							.WR1_DATA({1'b0, o_gen_data[19:15], o_gen_data[9:0]}), // {1'b0,sCCD_G[11:7],sCCD_B[11:2]}
+							.WR1(o_gen_valid), // sCCD_DVAL
 							.WR1_ADDR(0),
 `ifdef VGA_640x480p60
 						    .WR1_MAX_ADDR(640*480/2),
@@ -590,8 +592,8 @@ Sdram_Control	u7	(	//	HOST Side
 							.WR1_CLK(D5M_PIXLCLK),
 
 							//	FIFO Write Side 2
-							.WR2_DATA({1'b0,sCCD_G[6:2],sCCD_R[11:2]}),
-							.WR2(sCCD_DVAL),
+							.WR2_DATA({1'b0, o_gen_data[14:10], o_gen_data[29:20]}), // {1'b0,sCCD_G[6:2],sCCD_R[11:2]}
+							.WR2(o_gen_data), // sCCD_DVAL
 							.WR2_ADDR(23'h100000),
 `ifdef VGA_640x480p60
 						    .WR2_MAX_ADDR(23'h100000+640*480/2),
@@ -674,14 +676,14 @@ VGA_Controller		u1	(	//	Host Side
 						);
 
 Image_Generator     img_gen (
-							.i_clk(CLK),
-							.i_rst_n(),
-							.i_valid(),
-							.i_row(),
-							.i_col(),
-							.i_data(),
-							.o_vaild(),
-							.o_data()
+							.i_clk(CLOCK2_50),
+							.i_rst_n(DLY_RST_2),
+							.i_valid(sCCD_DVAL),
+							.i_row(300),
+							.i_col(400),
+							.i_data({2'b0, sCCD_R[11:2], sCCD_G[11:2], sCCD_B[11:2]}),
+							.o_vaild(o_gen_valid),
+							.o_data(o_gen_data)
 )
 
 endmodule

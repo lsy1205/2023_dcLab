@@ -3,8 +3,6 @@ module Image_Generator (
     input         i_rst_n,
     input         i_valid,
     
-    input         i_frame_row,
-    input         i_frame_col,
     input         i_row, // row of center  picture is 128*128
     input         i_col, // col of center
     input  [31:0] i_data, // {8'b0, R, G, B}
@@ -32,21 +30,20 @@ module Image_Generator (
         else begin
             out_data_w = i_data;
         end
-
-        if (col_counter_r == 799) begin
-            col_counter_w = 0;
-            if(row_counter_r == 599) begin
-                row_counter_w = 0;
-            end 
+        if (i_valid) begin
+            if (col_counter_r == 799) begin
+                col_counter_w = 0;
+                if(row_counter_r == 599) begin
+                    row_counter_w = 0;
+                end 
+                else begin
+                    row_counter_w = row_counter_r + 1;
+                end
+            end
             else begin
-                row_counter_w = row_counter_r + 1;
+                col_counter_w = col_counter_r + 1;
             end
         end
-        else begin
-            col_counter_w = col_counter_r + 1;
-        end
-        valid_w = 1;
-
     end
 
     always_ff @(posedge i_clk or negedge i_rst_n) begin
