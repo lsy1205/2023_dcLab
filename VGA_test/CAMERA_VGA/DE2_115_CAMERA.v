@@ -477,6 +477,8 @@ wire            gen_ack;
 wire    [15:0]  test;
 wire            test_bit;
 wire    [15:0]  test_data;
+wire            test_rd_use;
+wire            sram_wr_full;
 
 //power on start
 wire             auto_start;
@@ -489,7 +491,10 @@ assign	D5M_RESET_N	=	DLY_RST_1;
 assign  VGA_CTRL_CLK = ~VGA_CLK;
 
 assign	LEDR		=	SW;
-assign	LEDG		=	Y_Cont;
+// assign	LEDG		=	Y_Cont;
+assign  LEDG[0] = test_data[0];
+assign  LEDG[1] = test_rd_use;
+assign  LEDG[2] = sram_wr_full;
 assign	UART_TXD = UART_RXD;
 
 //fetch the high 8 bits
@@ -677,12 +682,12 @@ I2C_CCD_Config 		u8	(	//	Host Side
 //VGA DISPLAY
 VGA_Controller		u1	(	//	Host Side
 							.oRequest(Read),
-							// .iRed(Read_DATA2[9:0]),
-							// .iGreen({Read_DATA1[14:10],Read_DATA2[14:10]}),
-							// .iBlue(Read_DATA1[9:0]),
-							.iRed(10{1'b1}),
-							.iGreen({2'b0, test_data[15:8]}),
-							.iBlue({2'b0, test_data[7:0]}),
+							.iRed(Read_DATA2[9:0]),
+							.iGreen({Read_DATA1[14:10],Read_DATA2[14:10]}),
+							.iBlue(Read_DATA1[9:0]),
+							// .iRed({test_data[15:11], 5'h0}),
+							// .iGreen({test_data[10:5], 4'h0}),
+							// .iBlue({test_data[4:0], 5'h0}),
 							//	VGA Side
 							.oVGA_R(oVGA_R),
 							.oVGA_G(oVGA_G),
@@ -702,7 +707,7 @@ Image_Generator     img_gen (
 							.i_rst_n(DLY_RST_1),
 							.i_valid(sCCD_DVAL),
 							.i_enable(corner_found),
-							.i_recive(gen_ack),
+							.i_pause(sram_wr_full),
 							.i_addr_valid(corner_val),
 							.i_ul_addr(ul_addr),
 							.i_ur_addr(ur_addr),
@@ -711,8 +716,6 @@ Image_Generator     img_gen (
 							.i_data({2'b0, sCCD_R[11:2], sCCD_G[11:2], sCCD_B[11:2]}),
 							.o_vaild(gen_valid),
 							.o_data(gen_data),
-							.o_fin(gen_fin),
-							.o_test(test_bit)
 );
 
 Median_Filter       medium_filter (
@@ -739,13 +742,11 @@ Corner_Finder       corner_finder (
 
 Sram_Contoller      sram_control (
 							.i_clk(sdram_ctrl_clk),
-							.i_rst_n(KEY[0]),
+							.i_rst_n(DLY_RST_1),
 
-							.wr_data(test),
+							.wr_data({gen_data[29:25], gen_data[19:14], gen_data[9:5]}),
 							.wr_request(gen_valid),
 							.wr_clk(D5M_PIXLCLK),
-							.i_gen_fin(gen_fin),
-							.o_gen_ack(gen_ack),
 
 							.rd_data(test_data),
 							.rd_request(Read),
@@ -757,7 +758,10 @@ Sram_Contoller      sram_control (
 							.o_SRAM_CE_N(SRAM_CE_N),
 							.o_SRAM_OE_N(SRAM_OE_N),
 							.o_SRAM_LB_N(SRAM_LB_N),
-							.o_SRAM_UB_N(SRAM_UB_N)
+							.o_SRAM_UB_N(SRAM_UB_N),
+
+							.o_rd_use(test_rd_use),
+							.o_wr_use(sram_wr_full)
 );
 
 endmodule
