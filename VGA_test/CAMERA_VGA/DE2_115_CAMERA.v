@@ -472,6 +472,11 @@ wire            medi, medi_val;
 wire            corner_val;
 wire    [19:0]  ul_addr, ur_addr, dl_addr, dr_addr;
 wire            corner_found;
+wire            gen_fin;
+wire            gen_ack;
+wire    [15:0]  test;
+wire            test_bit;
+wire    [15:0]  test_data;
 
 //power on start
 wire             auto_start;
@@ -494,6 +499,7 @@ assign  VGA_B = oVGA_B[9:2];
 
 assign write_1 = medi ? 16'h7fff : 16'b0;
 assign write_2 = medi ? 16'h7fff : 16'b0;
+assign test = test_bit ? 16'h7fff : 16'b0;
 
 //D5M read 
 always@(posedge D5M_PIXLCLK)
@@ -671,9 +677,12 @@ I2C_CCD_Config 		u8	(	//	Host Side
 //VGA DISPLAY
 VGA_Controller		u1	(	//	Host Side
 							.oRequest(Read),
-							.iRed(Read_DATA2[9:0]),
-							.iGreen({Read_DATA1[14:10],Read_DATA2[14:10]}),
-							.iBlue(Read_DATA1[9:0]),
+							// .iRed(Read_DATA2[9:0]),
+							// .iGreen({Read_DATA1[14:10],Read_DATA2[14:10]}),
+							// .iBlue(Read_DATA1[9:0]),
+							.iRed(10{1'b1}),
+							.iGreen({2'b0, test_data[15:8]}),
+							.iBlue({2'b0, test_data[7:0]}),
 							//	VGA Side
 							.oVGA_R(oVGA_R),
 							.oVGA_G(oVGA_G),
@@ -693,6 +702,7 @@ Image_Generator     img_gen (
 							.i_rst_n(DLY_RST_1),
 							.i_valid(sCCD_DVAL),
 							.i_enable(corner_found),
+							.i_recive(gen_ack),
 							.i_addr_valid(corner_val),
 							.i_ul_addr(ul_addr),
 							.i_ur_addr(ur_addr),
@@ -700,7 +710,9 @@ Image_Generator     img_gen (
 							.i_dr_addr(dr_addr),
 							.i_data({2'b0, sCCD_R[11:2], sCCD_G[11:2], sCCD_B[11:2]}),
 							.o_vaild(gen_valid),
-							.o_data(gen_data)
+							.o_data(gen_data),
+							.o_fin(gen_fin),
+							.o_test(test_bit)
 );
 
 Median_Filter       medium_filter (
@@ -723,6 +735,29 @@ Corner_Finder       corner_finder (
 							.o_ur_addr(ur_addr),
 							.o_dl_addr(dl_addr),
 							.o_dr_addr(dr_addr),
+);
+
+Sram_Contoller      sram_control (
+							.i_clk(sdram_ctrl_clk),
+							.i_rst_n(KEY[0]),
+
+							.wr_data(test),
+							.wr_request(gen_valid),
+							.wr_clk(D5M_PIXLCLK),
+							.i_gen_fin(gen_fin),
+							.o_gen_ack(gen_ack),
+
+							.rd_data(test_data),
+							.rd_request(Read),
+							.rd_clk(~VGA_CTRL_CLK),
+
+							.o_SRAM_ADDR(SRAM_ADDR),
+							.io_SRAM_DQ(SRAM_DQ),
+							.o_SRAM_WE_N(SRAM_WE_N),
+							.o_SRAM_CE_N(SRAM_CE_N),
+							.o_SRAM_OE_N(SRAM_OE_N),
+							.o_SRAM_LB_N(SRAM_LB_N),
+							.o_SRAM_UB_N(SRAM_UB_N)
 );
 
 endmodule
