@@ -15,7 +15,7 @@ s = Serial(
     rtscts=False
 )
 
-for i in range(16384):
-    s.write(nd.randint(0,256).to_bytes(8, byteorder='big'))
-    # time.sleep(0.00001)
-    i = i + 1
+for i in range(16384*3):  #range(16384*3):
+    s.write(nd.randint(0,255).to_bytes(1, byteorder='big'))
+    # s.write(((i+128) % 256).to_bytes(1, byteorder='big'))
+    # s.write(nd.randint(0,1).to_bytes(1, byteorder='big'))

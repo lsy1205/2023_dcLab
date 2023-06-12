@@ -24,11 +24,11 @@ module Sram_Contoller (
 );
 
 localparam   addr1_start = 20'd0;
-// localparam   addr2_start = 20'd500_000;
-localparam   addr2_start = 20'd0;
+localparam   addr2_start = 20'd500_000;
+// localparam   addr2_start = 20'd0;
 localparam   addr1_end = 20'd479_999;  // 800*600;
-// localparam   addr2_end = 20'd980_000;  // 500_000 + 800*600;
-localparam   addr2_end = 20'd479_999;  // 500_000 + 800*600;
+localparam   addr2_end = 20'd979_999;  // 500_000 + 800*600;
+// localparam   addr2_end = 20'd479_999;  // 500_000 + 800*600;
 
 localparam S_IDLE  = 0;
 localparam S_WRITE = 1;

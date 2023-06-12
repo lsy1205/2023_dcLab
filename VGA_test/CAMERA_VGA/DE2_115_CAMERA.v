@@ -483,6 +483,7 @@ wire    [23:0]  loader_data;
 wire            loader_valid;
 wire    [23:0]  image_data;
 wire    [13:0]  image_addr;
+wire            test_line;
 
 //power on start
 wire             auto_start;
@@ -493,12 +494,15 @@ wire             auto_start;
 assign	D5M_TRIGGER	=	1'b1;  // tRIGGER
 assign	D5M_RESET_N	=	DLY_RST_1;
 assign  VGA_CTRL_CLK = ~VGA_CLK;
-
-assign	LEDR		=	SW;
+assign  LEDR        = image_addr;
+// assign	LEDR		=	SW;
 // assign	LEDG		=	Y_Cont;
 assign  LEDG[0] = test_data[0];
 assign  LEDG[1] = test_rd_use;
 assign  LEDG[2] = sram_wr_full;
+assign  LEDG[3] = test_line;
+// assign  LEDG[3] = UART_RXD;
+// assign  LEDG[4] = UART_TXD;
 // assign	UART_TXD = UART_RXD;
 
 //fetch the high 8 bits
@@ -779,32 +783,42 @@ Image_Controller    image_controller (
 							.o_data(image_data)
 );
 
-Image_Loader_Wrapper        image_loader_wrapper (
-	                        .clk_clk(D5M_XCLKIN),                        //                        clk.clk
-	                        .image_loader_wrapper_i_clk(CLOCK2_50),               //                 img_loader.i_clk
-	                        .image_loader_wrapper_data(loader_data),                //                           .data
-	                        .image_loader_wrapper_valid(loader_valid),               //                           .valid
-	                        .reset_reset_n(DLY_RST_2),                  //                      reset.reset_n
-	                        .uart_0_external_connection_rxd(UART_RXD), // uart_0_external_connection.rxd
-	                        .uart_0_external_connection_txd(UART_TXD)  //                           .txd
-);
+// Image_Loader_Wrapper        image_loader_wrapper (
+// 	                        .clk_clk(CLOCK3_50),                        //                        clk.clk
+// 	                        .image_loader_wrapper_i_clk(CLOCK3_50),               //                 img_loader.i_clk
+// 	                        .image_loader_wrapper_data(loader_data),                //                           .data
+// 	                        .image_loader_wrapper_valid(loader_valid),               //                           .valid
+// 	                        .reset_reset_n(DLY_RST_2),                  //                      reset.reset_n
+// 	                        .uart_0_external_connection_rxd(UART_RXD), // uart_0_external_connection.rxd
+// 	                        .uart_0_external_connection_txd(UART_TXD)  //                           .txd
+// );
 
-GetPerspective get_perspective (
-    .i_clk(D5M_PIXLCLK),
-    .i_rst_n(DLY_RST_1),
-    .i_start(corner_valid && corner_found),
-	.i_ul_addr({ul_addr[9:0], ul_addr[19:10]}), // first 10 bit is x, last is y()
-	.i_ur_addr({ur_addr[9:0], ur_addr[19:10]}),
-	.i_dr_addr({dr_addr[9:0], dr_addr[19:10]}),
-	.i_dl_addr({dl_addr[9:0], dl_addr[19:10]}),
-	.A(),
-	.B(),
-	.C(),
-	.D(),
-	.E(),
-	.F(),
-	.G(),
-	.H(),
-	.o_valid()
-);
+test                 test_0 (
+		                .clk_clk(CLOCK3_50),                         //                        clk.clk
+		                .reset_reset_n(DLY_RST_2),                   //                      reset.reset_n
+		                .test_loader_0_conduit_end_name(),  //  test_loader_0_conduit_end.name
+		                .test_loader_0_conduit_end_data(loader_data),  //                           .data
+		                .test_loader_0_conduit_end_valid(loader_valid), //                           .valid
+		                .uart_0_external_connection_rxd(UART_RXD),  // uart_0_external_connection.rxd
+		                .uart_0_external_connection_txd(UART_TXD)   //                           .txd
+	);
+
+// GetPerspective get_perspective (
+//     .i_clk(D5M_PIXLCLK),
+//     .i_rst_n(DLY_RST_1),
+//     .i_start(corner_valid && corner_found),
+// 	.i_ul_addr({ul_addr[9:0], ul_addr[19:10]}), // first 10 bit is x, last is y()
+// 	.i_ur_addr({ur_addr[9:0], ur_addr[19:10]}),
+// 	.i_dr_addr({dr_addr[9:0], dr_addr[19:10]}),
+// 	.i_dl_addr({dl_addr[9:0], dl_addr[19:10]}),
+// 	.A(),
+// 	.B(),
+// 	.C(),
+// 	.D(),
+// 	.E(),
+// 	.F(),
+// 	.G(),
+// 	.H(),
+// 	.o_valid()
+// );
 endmodule

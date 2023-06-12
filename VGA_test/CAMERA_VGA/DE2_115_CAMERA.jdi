@@ -1,14 +1,14 @@
 <sld_project_info>
   <project>
-    <hash md5_digest_80b="44a7b4ea065a9fecb329"/>
+    <hash md5_digest_80b="3cbab42b5ec35b874121"/>
   </project>
   <file_info>
     <file device="EP4CE115F29C7" path="DE2_115_CAMERA.sof" usercode="0xFFFFFFFF"/>
   </file_info>
   <sld_infos>
-    <sld_info hpath="Image_Loader_Wrapper:image_loader_wrapper" name="image_loader_wrapper">
+    <sld_info hpath="test:test_0" name="test_0">
       <assignment_values>
-        <assignment_value text="QSYS_NAME Image_Loader_Wrapper HAS_SOPCINFO 1 GENERATION_ID 1686552750"/>
+        <assignment_value text="QSYS_NAME test HAS_SOPCINFO 1 GENERATION_ID 1686590316"/>
       </assignment_values>
       <parameters/>
     </sld_info>

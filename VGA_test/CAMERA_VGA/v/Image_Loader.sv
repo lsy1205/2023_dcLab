@@ -1,5 +1,5 @@
 module Image_Loader (
-    input         i_clk,
+    input         i_clk, // don't use
     output [23:0] data,
     output        valid,
     input         avm_clk,
@@ -33,23 +33,22 @@ assign valid         = valid_r;
 
 always_comb begin : FSM
     state_w = state_r;
-    if (avm_clk == 1) begin
-        case (state_r)
-            S_CHECK: begin
-                if(!avm_waitrequest && avm_readdata[RX_OK_BIT]) begin
-                    state_w = S_TRANS;
-                end
+
+    case (state_r)
+        S_CHECK: begin
+            if(!avm_waitrequest && avm_readdata[RX_OK_BIT]) begin
+                state_w = S_TRANS;
             end
-            S_TRANS: begin
-                if(!avm_waitrequest) begin
-                    state_w = S_CHECK;
-                end
-            end
-            default: begin
+        end
+        S_TRANS: begin
+            if(!avm_waitrequest) begin
                 state_w = S_CHECK;
             end
-        endcase
-    end
+        end
+        default: begin
+            state_w = S_CHECK;
+        end
+    endcase
 end
 
 always_comb begin
@@ -59,50 +58,48 @@ always_comb begin
     data_w          = data_r;
     valid_w         = 0;
 
-    if (avm_clk == 1) begin
-        case (state_r)
-            S_CHECK: begin
-                avm_read_w = 1;
-                avm_address_w = STATUS_BASE;
-                valid_w = 0;
-                
-                if(!avm_waitrequest && avm_readdata[RX_OK_BIT]) begin
-                    avm_read_w = 0;
+    case (state_r)
+        S_CHECK: begin
+            avm_read_w = 1;
+            avm_address_w = STATUS_BASE;
+            valid_w = 0;
+            
+            if(!avm_waitrequest && avm_readdata[RX_OK_BIT]) begin
+                avm_read_w = 0;
+            end
+        end
+        S_TRANS: begin
+            avm_read_w = 1;
+            avm_address_w = RX_BASE;
+            
+            if(!avm_waitrequest) begin
+                if(receive_num_r == 0) begin
+                    data_w[7:0] = avm_readdata[7:0];
+                    receive_num_w = receive_num_r + 1;
                 end
-            end
-            S_TRANS: begin
-                avm_read_w = 1;
-                avm_address_w = RX_BASE;
-                
-                if(!avm_waitrequest) begin
-                    if(receive_num_r == 0) begin
-                        data_w[7:0] = avm_readdata[7:0];
-                        receive_num_w = receive_num_r + 1;
-                    end
-                    else if(receive_num_r == 1) begin
-                        data_w[15:8] = avm_readdata[7:0];
-                        receive_num_w = receive_num_r + 1;
-                    end
-                    else begin
-                        data_w[23:16] = avm_readdata[7:0];
-                        receive_num_w = 0;
-                        valid_w = 1;
-                    end
-                    avm_read_w = 0;
+                else if(receive_num_r == 1) begin
+                    data_w[15:8] = avm_readdata[7:0];
+                    receive_num_w = receive_num_r + 1;
                 end
+                else begin
+                    data_w[23:16] = avm_readdata[7:0];
+                    receive_num_w = 0;
+                    valid_w = 1;
+                end
+                avm_read_w = 0;
             end
-            default: begin
-                receive_num_w   = receive_num_r;
-                avm_address_w   = avm_address_r;
-                avm_read_w      = avm_read_r;
-                data_w          = data_r;
-                valid_w         = 0;
-            end
-        endcase
-    end
+        end
+        default: begin
+            receive_num_w   = receive_num_r;
+            avm_address_w   = avm_address_r;
+            avm_read_w      = avm_read_r;
+            data_w          = data_r;
+            valid_w         = 0;
+        end
+    endcase
 end
 
-always_ff @(posedge i_clk or negedge avm_rst_n) begin
+always_ff @(posedge avm_clk or negedge avm_rst_n) begin
     if (!avm_rst_n) begin
         state_r         <= S_CHECK;
         receive_num_r   <= 0;

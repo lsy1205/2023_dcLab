@@ -37,12 +37,13 @@ assign o_req_addr = req_addr_w;
 always_comb begin
     row_counter_w = row_counter_r;
     col_counter_w = col_counter_r;
-    out_data_w    = out_data_r;
-    valid_w       = i_valid;
     cen_row_w     = cen_row_r;
     cen_col_w     = cen_col_r;
     enable_w      = enable_r;
     req_addr_w    = req_addr_r;
+
+    valid_w       = i_valid;
+    out_data_w    = i_cam_data;
 
     if (i_addr_valid) begin
         cen_row_w = row_sum[11:2];
@@ -50,20 +51,45 @@ always_comb begin
         enable_w  = i_enable;
     end
 
-    if (enable_r && 
-        row_counter_w > (cen_row_r - 65) && row_counter_w < (cen_row_r + 64) &&
-        col_counter_w > (cen_col_r - 65) && col_counter_w < (cen_col_r + 64)) begin
-            req_addr_w = req_addr_r + 1;
-    end 
+    if (enable_r) begin
+        if (   row_counter_w > (cen_row_r - 65) 
+            && row_counter_w < (cen_row_r + 64)
+            && col_counter_w > (cen_col_r - 65)
+            && col_counter_w < (cen_col_r + 64)) begin
+            req_addr_w = req_addr_r + 1; // address jitter but is ok ^_^
+        end
 
-    if (enable_r && 
-        row_counter_r > (cen_row_r - 65) && row_counter_r < (cen_row_r + 64) &&
-        col_counter_r > (cen_col_r - 65) && col_counter_r < (cen_col_r + 64)) begin
-        // out_data_w = 32'h000003ff; // Blue
-        out_data_w = {2'b0, i_img_data[23:16], 2'b0, i_img_data[15:8], 2'b0, i_img_data[7:0], 2'b0};
-    end 
-    else begin
-        out_data_w = i_cam_data;
+        // case({row_counter_r, col_counter_r})
+        //     i_ul_addr: begin
+        //         out_data_w = {2'b0, 10'h3ff, 10'h0, 10'h0};
+        //     end
+        //     i_ur_addr: begin
+        //         out_data_w = {2'b0, 10'h0, 10'h3ff, 10'h3ff};
+        //     end
+        //     i_dl_addr: begin
+        //         out_data_w = {2'b0, 10'h0, 10'h0, 10'h3ff};
+        //     end
+        //     i_dr_addr: begin
+        //         out_data_w = {2'b0, 10'h3ff, 10'h0, 10'h3ff};
+        //     end
+        //     default: begin
+        //     end
+        // endcase
+        
+        if (   row_counter_r > (i_ul_addr[19:10]) 
+            && row_counter_r < (i_ul_addr[19:10] + 9)
+            && col_counter_r > (i_ul_addr[ 9: 0] - 10)
+            && col_counter_r < (i_ul_addr[ 9: 0] + 9)) begin
+            out_data_w = {2'b0, 10'h3ff, 10'h0, 10'h3ff};
+        end
+
+        if (   row_counter_r > (cen_row_r - 65)
+            && row_counter_r < (cen_row_r + 64)
+            && col_counter_r > (cen_col_r - 65)
+            && col_counter_r < (cen_col_r + 64)) begin
+            // out_data_w = 32'h000003ff; // Blue
+            out_data_w = {2'b0, i_img_data[23:16], 2'b0, i_img_data[15:8], 2'b0, i_img_data[7:0], 2'b0};
+        end 
     end
     
     if (i_valid) begin
@@ -91,6 +117,7 @@ always_ff @(posedge i_clk or negedge i_rst_n) begin
         out_data_r    <= 0;
         valid_r       <= 0;
         enable_r      <= 0;
+        req_addr_r    <= 0;
     end
     else begin
         row_counter_r <= row_counter_w;
@@ -100,6 +127,7 @@ always_ff @(posedge i_clk or negedge i_rst_n) begin
         out_data_r    <= out_data_w;
         valid_r       <= valid_w;
         enable_r      <= enable_w;
+        req_addr_r    <= req_addr_w;
     end
 end 
 
