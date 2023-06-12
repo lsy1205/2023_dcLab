@@ -4,7 +4,7 @@
 // MODULE: altsyncram 
 
 // ============================================================
-// File Name: RAM_img.v
+// File Name: RAM_image.v
 // Megafunction Name(s):
 // 			altsyncram
 //
@@ -32,7 +32,7 @@
 //authorized distributors.  Please refer to the applicable 
 //agreement for further details.
 
-module RAM_img (
+module RAM_image (
 	aclr,
 	address,
 	clock,
@@ -85,7 +85,7 @@ endmodule
 // Retrieval info: PRIVATE: READ_DURING_WRITE_MODE_PORT_A NUMERIC "2"
 // Retrieval info: PRIVATE: RegAddr NUMERIC "1"
 // Retrieval info: PRIVATE: RegData NUMERIC "1"
-// Retrieval info: PRIVATE: RegOutput NUMERIC "1"
+// Retrieval info: PRIVATE: RegOutput NUMERIC "0"
 // Retrieval info: PRIVATE: SYNTH_WRAPPER_GEN_POSTFIX STRING "0"
 // Retrieval info: PRIVATE: SingleClock NUMERIC "1"
 // Retrieval info: PRIVATE: UseDQRAM NUMERIC "1"
@@ -102,7 +102,7 @@ endmodule
 // Retrieval info: CONSTANT: NUMWORDS_A NUMERIC "16384"
 // Retrieval info: CONSTANT: OPERATION_MODE STRING "SINGLE_PORT"
 // Retrieval info: CONSTANT: OUTDATA_ACLR_A STRING "CLEAR0"
-// Retrieval info: CONSTANT: OUTDATA_REG_A STRING "CLOCK0"
+// Retrieval info: CONSTANT: OUTDATA_REG_A STRING "UNREGISTERED"
 // Retrieval info: CONSTANT: POWER_UP_UNINITIALIZED STRING "FALSE"
 // Retrieval info: CONSTANT: READ_DURING_WRITE_MODE_PORT_A STRING "DONT_CARE"
 // Retrieval info: CONSTANT: WIDTHAD_A NUMERIC "14"
@@ -120,10 +120,10 @@ endmodule
 // Retrieval info: CONNECT: @data_a 0 0 24 0 data 0 0 24 0
 // Retrieval info: CONNECT: @wren_a 0 0 0 0 wren 0 0 0 0
 // Retrieval info: CONNECT: q 0 0 24 0 @q_a 0 0 24 0
-// Retrieval info: GEN_FILE: TYPE_NORMAL RAM_img.v TRUE
-// Retrieval info: GEN_FILE: TYPE_NORMAL RAM_img.inc FALSE
-// Retrieval info: GEN_FILE: TYPE_NORMAL RAM_img.cmp FALSE
-// Retrieval info: GEN_FILE: TYPE_NORMAL RAM_img.bsf FALSE
-// Retrieval info: GEN_FILE: TYPE_NORMAL RAM_img_inst.v FALSE
-// Retrieval info: GEN_FILE: TYPE_NORMAL RAM_img_bb.v TRUE
+// Retrieval info: GEN_FILE: TYPE_NORMAL RAM_image.v TRUE
+// Retrieval info: GEN_FILE: TYPE_NORMAL RAM_image.inc FALSE
+// Retrieval info: GEN_FILE: TYPE_NORMAL RAM_image.cmp FALSE
+// Retrieval info: GEN_FILE: TYPE_NORMAL RAM_image.bsf FALSE
+// Retrieval info: GEN_FILE: TYPE_NORMAL RAM_image_inst.v FALSE
+// Retrieval info: GEN_FILE: TYPE_NORMAL RAM_image_bb.v TRUE
 // Retrieval info: LIB_FILE: altera_mf

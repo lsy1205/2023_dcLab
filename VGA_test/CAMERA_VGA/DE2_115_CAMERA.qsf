@@ -1040,3 +1040,4 @@ set_global_assignment -name QIP_FILE SRAM_RD_FIFO.qip
 set_global_assignment -name QIP_FILE SRAM_WR_FIFO.qip
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
 set_global_assignment -name QIP_FILE RAM_img.qip
+set_global_assignment -name QIP_FILE RAM_image.qip
