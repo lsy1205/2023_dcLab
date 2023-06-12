@@ -11,12 +11,12 @@ logic [13:0] addr, addr_counter_r, addr_counter_w;
 assign addr = wen ? addr_counter_r : i_address; 
 
 RAM_image ram_imgae (
-    aclr(~i_rst_n),
-    address(addr),
-    clock(i_clk),
-    data(i_data),
-    wren(wen),
-    q(o_data)
+    .aclr(~i_rst_n),
+    .address(addr),
+    .clock(i_clk),
+    .data(i_data),
+    .wren(wen),
+    .q(o_data)
 );
 
 always_comb begin

@@ -479,8 +479,10 @@ wire            test_bit;
 wire    [15:0]  test_data;
 wire            test_rd_use;
 wire            sram_wr_full;
+wire    [23:0]  loader_data;
+wire            loader_valid;
 wire    [23:0]  image_data;
-wire            image_valid;
+wire    [13:0]  image_addr;
 
 //power on start
 wire             auto_start;
@@ -497,7 +499,7 @@ assign	LEDR		=	SW;
 assign  LEDG[0] = test_data[0];
 assign  LEDG[1] = test_rd_use;
 assign  LEDG[2] = sram_wr_full;
-assign	UART_TXD = UART_RXD;
+// assign	UART_TXD = UART_RXD;
 
 //fetch the high 8 bits
 assign  VGA_R = oVGA_R[9:2];
@@ -684,12 +686,12 @@ I2C_CCD_Config 		u8	(	//	Host Side
 //VGA DISPLAY
 VGA_Controller		u1	(	//	Host Side
 							.oRequest(Read),
-							.iRed(Read_DATA2[9:0]),
-							.iGreen({Read_DATA1[14:10],Read_DATA2[14:10]}),
-							.iBlue(Read_DATA1[9:0]),
-							// .iRed({test_data[15:11], 5'h0}),
-							// .iGreen({test_data[10:5], 4'h0}),
-							// .iBlue({test_data[4:0], 5'h0}),
+							// .iRed(Read_DATA2[9:0]),
+							// .iGreen({Read_DATA1[14:10],Read_DATA2[14:10]}),
+							// .iBlue(Read_DATA1[9:0]),
+							.iRed({test_data[15:11], 5'h0}),
+							.iGreen({test_data[10:5], 4'h0}),
+							.iBlue({test_data[4:0], 5'h0}),
 							//	VGA Side
 							.oVGA_R(oVGA_R),
 							.oVGA_G(oVGA_G),
@@ -715,9 +717,11 @@ Image_Generator     img_gen (
 							.i_ur_addr(ur_addr),
 							.i_dl_addr(dl_addr),
 							.i_dr_addr(dr_addr),
-							.i_data({2'b0, sCCD_R[11:2], sCCD_G[11:2], sCCD_B[11:2]}),
+							.i_cam_data({2'b0, sCCD_R[11:2], sCCD_G[11:2], sCCD_B[11:2]}),
 							.o_vaild(gen_valid),
 							.o_data(gen_data),
+							.i_img_data(image_data),
+							.o_req_addr(image_addr)
 );
 
 Median_Filter       medium_filter (
@@ -766,26 +770,23 @@ Sram_Contoller      sram_control (
 							.o_wr_use(sram_wr_full)
 );
 
-Image_Loader        image_loader (
+Image_Controller    image_controller (
 							.i_clk(CLOCK2_50),
-							.data(image_data),
-							.valid(image_valid),
-							.avm_clk(),
-							.avm_rst_n(),
-							.avm_address(),
-							.avm_read(),
-							.avm_readdata(),
-							.avm_write(),
-							.avm_waitrequest()
+							.i_rst_n(DLY_RST_2),
+							.wen(loader_valid),
+							.i_data(loader_data),
+							.i_address(image_addr),
+							.o_data(image_data)
 );
 
-Image_Controller    image_controller (
-							.i_clk(),
-							.i_rst_n(),
-							.wen(),
-							.i_data(),
-							.i_address(),
-							.o_data()
+Image_Loader_Wrapper        image_loader_wrapper (
+	                        .clk_clk(D5M_XCLKIN),                        //                        clk.clk
+	                        .image_loader_wrapper_i_clk(CLOCK2_50),               //                 img_loader.i_clk
+	                        .image_loader_wrapper_data(loader_data),                //                           .data
+	                        .image_loader_wrapper_valid(loader_valid),               //                           .valid
+	                        .reset_reset_n(DLY_RST_2),                  //                      reset.reset_n
+	                        .uart_0_external_connection_rxd(UART_RXD), // uart_0_external_connection.rxd
+	                        .uart_0_external_connection_txd(UART_TXD)  //                           .txd
 );
 
 endmodule

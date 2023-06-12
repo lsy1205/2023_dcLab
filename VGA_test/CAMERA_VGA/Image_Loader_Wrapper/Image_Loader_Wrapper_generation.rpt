@@ -1,0 +1,51 @@
+Info: Starting: Create block symbol file (.bsf)
+Info: qsys-generate C:\Users\user\Documents\2023spring\2023_dcLab\VGA_test\CAMERA_VGA\Image_Loader_Wrapper.qsys --block-symbol-file --output-directory=C:\Users\user\Documents\2023spring\2023_dcLab\VGA_test\CAMERA_VGA\Image_Loader_Wrapper --family="Cyclone IV E" --part=EP4CE115F29C7
+Progress: Loading CAMERA_VGA/Image_Loader_Wrapper.qsys
+Progress: Reading input file
+Progress: Adding Image_Loader_Wrapper_0 [Image_Loader_Wrapper 1.0]
+Progress: Parameterizing module Image_Loader_Wrapper_0
+Progress: Adding clk_0 [clock_source 15.0]
+Progress: Parameterizing module clk_0
+Progress: Adding uart_0 [altera_avalon_uart 15.0]
+Progress: Parameterizing module uart_0
+Progress: Building connections
+Progress: Parameterizing connections
+Progress: Validating
+Progress: Done reading input file
+Warning: Image_Loader_Wrapper.uart_0: Interrupt sender uart_0.irq is not connected to an interrupt receiver
+Info: ip-generate succeeded.
+Info: Finished: Create block symbol file (.bsf)
+Info: 
+Info: Starting: Create HDL design files for synthesis
+Info: qsys-generate C:\Users\user\Documents\2023spring\2023_dcLab\VGA_test\CAMERA_VGA\Image_Loader_Wrapper.qsys --synthesis=VERILOG --output-directory=C:\Users\user\Documents\2023spring\2023_dcLab\VGA_test\CAMERA_VGA\Image_Loader_Wrapper\synthesis --family="Cyclone IV E" --part=EP4CE115F29C7
+Progress: Loading CAMERA_VGA/Image_Loader_Wrapper.qsys
+Progress: Reading input file
+Progress: Adding Image_Loader_Wrapper_0 [Image_Loader_Wrapper 1.0]
+Progress: Parameterizing module Image_Loader_Wrapper_0
+Progress: Adding clk_0 [clock_source 15.0]
+Progress: Parameterizing module clk_0
+Progress: Adding uart_0 [altera_avalon_uart 15.0]
+Progress: Parameterizing module uart_0
+Progress: Building connections
+Progress: Parameterizing connections
+Progress: Validating
+Progress: Done reading input file
+Warning: Image_Loader_Wrapper.uart_0: Interrupt sender uart_0.irq is not connected to an interrupt receiver
+Info: Image_Loader_Wrapper: Generating Image_Loader_Wrapper "Image_Loader_Wrapper" for QUARTUS_SYNTH
+Info: Interconnect is inserted between master Image_Loader_Wrapper_0.avalon_master_0 and slave uart_0.s1 because the master has address signal 5 bit wide, but the slave is 3 bit wide.
+Info: Interconnect is inserted between master Image_Loader_Wrapper_0.avalon_master_0 and slave uart_0.s1 because the master has readdata signal 32 bit wide, but the slave is 16 bit wide.
+Info: Interconnect is inserted between master Image_Loader_Wrapper_0.avalon_master_0 and slave uart_0.s1 because the master has waitrequest signal 1 bit wide, but the slave is 0 bit wide.
+Warning: Image_Loader_Wrapper: "No matching role found for uart_0:s1:dataavailable (dataavailable)"
+Warning: Image_Loader_Wrapper: "No matching role found for uart_0:s1:readyfordata (readyfordata)"
+Info: Image_Loader_Wrapper_0: "Image_Loader_Wrapper" instantiated Image_Loader_Wrapper "Image_Loader_Wrapper_0"
+Info: uart_0: Starting RTL generation for module 'Image_Loader_Wrapper_uart_0'
+Info: uart_0:   Generation command is [exec C:/altera/15.0/quartus/bin64/perl/bin/perl.exe -I C:/altera/15.0/quartus/bin64/perl/lib -I C:/altera/15.0/quartus/sopc_builder/bin/europa -I C:/altera/15.0/quartus/sopc_builder/bin/perl_lib -I C:/altera/15.0/quartus/sopc_builder/bin -I C:/altera/15.0/quartus/../ip/altera/sopc_builder_ip/common -I C:/altera/15.0/quartus/../ip/altera/sopc_builder_ip/altera_avalon_uart -- C:/altera/15.0/quartus/../ip/altera/sopc_builder_ip/altera_avalon_uart/generate_rtl.pl --name=Image_Loader_Wrapper_uart_0 --dir=C:/Users/user/AppData/Local/Temp/alt9520_3801256629302844434.dir/0003_uart_0_gen/ --quartus_dir=C:/altera/15.0/quartus --verilog --config=C:/Users/user/AppData/Local/Temp/alt9520_3801256629302844434.dir/0003_uart_0_gen//Image_Loader_Wrapper_uart_0_component_configuration.pl  --do_build_sim=0  ]
+Info: uart_0: Done RTL generation for module 'Image_Loader_Wrapper_uart_0'
+Info: uart_0: "Image_Loader_Wrapper" instantiated altera_avalon_uart "uart_0"
+Info: mm_interconnect_0: "Image_Loader_Wrapper" instantiated altera_mm_interconnect "mm_interconnect_0"
+Info: rst_controller: "Image_Loader_Wrapper" instantiated altera_reset_controller "rst_controller"
+Info: Image_Loader_Wrapper_0_avalon_master_0_translator: "mm_interconnect_0" instantiated altera_merlin_master_translator "Image_Loader_Wrapper_0_avalon_master_0_translator"
+Info: uart_0_s1_translator: "mm_interconnect_0" instantiated altera_merlin_slave_translator "uart_0_s1_translator"
+Info: Image_Loader_Wrapper: Done "Image_Loader_Wrapper" with 7 modules, 9 files
+Info: ip-generate succeeded.
+Info: Finished: Create HDL design files for synthesis

@@ -11,9 +11,12 @@ module Image_Generator (
     input  [19:0] i_dl_addr,
     input  [19:0] i_dr_addr,
 
-    input  [31:0] i_data, // {2'b0, R, G, B}
+    input  [31:0] i_cam_data, // {2'b0, R, G, B}
     output        o_vaild,
-    output [31:0] o_data
+    output [31:0] o_data,
+
+    input  [23:0] i_img_data,
+    output [13:0] o_req_addr
 );
 
 logic [9:0]  row_counter_r, row_counter_w;
@@ -23,11 +26,13 @@ logic [31:0] out_data_r, out_data_w;
 logic        valid_r, valid_w;
 logic        enable_r, enable_w;
 logic [11:0] row_sum, col_sum;
+logic [13:0] req_addr_r, req_addr_w;
 
 assign o_vaild = valid_r;
 assign o_data = out_data_r;
 assign row_sum = i_ul_addr[19:10] + i_ur_addr[19:10] + i_dl_addr[19:10] + i_dr_addr[19:10];
 assign col_sum = i_ul_addr[9:0] + i_ur_addr[9:0] + i_dl_addr[9:0] + i_dr_addr[9:0];
+assign o_req_addr = req_addr_w;
 
 always_comb begin
     row_counter_w = row_counter_r;
@@ -37,6 +42,7 @@ always_comb begin
     cen_row_w     = cen_row_r;
     cen_col_w     = cen_col_r;
     enable_w      = enable_r;
+    req_addr_w    = req_addr_r;
 
     if (i_addr_valid) begin
         cen_row_w = row_sum[11:2];
@@ -45,13 +51,21 @@ always_comb begin
     end
 
     if (enable_r && 
+        row_counter_w > (cen_row_r - 65) && row_counter_w < (cen_row_r + 64) &&
+        col_counter_w > (cen_col_r - 65) && col_counter_w < (cen_col_r + 64)) begin
+            req_addr_w = req_addr_r + 1;
+    end 
+
+    if (enable_r && 
         row_counter_r > (cen_row_r - 65) && row_counter_r < (cen_row_r + 64) &&
         col_counter_r > (cen_col_r - 65) && col_counter_r < (cen_col_r + 64)) begin
-        out_data_w = 32'h000003ff; // Blue
+        // out_data_w = 32'h000003ff; // Blue
+        out_data_w = {2'b0, i_img_data[23:16], 2'b0, i_img_data[15:8], 2'b0, i_img_data[7:0], 2'b0};
     end 
     else begin
-        out_data_w = i_data;
+        out_data_w = i_cam_data;
     end
+    
     if (i_valid) begin
         if (col_counter_r == 799) begin
             col_counter_w = 0;

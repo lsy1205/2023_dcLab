@@ -1,12 +1,12 @@
 // --------------------------------------------------------------------
-// Copyright (c) 2010 by Terasic Technologies Inc. 
+// Copyright (c) 2010 by Terasic Technologies Inc.
 // --------------------------------------------------------------------
 //
 // Permission:
 //
 //   Terasic grants permission to use and modify this code for use
-//   in synthesis for all Terasic Development Boards and Altera Development 
-//   Kits made by Terasic.  Other use of this code, including the selling 
+//   in synthesis for all Terasic Development Boards and Altera Development
+//   Kits made by Terasic.  Other use of this code, including the selling
 //   ,duplication, or modification of any portion is strictly prohibited.
 //
 // Disclaimer:
@@ -15,11 +15,11 @@
 //   which illustrates how these types of functions can be implemented.
 //   It is the user's responsibility to verify their design for
 //   consistency and functionality through the use of formal
-//   verification methods.  Terasic provides no warranty regarding the use 
+//   verification methods.  Terasic provides no warranty regarding the use
 //   or functionality of this code.
 //
 // --------------------------------------------------------------------
-//           
+//
 //                     Terasic Technologies Inc
 //                     356 Fu-Shin E. Rd Sec. 1. JhuBei City,
 //                     HsinChu County, Taiwan
@@ -60,7 +60,7 @@ module Sdram_Control (
     RD1_ADDR,
     RD1_MAX_ADDR,
     RD1_LENGTH,
-    RD1_LOAD,    
+    RD1_LOAD,
     RD1_CLK,
     //    FIFO Read Side 2
     RD2_DATA,
@@ -146,11 +146,11 @@ output [`DSIZE/8-1:0]           DQM;                    //SDRAM data mask lines
 //    Controller
 reg        [`ASIZE-1:0]         mADDR;                            //Internal address
 reg               [7:0]         mLENGTH;                        //Internal length
-reg        [`ASIZE-1:0]         rWR1_ADDR;                    //Register write address                
-reg        [`ASIZE-1:0]         rWR1_MAX_ADDR;            //Register max write address                
+reg        [`ASIZE-1:0]         rWR1_ADDR;                    //Register write address
+reg        [`ASIZE-1:0]         rWR1_MAX_ADDR;            //Register max write address
 reg               [7:0]         rWR1_LENGTH;                //Register write length
-reg        [`ASIZE-1:0]         rWR2_ADDR;                    //Register write address                
-reg        [`ASIZE-1:0]         rWR2_MAX_ADDR;            //Register max write address                
+reg        [`ASIZE-1:0]         rWR2_ADDR;                    //Register write address
+reg        [`ASIZE-1:0]         rWR2_MAX_ADDR;            //Register max write address
 reg               [7:0]         rWR2_LENGTH;                //Register write length
 reg        [`ASIZE-1:0]         rRD1_ADDR;                    //Register read address
 reg        [`ASIZE-1:0]         rRD1_MAX_ADDR;            //Register max read address
@@ -170,12 +170,12 @@ reg                             PM_STOP;                        //Flag page mode
 reg                             PM_DONE;                        //Flag page mode done
 reg                             Read;                              //Flag read active
 reg                             Write;                            //Flag write active
-reg       [`DSIZE-1:0]          mDATAOUT;               //Controller Data output 
+reg       [`DSIZE-1:0]          mDATAOUT;               //Controller Data output
 wire      [`DSIZE-1:0]          mDATAIN;                //Controller Data input
 wire      [`DSIZE-1:0]          mDATAIN1;               //Controller Data input 1
 wire      [`DSIZE-1:0]          mDATAIN2;               //Controller Data input 2
 wire                            CMDACK;                 //Controller command acknowledgement
-//    DRAM Control                
+//    DRAM Control
 reg  [`DSIZE/8-1:0]             DQM;                    //SDRAM data mask lines
 reg          [11:0]             SA;                     //SDRAM address output
 reg           [1:0]             BA;                     //SDRAM bank address
@@ -184,8 +184,6 @@ reg                             CKE;                    //SDRAM clock enable
 reg                             RAS_N;                  //SDRAM Row address Strobe
 reg                             CAS_N;                  //SDRAM Column address Strobe
 reg                             WE_N;                   //SDRAM write enable
-// wire    [`DSIZE-1:0]            DQOUT;                            //SDRAM data out link
-// wire  [`DSIZE/8-1:0]            IDQM;                   //SDRAM data mask lines
 wire          [11:0]            ISA;                    //SDRAM address output
 wire           [1:0]            IBA;                    //SDRAM bank address
 wire           [1:0]            ICS_N;                  //SDRAM Chip Selects
@@ -193,7 +191,7 @@ wire                            ICKE;                   //SDRAM clock enable
 wire                            IRAS_N;                 //SDRAM Row address Strobe
 wire                            ICAS_N;                 //SDRAM Column address Strobe
 wire                            IWE_N;                  //SDRAM write enable
-//    FIFO Control                                        
+//    FIFO Control
 reg                             OUT_VALID;                    //Output data request to read side fifo
 reg                             IN_REQ;                            //Input    data request to write side fifo
 wire           [7:0]            write_side_fifo_rusedw1;
@@ -262,14 +260,6 @@ command  u_command (
          .RAS_N(IRAS_N),
          .CAS_N(ICAS_N),
          .WE_N(IWE_N) );
-                
-// sdr_data_path  u_sdr_data_path (
-//          .CLK(CLK),
-//          .RESET_N(RESET_N),
-//          .DATAIN(mDATAIN),
-//          .DM(2'b00),
-//          .DQOUT(DQOUT),
-//          .DQM(IDQM) );
 
 Sdram_WR_FIFO  u_write1_fifo (
                 .data(WR1_DATA),
@@ -290,7 +280,7 @@ Sdram_WR_FIFO  u_write2_fifo (
                 .rdclk(CLK),
                 .q(mDATAIN2),
                 .rdusedw(write_side_fifo_rusedw2)    );
-                
+
 Sdram_RD_FIFO  u_read1_fifo (
                 .data(mDATAOUT),
                 .wrreq(OUT_VALID&&RD_MASK[0]),
@@ -300,7 +290,7 @@ Sdram_RD_FIFO  u_read1_fifo (
                 .rdclk(RD1_CLK),
                 .q(RD1_DATA),
                 .wrusedw(read_side_fifo_wusedw1) );
-                
+
 Sdram_RD_FIFO  u_read2_fifo (
                 .data(mDATAOUT),
                 .wrreq(OUT_VALID&&RD_MASK[1]),
@@ -341,14 +331,14 @@ always@(posedge CLK or negedge RESET_N)
 begin
     if(!RESET_N)
     begin
-        CMD              <= 0;
-        ST              <= 0;
+        CMD         <= 0;
+        ST          <= 0;
         Pre_RD      <= 0;
         Pre_WR      <= 0;
-        Read          <= 0;
-        Write          <= 0;
-        OUT_VALID    <= 0;
-        IN_REQ        <= 0;
+        Read        <= 0;
+        Write       <= 0;
+        OUT_VALID   <= 0;
+        IN_REQ      <= 0;
         mWR_DONE    <= 0;
         mRD_DONE    <= 0;
     end
@@ -360,17 +350,17 @@ begin
         0:    begin
                 if (!Pre_RD && mRD)
                 begin
-                    Read    <=    1;
-                    Write    <=    0;
-                    CMD        <=    2'b01;
-                    ST        <=    1;
+                    Read   <=    1;
+                    Write  <=    0;
+                    CMD    <=    2'b01;
+                    ST     <=    1;
                 end
                 else if (!Pre_WR && mWR)
                 begin
                     Read    <=    0;
-                    Write    <=    1;
-                    CMD        <=    2'b10;
-                    ST        <=    1;
+                    Write   <=    1;
+                    CMD     <=    2'b10;
+                    ST      <=    1;
                 end
         end
         1:    begin
@@ -380,28 +370,28 @@ begin
                     ST    <=  2;
                 end
         end
-        default:  begin    
+        default:  begin
                 if (ST!=SC_CL+SC_RCD+mLENGTH+1)
                   ST    <=  ST+1;
                 else
                   ST    <=  0;
         end
         endcase
-    
+
         if (Read)
         begin
             if (ST==SC_CL+SC_RCD+1)
               OUT_VALID    <=    1;
             else if (ST==SC_CL+SC_RCD+mLENGTH+1)
             begin
-                OUT_VALID    <=    0;
-                Read          <=    0;
+                OUT_VALID   <=    0;
+                Read        <=    0;
                 mRD_DONE    <=    1;
             end
         end
         else
           mRD_DONE      <=    0;
-        
+
         if (Write)
         begin
             if (ST==SC_CL-1)
@@ -411,7 +401,7 @@ begin
             else if (ST==SC_CL+SC_RCD+mLENGTH)
             begin
                 Write     <=    0;
-                mWR_DONE<=    1;
+                mWR_DONE  <=    1;
             end
         end
         else
@@ -423,19 +413,19 @@ end
 always@(posedge CLK or negedge RESET_N)
     if (!RESET_N)
     begin
-        rWR1_ADDR          <=    WR1_ADDR;
-        rWR2_ADDR          <=    WR2_ADDR;
-        rRD1_ADDR          <=    RD1_ADDR;
-        rRD2_ADDR          <=    RD2_ADDR;
+        rWR1_ADDR        <=    WR1_ADDR;
+        rWR2_ADDR        <=    WR2_ADDR;
+        rRD1_ADDR        <=    RD1_ADDR;
+        rRD2_ADDR        <=    RD2_ADDR;
         rWR1_MAX_ADDR    <=    WR1_MAX_ADDR;
         rWR2_MAX_ADDR    <=    WR2_MAX_ADDR;
         rRD1_MAX_ADDR    <=    RD1_MAX_ADDR;
         rRD2_MAX_ADDR    <=    RD2_MAX_ADDR;
 
-        rWR1_LENGTH        <=    WR1_LENGTH;
-        rWR2_LENGTH        <=    WR2_LENGTH;
-        rRD1_LENGTH        <=    RD1_LENGTH;
-        rRD2_LENGTH        <=    RD2_LENGTH;
+        rWR1_LENGTH      <=    WR1_LENGTH;
+        rWR2_LENGTH      <=    WR2_LENGTH;
+        rRD1_LENGTH      <=    RD1_LENGTH;
+        rRD2_LENGTH      <=    RD2_LENGTH;
     end
     else
     begin
@@ -477,10 +467,10 @@ always@(posedge CLK or negedge RESET_N)
 always@(posedge CLK or negedge RESET_N)
     if (!RESET_N)
     begin
-        mWR        <=    0;
-        mRD        <=    0;
+        mWR     <=    0;
+        mRD     <=    0;
         mADDR   <=    0;
-        mLENGTH    <=    0;
+        mLENGTH <=    0;
         RD_MASK <=    0; //Peli
         WR_MASK <=    0;
     end
@@ -498,8 +488,8 @@ always@(posedge CLK or negedge RESET_N)
                 mLENGTH    <=    rWR1_LENGTH;
                 WR_MASK    <=    2'b01;
                 RD_MASK    <=    2'b00;
-                mWR          <=    1;
-                mRD          <=    0;
+                mWR        <=    1;
+                mRD        <=    0;
             end
             //    Write Side 2
             else if ( (write_side_fifo_rusedw2 >= rWR2_LENGTH) && (rWR2_LENGTH!=0) )
@@ -508,8 +498,8 @@ always@(posedge CLK or negedge RESET_N)
                 mLENGTH    <=    rWR2_LENGTH;
                 WR_MASK    <=    2'b10;
                 RD_MASK    <=    2'b00;
-                mWR          <=    1;
-                mRD          <=    0;
+                mWR        <=    1;
+                mRD        <=    0;
             end
             //    Read Side 1
             else if ( (read_side_fifo_wusedw1 < rRD1_LENGTH) )
@@ -518,8 +508,8 @@ always@(posedge CLK or negedge RESET_N)
                 mLENGTH    <=    rRD1_LENGTH;
                 WR_MASK    <=    2'b00;
                 RD_MASK    <=    2'b01;
-                mWR          <=    0;
-                mRD          <=    1;                
+                mWR        <=    0;
+                mRD        <=    1;
             end
             //    Read Side 2
             else if ( (read_side_fifo_wusedw2 < rRD2_LENGTH) )
@@ -528,21 +518,21 @@ always@(posedge CLK or negedge RESET_N)
                 mLENGTH    <=    rRD2_LENGTH;
                 WR_MASK    <=    2'b00;
                 RD_MASK    <=    2'b10;
-                mWR          <=    0;
-                mRD          <=    1;
+                mWR        <=    0;
+                mRD        <=    1;
             end
         end
-        
+
         if (mWR_DONE)
         begin
             WR_MASK    <=    0;
-            mWR          <=    0;
+            mWR        <=    0;
         end
-        
+
         if (mRD_DONE)
         begin
             RD_MASK    <=    0;
-            mRD          <=    0;
+            mRD        <=    0;
         end
     end
 
