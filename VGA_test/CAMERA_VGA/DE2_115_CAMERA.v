@@ -435,6 +435,7 @@ output		          		D5M_XCLKIN;
 //=======================================================
 //  REG/WIRE declarations
 //=======================================================
+reg     [23:0]  image_r,image_w [0:127][0:127];
 wire	[15:0]	Read_DATA1;
 wire	[15:0]	Read_DATA2;
 
@@ -763,5 +764,31 @@ Sram_Contoller      sram_control (
 							.o_rd_use(test_rd_use),
 							.o_wr_use(sram_wr_full)
 );
+
+integer i,j;
+always @(*) begin
+	if(test_bit == 0) begin
+		for(i = 0; i < 128; i = i + 1) begin
+			for(j = 0; j < 128; j = j + 1) begin
+				image_w[i][j] = 24'hffffff;
+			end
+		end
+	end
+	else begin
+		for(i = 0; i < 128; i = i + 1) begin
+			for(j = 0; j < 128; j = j + 1) begin
+				image_w[i][j] = 24'b0;
+			end
+		end
+	end
+end
+
+always @(posedge CLOCK_50) begin
+	for(i = 0; i < 128; i = i + 1) begin
+		for(j = 0; j < 128; j = j + 1) begin
+			image_r[i][j] = image_w[i][j];
+		end
+	end
+end
 
 endmodule
