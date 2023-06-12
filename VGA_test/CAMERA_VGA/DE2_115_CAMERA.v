@@ -479,6 +479,8 @@ wire            test_bit;
 wire    [15:0]  test_data;
 wire            test_rd_use;
 wire            sram_wr_full;
+wire    [23:0]  image_data;
+wire            image_valid;
 
 //power on start
 wire             auto_start;
@@ -764,13 +766,26 @@ Sram_Contoller      sram_control (
 							.o_wr_use(sram_wr_full)
 );
 
-RAM_img             ram_img (
-							.aclr(~DLY_RST_2),
-							.address,
-							.clock,
-							.data,
-							.wren,
-							.q
-)
+Image_Loader        image_loader (
+							.i_clk(CLOCK2_50),
+							.data(image_data),
+							.valid(image_valid),
+							.avm_clk(),
+							.avm_rst_n(),
+							.avm_address(),
+							.avm_read(),
+							.avm_readdata(),
+							.avm_write(),
+							.avm_waitrequest()
+);
+
+Image_Controller    image_controller (
+							.i_clk(),
+							.i_rst_n(),
+							.wen(),
+							.i_data(),
+							.i_address(),
+							.o_data()
+);
 
 endmodule

@@ -1,7 +1,7 @@
 module Image_Controller (
-    input  i_clk,
-    input  i_rst_n,
-    input  wen,
+    input         i_clk,
+    input         i_rst_n,
+    input         wen,
     input  [23:0] i_data,
     input  [13:0] i_address,
     output [23:0] o_data
