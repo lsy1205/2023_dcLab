@@ -1,5 +1,5 @@
 Analysis & Synthesis report for DE2_115_CAMERA
-Mon Jun 12 00:17:41 2023
+Mon Jun 12 11:09:44 2023
 Quartus II 64-Bit Version 15.0.0 Build 145 04/22/2015 SJ Full Version
 
 
@@ -94,34 +94,32 @@ Quartus II 64-Bit Version 15.0.0 Build 145 04/22/2015 SJ Full Version
  86. Parameter Settings for User Entity Instance: Sdram_Control:u7
  87. Parameter Settings for User Entity Instance: Sdram_Control:u7|control_interface:u_control_interface
  88. Parameter Settings for User Entity Instance: Sdram_Control:u7|command:u_command
- 89. Parameter Settings for User Entity Instance: Sdram_Control:u7|sdr_data_path:u_sdr_data_path
- 90. Parameter Settings for User Entity Instance: Sdram_Control:u7|Sdram_WR_FIFO:u_write1_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component
- 91. Parameter Settings for User Entity Instance: Sdram_Control:u7|Sdram_WR_FIFO:u_write2_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component
- 92. Parameter Settings for User Entity Instance: Sdram_Control:u7|Sdram_RD_FIFO:u_read1_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component
- 93. Parameter Settings for User Entity Instance: Sdram_Control:u7|Sdram_RD_FIFO:u_read2_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component
- 94. Parameter Settings for User Entity Instance: I2C_CCD_Config:u8
- 95. Parameter Settings for User Entity Instance: VGA_Controller:u1
- 96. Parameter Settings for User Entity Instance: Sram_Contoller:sram_control|SRAM_WR_FIFO:write_fifo|dcfifo:dcfifo_component
- 97. Parameter Settings for User Entity Instance: Sram_Contoller:sram_control|SRAM_RD_FIFO:read_fifo|dcfifo:dcfifo_component
- 98. Parameter Settings for Inferred Entity Instance: Median_Filter:medium_filter|altshift_taps:buffer_r_rtl_0
- 99. Parameter Settings for Inferred Entity Instance: Median_Filter:medium_filter|altshift_taps:buffer_r_rtl_1
-100. altshift_taps Parameter Settings by Entity Instance
-101. altpll Parameter Settings by Entity Instance
-102. dcfifo Parameter Settings by Entity Instance
-103. Port Connectivity Checks: "Sram_Contoller:sram_control"
-104. Port Connectivity Checks: "Image_Generator:img_gen"
-105. Port Connectivity Checks: "VGA_Controller:u1"
-106. Port Connectivity Checks: "I2C_CCD_Config:u8|I2C_Controller:u0"
-107. Port Connectivity Checks: "Sdram_Control:u7|sdr_data_path:u_sdr_data_path"
-108. Port Connectivity Checks: "Sdram_Control:u7|control_interface:u_control_interface"
-109. Port Connectivity Checks: "Sdram_Control:u7"
-110. Port Connectivity Checks: "sdram_pll:u6"
-111. Port Connectivity Checks: "RAW2RGB:u4|Line_Buffer:L1"
-112. Port Connectivity Checks: "RAW2RGB:u4"
-113. Post-Synthesis Netlist Statistics for Top Partition
-114. Elapsed Time Per Partition
-115. Analysis & Synthesis Messages
-116. Analysis & Synthesis Suppressed Messages
+ 89. Parameter Settings for User Entity Instance: Sdram_Control:u7|Sdram_WR_FIFO:u_write1_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component
+ 90. Parameter Settings for User Entity Instance: Sdram_Control:u7|Sdram_WR_FIFO:u_write2_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component
+ 91. Parameter Settings for User Entity Instance: Sdram_Control:u7|Sdram_RD_FIFO:u_read1_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component
+ 92. Parameter Settings for User Entity Instance: Sdram_Control:u7|Sdram_RD_FIFO:u_read2_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component
+ 93. Parameter Settings for User Entity Instance: I2C_CCD_Config:u8
+ 94. Parameter Settings for User Entity Instance: VGA_Controller:u1
+ 95. Parameter Settings for User Entity Instance: Sram_Contoller:sram_control|SRAM_WR_FIFO:write_fifo|dcfifo:dcfifo_component
+ 96. Parameter Settings for User Entity Instance: Sram_Contoller:sram_control|SRAM_RD_FIFO:read_fifo|dcfifo:dcfifo_component
+ 97. Parameter Settings for Inferred Entity Instance: Median_Filter:medium_filter|altshift_taps:buffer_r_rtl_0
+ 98. Parameter Settings for Inferred Entity Instance: Median_Filter:medium_filter|altshift_taps:buffer_r_rtl_1
+ 99. altshift_taps Parameter Settings by Entity Instance
+100. altpll Parameter Settings by Entity Instance
+101. dcfifo Parameter Settings by Entity Instance
+102. Port Connectivity Checks: "Sram_Contoller:sram_control"
+103. Port Connectivity Checks: "Image_Generator:img_gen"
+104. Port Connectivity Checks: "VGA_Controller:u1"
+105. Port Connectivity Checks: "I2C_CCD_Config:u8|I2C_Controller:u0"
+106. Port Connectivity Checks: "Sdram_Control:u7|control_interface:u_control_interface"
+107. Port Connectivity Checks: "Sdram_Control:u7"
+108. Port Connectivity Checks: "sdram_pll:u6"
+109. Port Connectivity Checks: "RAW2RGB:u4|Line_Buffer:L1"
+110. Port Connectivity Checks: "RAW2RGB:u4"
+111. Post-Synthesis Netlist Statistics for Top Partition
+112. Elapsed Time Per Partition
+113. Analysis & Synthesis Messages
+114. Analysis & Synthesis Suppressed Messages
 
 
 
@@ -148,7 +146,7 @@ agreement for further details.
 +----------------------------------------------------------------------------------+
 ; Analysis & Synthesis Summary                                                     ;
 +------------------------------------+---------------------------------------------+
-; Analysis & Synthesis Status        ; Successful - Mon Jun 12 00:17:41 2023       ;
+; Analysis & Synthesis Status        ; Successful - Mon Jun 12 11:09:44 2023       ;
 ; Quartus II 64-Bit Version          ; 15.0.0 Build 145 04/22/2015 SJ Full Version ;
 ; Revision Name                      ; DE2_115_CAMERA                              ;
 ; Top-level Entity Name              ; DE2_115_CAMERA                              ;
@@ -282,7 +280,6 @@ agreement for further details.
 ; v/Line_Buffer.v                   ; yes             ; User Wizard-Generated File   ; C:/Users/user/Documents/2023spring/2023_dcLab/VGA_test/CAMERA_VGA/v/Line_Buffer.v                   ;         ;
 ; Sdram_Control/command.v           ; yes             ; User Verilog HDL File        ; C:/Users/user/Documents/2023spring/2023_dcLab/VGA_test/CAMERA_VGA/Sdram_Control/command.v           ;         ;
 ; Sdram_Control/control_interface.v ; yes             ; User Verilog HDL File        ; C:/Users/user/Documents/2023spring/2023_dcLab/VGA_test/CAMERA_VGA/Sdram_Control/control_interface.v ;         ;
-; Sdram_Control/sdr_data_path.v     ; yes             ; User Verilog HDL File        ; C:/Users/user/Documents/2023spring/2023_dcLab/VGA_test/CAMERA_VGA/Sdram_Control/sdr_data_path.v     ;         ;
 ; Sdram_Control/Sdram_Control.v     ; yes             ; User Verilog HDL File        ; C:/Users/user/Documents/2023spring/2023_dcLab/VGA_test/CAMERA_VGA/Sdram_Control/Sdram_Control.v     ;         ;
 ; Sdram_Control/Sdram_Params.h      ; yes             ; User Unspecified File        ; C:/Users/user/Documents/2023spring/2023_dcLab/VGA_test/CAMERA_VGA/Sdram_Control/Sdram_Params.h      ;         ;
 ; Sdram_Control/Sdram_RD_FIFO.v     ; yes             ; User Wizard-Generated File   ; C:/Users/user/Documents/2023spring/2023_dcLab/VGA_test/CAMERA_VGA/Sdram_Control/Sdram_RD_FIFO.v     ;         ;
@@ -1908,25 +1905,6 @@ Note: In order to hide this table in the UI and the text report file, please set
 Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
 
 
-+---------------------------------------------------------------------------------------------+
-; Parameter Settings for User Entity Instance: Sdram_Control:u7|sdr_data_path:u_sdr_data_path ;
-+----------------+-------+--------------------------------------------------------------------+
-; Parameter Name ; Value ; Type                                                               ;
-+----------------+-------+--------------------------------------------------------------------+
-; INIT_PER       ; 24000 ; Signed Integer                                                     ;
-; REF_PER        ; 1024  ; Signed Integer                                                     ;
-; SC_CL          ; 3     ; Signed Integer                                                     ;
-; SC_RCD         ; 3     ; Signed Integer                                                     ;
-; SC_RRD         ; 7     ; Signed Integer                                                     ;
-; SC_PM          ; 1     ; Signed Integer                                                     ;
-; SC_BL          ; 1     ; Signed Integer                                                     ;
-; SDR_BL         ; 111   ; Unsigned Binary                                                    ;
-; SDR_BT         ; 0     ; Unsigned Binary                                                    ;
-; SDR_CL         ; 011   ; Unsigned Binary                                                    ;
-+----------------+-------+--------------------------------------------------------------------+
-Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
-
-
 +---------------------------------------------------------------------------------------------------------------------------------------------+
 ; Parameter Settings for User Entity Instance: Sdram_Control:u7|Sdram_WR_FIFO:u_write1_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component ;
 +----------------------------------------+-------------+--------------------------------------------------------------------------------------+
@@ -2284,17 +2262,6 @@ Note: In order to hide this table in the UI and the text report file, please set
 +------+-------+----------+----------------------------------------------------------------------------------------------------------------------------------------------+
 
 
-+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-; Port Connectivity Checks: "Sdram_Control:u7|sdr_data_path:u_sdr_data_path"                                                                                            ;
-+------+--------+----------+--------------------------------------------------------------------------------------------------------------------------------------------+
-; Port ; Type   ; Severity ; Details                                                                                                                                    ;
-+------+--------+----------+--------------------------------------------------------------------------------------------------------------------------------------------+
-; DM   ; Input  ; Warning  ; Input port expression (2 bits) is smaller than the input port (4 bits) it drives.  Extra input bit(s) "DM[3..2]" will be connected to GND. ;
-; DM   ; Input  ; Info     ; Stuck at GND                                                                                                                               ;
-; DQM  ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed.                                                        ;
-+------+--------+----------+--------------------------------------------------------------------------------------------------------------------------------------------+
-
-
 +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 ; Port Connectivity Checks: "Sdram_Control:u7|control_interface:u_control_interface"                                                                                         ;
 +----------+-------+----------+----------------------------------------------------------------------------------------------------------------------------------------------+
@@ -2464,7 +2431,7 @@ Note: In order to hide this table in the UI and the text report file, please set
 Info: *******************************************************************
 Info: Running Quartus II 64-Bit Analysis & Synthesis
     Info: Version 15.0.0 Build 145 04/22/2015 SJ Full Version
-    Info: Processing started: Mon Jun 12 00:17:23 2023
+    Info: Processing started: Mon Jun 12 11:06:39 2023
 Info: Command: quartus_map --read_settings_files=on --write_settings_files=off DE2_115_CAMERA -c DE2_115_CAMERA
 Info (11104): Parallel Compilation has detected 12 hyper-threaded processors. However, the extra hyper-threaded processors will not be used by default. Parallel Compilation will use 6 of the 6 physical processors detected instead.
 Info (12021): Found 1 design units, including 1 entities, in source file v/sram_controller.sv
@@ -2513,20 +2480,21 @@ Info (12021): Found 1 design units, including 1 entities, in source file v/sdram
     Info (12023): Found entity 1: sdram_pll
 Warning (12019): Can't analyze file -- file v/touch_tcon.v is missing
 Warning (12019): Can't analyze file -- file v/VGA_Param.v is missing
-Warning (10275): Verilog HDL Module Instantiation warning at DE2_115_CAMERA.v(719): ignored dangling comma in List of Port Connections
-Warning (10275): Verilog HDL Module Instantiation warning at DE2_115_CAMERA.v(741): ignored dangling comma in List of Port Connections
+Warning (10275): Verilog HDL Module Instantiation warning at DE2_115_CAMERA.v(720): ignored dangling comma in List of Port Connections
+Warning (10275): Verilog HDL Module Instantiation warning at DE2_115_CAMERA.v(742): ignored dangling comma in List of Port Connections
 Info (12021): Found 1 design units, including 1 entities, in source file de2_115_camera.v
     Info (12023): Found entity 1: DE2_115_CAMERA
 Info (12021): Found 1 design units, including 1 entities, in source file sram_rd_fifo.v
     Info (12023): Found entity 1: SRAM_RD_FIFO
 Info (12021): Found 1 design units, including 1 entities, in source file sram_wr_fifo.v
     Info (12023): Found entity 1: SRAM_WR_FIFO
-Warning (10236): Verilog HDL Implicit Net warning at DE2_115_CAMERA.v(491): created implicit net for "VGA_CTRL_CLK"
+Warning (10236): Verilog HDL Implicit Net warning at DE2_115_CAMERA.v(492): created implicit net for "VGA_CTRL_CLK"
 Info (12127): Elaborating entity "DE2_115_CAMERA" for the top level hierarchy
-Warning (10036): Verilog HDL or VHDL warning at DE2_115_CAMERA.v(468): object "write_1" assigned a value but never read
-Warning (10036): Verilog HDL or VHDL warning at DE2_115_CAMERA.v(468): object "write_2" assigned a value but never read
-Warning (10036): Verilog HDL or VHDL warning at DE2_115_CAMERA.v(477): object "test" assigned a value but never read
-Warning (10858): Verilog HDL warning at DE2_115_CAMERA.v(478): object test_bit used but never assigned
+Warning (10036): Verilog HDL or VHDL warning at DE2_115_CAMERA.v(438): object "image_r" assigned a value but never read
+Warning (10036): Verilog HDL or VHDL warning at DE2_115_CAMERA.v(469): object "write_1" assigned a value but never read
+Warning (10036): Verilog HDL or VHDL warning at DE2_115_CAMERA.v(469): object "write_2" assigned a value but never read
+Warning (10036): Verilog HDL or VHDL warning at DE2_115_CAMERA.v(478): object "test" assigned a value but never read
+Warning (10858): Verilog HDL warning at DE2_115_CAMERA.v(479): object test_bit used but never assigned
 Warning (10034): Output port "LEDG[8..3]" at DE2_115_CAMERA.v(257) has no driver
 Warning (10034): Output port "ENET0_TX_DATA" at DE2_115_CAMERA.v(345) has no driver
 Warning (10034): Output port "ENET1_TX_DATA" at DE2_115_CAMERA.v(364) has no driver
@@ -2565,6 +2533,8 @@ Warning (10034): Output port "FL_OE_N" at DE2_115_CAMERA.v(416) has no driver
 Warning (10034): Output port "FL_RST_N" at DE2_115_CAMERA.v(417) has no driver
 Warning (10034): Output port "FL_WE_N" at DE2_115_CAMERA.v(419) has no driver
 Warning (10034): Output port "FL_WP_N" at DE2_115_CAMERA.v(420) has no driver
+Info (10008): Verilog HDL or VHDL information: EDA Netlist Writer cannot regroup multidimensional array "image_r" into its bus
+Info (10008): Verilog HDL or VHDL information: EDA Netlist Writer cannot regroup multidimensional array "image_w" into its bus
 Info (12128): Elaborating entity "Reset_Delay" for hierarchy "Reset_Delay:u2"
 Info (12128): Elaborating entity "CCD_Capture" for hierarchy "CCD_Capture:u3"
 Warning (10036): Verilog HDL or VHDL warning at CCD_Capture.v(166): object "ifval_fedge" assigned a value but never read
@@ -2820,8 +2790,6 @@ Info (12128): Elaborating entity "command" for hierarchy "Sdram_Control:u7|comma
 Warning (10240): Verilog HDL Always Construct warning at command.v(275): inferring latch(es) for variable "oe_shift", which holds its previous value in one or more paths through the always construct
 Warning (10240): Verilog HDL Always Construct warning at command.v(275): inferring latch(es) for variable "oe1", which holds its previous value in one or more paths through the always construct
 Warning (10240): Verilog HDL Always Construct warning at command.v(275): inferring latch(es) for variable "oe2", which holds its previous value in one or more paths through the always construct
-Info (12128): Elaborating entity "sdr_data_path" for hierarchy "Sdram_Control:u7|sdr_data_path:u_sdr_data_path"
-Warning (10230): Verilog HDL assignment warning at sdr_data_path.v(68): truncated value with size 32 to match size of target (4)
 Info (12128): Elaborating entity "Sdram_WR_FIFO" for hierarchy "Sdram_Control:u7|Sdram_WR_FIFO:u_write1_fifo"
 Info (12128): Elaborating entity "dcfifo_mixed_widths" for hierarchy "Sdram_Control:u7|Sdram_WR_FIFO:u_write1_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component"
 Info (12130): Elaborated megafunction instantiation "Sdram_Control:u7|Sdram_WR_FIFO:u_write1_fifo|dcfifo_mixed_widths:dcfifo_mixed_widths_component"
@@ -3080,7 +3048,7 @@ Info (12021): Found 1 design units, including 1 entities, in source file db/cntr
     Info (12023): Found entity 1: cntr_9uf
 Info (12021): Found 1 design units, including 1 entities, in source file db/cntr_vdh.tdf
     Info (12023): Found entity 1: cntr_vdh
-Warning (12241): 6 hierarchies have connectivity warnings - see the Connectivity Checks report folder
+Warning (12241): 5 hierarchies have connectivity warnings - see the Connectivity Checks report folder
 Warning (13039): The following bidirectional pins have no drivers
     Warning (13040): bidirectional pin "EX_IO[0]" has no driver
     Warning (13040): bidirectional pin "EX_IO[1]" has no driver
@@ -3285,10 +3253,10 @@ Info (21057): Implemented 3457 device resources after synthesis - the final reso
     Info (21064): Implemented 111 RAM segments
     Info (21065): Implemented 1 PLLs
 Info: Quartus II 64-Bit Analysis & Synthesis was successful. 0 errors, 319 warnings
-    Info: Peak virtual memory: 4908 megabytes
-    Info: Processing ended: Mon Jun 12 00:17:41 2023
-    Info: Elapsed time: 00:00:18
-    Info: Total CPU time (on all processors): 00:00:25
+    Info: Peak virtual memory: 5606 megabytes
+    Info: Processing ended: Mon Jun 12 11:09:44 2023
+    Info: Elapsed time: 00:03:05
+    Info: Total CPU time (on all processors): 00:03:08
 
 
 +------------------------------------------+
