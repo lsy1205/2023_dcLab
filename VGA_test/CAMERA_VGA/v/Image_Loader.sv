@@ -74,7 +74,7 @@ always_comb begin
             
             if(!avm_waitrequest) begin
                 if(receive_num_r == 0) begin
-                    data_w[7:0] = avm_readdata[7:0];
+                    data_w[23:16] = avm_readdata[7:0];
                     receive_num_w = receive_num_r + 1;
                 end
                 else if(receive_num_r == 1) begin
@@ -82,7 +82,7 @@ always_comb begin
                     receive_num_w = receive_num_r + 1;
                 end
                 else begin
-                    data_w[23:16] = avm_readdata[7:0];
+                    data_w[7:0] = avm_readdata[7:0];
                     receive_num_w = 0;
                     valid_w = 1;
                 end

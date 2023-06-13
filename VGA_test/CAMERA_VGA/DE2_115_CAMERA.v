@@ -484,6 +484,11 @@ wire            loader_valid;
 wire    [23:0]  image_data;
 wire    [13:0]  image_addr;
 wire            test_line;
+wire            test_line2;
+wire            test_line3;
+wire            gen_read;
+wire            frame_valid;
+reg             led1, led2;
 
 //power on start
 wire             auto_start;
@@ -494,7 +499,11 @@ wire             auto_start;
 assign	D5M_TRIGGER	=	1'b1;  // tRIGGER
 assign	D5M_RESET_N	=	DLY_RST_1;
 assign  VGA_CTRL_CLK = ~VGA_CLK;
-assign  LEDR        = image_addr;
+assign  LEDR[13:0]        = image_addr;
+// assign  LEDR[15]    = test_line2;
+// assign  LEDR[16]    = test_line3;
+assign  LEDR[15]    = led1;
+assign  LEDR[16]    = led2;
 // assign	LEDR		=	SW;
 // assign	LEDG		=	Y_Cont;
 assign  LEDG[0] = test_data[0];
@@ -602,11 +611,11 @@ Sdram_Control	u7	(	//	HOST Side
 							.CLK(sdram_ctrl_clk),
 
 							//	FIFO Write Side 1
-							// .WR1_DATA({1'b0,sCCD_G[11:7],sCCD_B[11:2]}),
-							.WR1_DATA({1'b0, gen_data[19:15], gen_data[9:0]}), // {1'b0,sCCD_G[11:7],sCCD_B[11:2]}
+							.WR1_DATA({1'b0,sCCD_G[11:7],sCCD_B[11:2]}),
+							// .WR1_DATA({1'b0, gen_data[19:15], gen_data[9:0]}), // {1'b0,sCCD_G[11:7],sCCD_B[11:2]}
 							// .WR1_DATA(write_1),
-							.WR1(gen_valid),
-							// .WR1(sCCD_DVAL),
+							// .WR1(gen_valid),
+							.WR1(sCCD_DVAL),
 							// .WR1(medi_val),
 							.WR1_ADDR(0),
 `ifdef VGA_640x480p60
@@ -620,11 +629,11 @@ Sdram_Control	u7	(	//	HOST Side
 							.WR1_CLK(D5M_PIXLCLK),
 
 							//	FIFO Write Side 2
-							// .WR2_DATA({1'b0,sCCD_G[6:2],sCCD_R[11:2]}),
-							.WR2_DATA({1'b0, gen_data[14:10], gen_data[29:20]}), // {1'b0,sCCD_G[6:2],sCCD_R[11:2]}
+							.WR2_DATA({1'b0,sCCD_G[6:2],sCCD_R[11:2]}),
+							// .WR2_DATA({1'b0, gen_data[14:10], gen_data[29:20]}), // {1'b0,sCCD_G[6:2],sCCD_R[11:2]}
 							// .WR2_DATA(write_2),
-							.WR2(gen_valid),
-							// .WR2(sCCD_DVAL),
+							// .WR2(gen_valid),
+							.WR2(sCCD_DVAL),
 							// .WR2(medi_val),
 							.WR2_ADDR(23'h100000),
 `ifdef VGA_640x480p60
@@ -639,31 +648,37 @@ Sdram_Control	u7	(	//	HOST Side
 
 							//	FIFO Read Side 1
 						    .RD1_DATA(Read_DATA1),
-				        	.RD1(Read),
+				        	// .RD1(Read),
+				        	.RD1(gen_read),
 				        	.RD1_ADDR(0),
 `ifdef VGA_640x480p60
 						    .RD1_MAX_ADDR(640*480/2),
 							.RD1_LENGTH(8'h50),
 `else
 							.RD1_MAX_ADDR(800*600/2),
-							.RD1_LENGTH(8'h80),
+							// .RD1_LENGTH(8'h20),
+							.RD1_LENGTH(8'h40),
 `endif
 							.RD1_LOAD(!DLY_RST_0),
-							.RD1_CLK(~VGA_CTRL_CLK),
+							// .RD1_CLK(~VGA_CTRL_CLK),
+							.RD1_CLK(CLOCK2_50),
 							
 							//	FIFO Read Side 2
 						    .RD2_DATA(Read_DATA2),
-							.RD2(Read),
+				        	// .RD2(Read),
+							.RD2(gen_read),
 							.RD2_ADDR(23'h100000),
 `ifdef VGA_640x480p60
 						    .RD2_MAX_ADDR(23'h100000+640*480/2),
 							.RD2_LENGTH(8'h50),
 `else
 							.RD2_MAX_ADDR(23'h100000+800*600/2),
-							.RD2_LENGTH(8'h80),
+							// .RD2_LENGTH(8'h20),
+							.RD2_LENGTH(8'h40),
 `endif
 				        	.RD2_LOAD(!DLY_RST_0),
-							.RD2_CLK(~VGA_CTRL_CLK),
+							// .RD2_CLK(~VGA_CTRL_CLK),
+							.RD2_CLK(CLOCK2_50),
 							
 							//	SDRAM Side
 						    .SA(DRAM_ADDR),
@@ -674,7 +689,9 @@ Sdram_Control	u7	(	//	HOST Side
 							.CAS_N(DRAM_CAS_N),
 							.WE_N(DRAM_WE_N),
 							.DQ(DRAM_DQ),
-							.DQM(DRAM_DQM)
+							.DQM(DRAM_DQM),
+							.test1(test_line2),
+							.test2(test_line3)
 						);
 //D5M I2C control
 I2C_CCD_Config 		u8	(	//	Host Side
@@ -711,9 +728,8 @@ VGA_Controller		u1	(	//	Host Side
 						);
 
 Image_Generator     img_gen (
-							.i_clk(D5M_PIXLCLK),
+							.i_clk(CLOCK2_50),
 							.i_rst_n(DLY_RST_1),
-							.i_valid(sCCD_DVAL),
 							.i_enable(corner_found),
 							.i_pause(sram_wr_full),
 							.i_addr_valid(corner_val),
@@ -721,11 +737,14 @@ Image_Generator     img_gen (
 							.i_ur_addr(ur_addr),
 							.i_dl_addr(dl_addr),
 							.i_dr_addr(dr_addr),
-							.i_cam_data({2'b0, sCCD_R[11:2], sCCD_G[11:2], sCCD_B[11:2]}),
+							.o_req_cam_data(gen_read),
+							.i_cam_data({2'b0, Read_DATA2[9:0], Read_DATA1[14:10], Read_DATA2[14:10], Read_DATA1[9:0]}),
 							.o_vaild(gen_valid),
 							.o_data(gen_data),
 							.i_img_data(image_data),
-							.o_req_addr(image_addr)
+							.o_req_addr(image_addr),
+
+							.frame_valid(frame_valid)
 );
 
 Median_Filter       medium_filter (
@@ -756,7 +775,7 @@ Sram_Contoller      sram_control (
 
 							.wr_data({gen_data[29:25], gen_data[19:14], gen_data[9:5]}),
 							.wr_request(gen_valid),
-							.wr_clk(D5M_PIXLCLK),
+							.wr_clk(CLOCK2_50),
 
 							.rd_data(test_data),
 							.rd_request(Read),
@@ -794,7 +813,7 @@ Image_Controller    image_controller (
 // );
 
 test                 test_0 (
-		                .clk_clk(CLOCK3_50),                         //                        clk.clk
+		                .clk_clk(CLOCK2_50),                         //                        clk.clk
 		                .reset_reset_n(DLY_RST_2),                   //                      reset.reset_n
 		                .test_loader_0_conduit_end_name(),  //  test_loader_0_conduit_end.name
 		                .test_loader_0_conduit_end_data(loader_data),  //                           .data
@@ -821,4 +840,20 @@ test                 test_0 (
 // 	.H(),
 // 	.o_valid()
 // );
+
+always @(*) begin
+	led1 = 0;
+	led2 = 0;
+	if (test_line3 || led2) begin
+		led2 = 1;
+	end
+	if (test_line2 || led1) begin
+		led1 = 1;
+	end
+	if (frame_valid) begin
+		led1 = 0;
+		led2 = 0;
+	end
+end
+
 endmodule

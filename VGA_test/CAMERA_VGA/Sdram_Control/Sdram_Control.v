@@ -79,9 +79,15 @@ module Sdram_Control (
     CAS_N,
     WE_N,
     DQ,
-    DQM
+    DQM,
+    test1,
+    test2
 );
 
+output test1;
+output test2;
+assign test1 = read_side_fifo_wusedw1 < 10;
+assign test2 = read_side_fifo_wusedw2 < 10;
 
 //=======================================================
 //  PARAMETER declarations
@@ -196,8 +202,8 @@ reg                             OUT_VALID;                    //Output data requ
 reg                             IN_REQ;                            //Input    data request to write side fifo
 wire           [7:0]            write_side_fifo_rusedw1;
 wire           [7:0]            write_side_fifo_rusedw2;
-wire           [7:0]            read_side_fifo_wusedw1;
-wire           [7:0]            read_side_fifo_wusedw2;
+wire           [8:0]            read_side_fifo_wusedw1;
+wire           [8:0]            read_side_fifo_wusedw2;
 //    DRAM Internal Control
 wire    [`ASIZE-1:0]            saddr;
 wire                            load_mode;
@@ -502,7 +508,7 @@ always@(posedge CLK or negedge RESET_N)
                 mRD        <=    0;
             end
             //    Read Side 1
-            else if ( (read_side_fifo_wusedw1 < rRD1_LENGTH) )
+            else if ( (read_side_fifo_wusedw1 < 512 - rRD1_LENGTH) )
             begin
                 mADDR      <=    rRD1_ADDR;
                 mLENGTH    <=    rRD1_LENGTH;
@@ -512,7 +518,7 @@ always@(posedge CLK or negedge RESET_N)
                 mRD        <=    1;
             end
             //    Read Side 2
-            else if ( (read_side_fifo_wusedw2 < rRD2_LENGTH) )
+            else if ( (read_side_fifo_wusedw2 < 512 - rRD2_LENGTH) )
             begin
                 mADDR      <=    rRD2_ADDR;
                 mLENGTH    <=    rRD2_LENGTH;
