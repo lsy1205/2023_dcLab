@@ -32,6 +32,11 @@ GetPerspective M0 (
     .i_ur_addr({10'd698, 10'd11}),
     .i_dr_addr({10'd788, 10'd520}),
     .i_dl_addr({10'd40, 10'd499}),
+    
+    // .i_ul_addr({10'd120, 10'd20}), // first 10 bit is x, last is y
+    // .i_dl_addr({10'd23, 10'd523}),
+    // .i_dr_addr({10'd677, 10'd499}),
+    // .i_ur_addr({10'd499, 10'd18}),
 
     .A(A),
     .B(B),

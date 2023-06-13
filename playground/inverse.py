@@ -18,7 +18,7 @@ mask = np.array(
 # p = np.array([(200,3), (23, 45), (40, 250), (250, 180)])
 p = np.array([(23, 63), (40, 499), (788, 520), (698, 11)])
 # p_temp = np.array([(200, 3, 1), (23, 45, 1), (40, 250, 1), (250, 180, 1)])
-p_temp = np.array([(23, 63, 1), (40, 499, 1), (788, 520, 1), (698, 11, 1)])
+p_temp = np.array([(300, 300, 1), (40, 499, 1), (788, 520, 1), (698, 11, 1)])
 q = np.array([(0, 0), (0, 99), (99, 99), (99, 0)])
 
 M = np.array(
@@ -103,9 +103,7 @@ M[5] = M[5] * factor // M[5][3]
 M[6] = M[6] - M[5] * M[6][3] // factor
 mask[3][0] = mask[6][3] = 0
 M *= mask
-print(
-    (M).astype(int),
-)
+# print((M).astype(int))
 
 # 3rd
 M[6] = M[6] * factor // M[6][6]
@@ -146,12 +144,16 @@ T = np.array(
 
 print(T.astype(int))
 # print((T // factor).astype(int))
-# q1 = (T @ p_temp[0])
-# q2 = (T @ p_temp[1])
-# q3 = (T @ p_temp[2])
-# q4 = (T @ p_temp[3])
+q1 = T @ p_temp[0]
+q2 = T @ p_temp[1]
+q3 = T @ p_temp[2]
+q4 = T @ p_temp[3]
 
 # print(q1 // q1[2])
 # print(q2 // q2[2])
 # print(q3 // q3[2])
 # print(q4 // q4[2])
+print(q1)
+print(q2)
+print(q3)
+print(q4)
