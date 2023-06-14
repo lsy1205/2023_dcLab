@@ -1,6 +1,6 @@
 import numpy as np
 
-factor = 8192
+factor = 1 << 13
 
 mask = np.array(
     [
@@ -16,9 +16,10 @@ mask = np.array(
 )
 
 # p = np.array([(200,3), (23, 45), (40, 250), (250, 180)])
-p = np.array([(23, 63), (40, 499), (788, 520), (698, 11)])
+# p = np.array([(23, 63), (450, 439), (788, 520), (691, 440)])
+p = np.array([(304, 210, 1), (195, 547, 1), (712, 234, 1), (762, 39, 1)])
 # p_temp = np.array([(200, 3, 1), (23, 45, 1), (40, 250, 1), (250, 180, 1)])
-p_temp = np.array([(300, 300, 1), (40, 499, 1), (788, 520, 1), (698, 11, 1)])
+# p_temp = np.array([(300, 300, 1), (40, 499, 1), (788, 520, 1), (698, 11, 1)])
 q = np.array([(0, 0), (0, 99), (99, 99), (99, 0)])
 
 M = np.array(
@@ -142,18 +143,20 @@ T = np.array(
     dtype=np.longlong,
 )
 
+T //= (factor >> 13)
+
 print(T.astype(int))
 # print((T // factor).astype(int))
-q1 = T @ p_temp[0]
-q2 = T @ p_temp[1]
-q3 = T @ p_temp[2]
-q4 = T @ p_temp[3]
+q1 = T @ p[0]
+q2 = T @ p[1]
+q3 = T @ p[2]
+q4 = T @ p[3]
 
-# print(q1 // q1[2])
-# print(q2 // q2[2])
-# print(q3 // q3[2])
-# print(q4 // q4[2])
-print(q1)
-print(q2)
-print(q3)
-print(q4)
+print(q1 // q1[2])
+print(q2 // q2[2])
+print(q3 // q3[2])
+print(q4 // q4[2])
+# print(q1)
+# print(q2)
+# print(q3)
+# print(q4)

@@ -822,24 +822,6 @@ test                 test_0 (
 		                .uart_0_external_connection_txd(UART_TXD)   //                           .txd
 	);
 
-// GetPerspective get_perspective (
-//     .i_clk(D5M_PIXLCLK),
-//     .i_rst_n(DLY_RST_1),
-//     .i_start(corner_valid && corner_found),
-// 	.i_ul_addr({ul_addr[9:0], ul_addr[19:10]}), // first 10 bit is x, last is y()
-// 	.i_ur_addr({ur_addr[9:0], ur_addr[19:10]}),
-// 	.i_dr_addr({dr_addr[9:0], dr_addr[19:10]}),
-// 	.i_dl_addr({dl_addr[9:0], dl_addr[19:10]}),
-// 	.A(),
-// 	.B(),
-// 	.C(),
-// 	.D(),
-// 	.E(),
-// 	.F(),
-// 	.G(),
-// 	.H(),
-// 	.o_valid()
-// );
 
 always @(*) begin
 	led1 = 0;

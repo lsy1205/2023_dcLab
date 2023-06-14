@@ -32,56 +32,49 @@
 `define M78 31
 
 module GetPerspective #(
-    parameter INT_W  = 20,
-    parameter FRAC_W = 13
+    parameter FRAC_W = 14
 ) (
-    input        i_clk,
-    input        i_rst_n,
-    input        i_start,
-    input [19:0] i_ul_addr, // first 10 bit is x, last is y
-    input [19:0] i_ur_addr,
-    input [19:0] i_dr_addr,
-    input [19:0] i_dl_addr,
+    input         i_clk,
+    input         i_rst_n,
+    input         i_start,
+    input  [19:0] i_ul_addr,    // {x, y}
+    input  [19:0] i_ur_addr,    // {x, y}
+    input  [19:0] i_dr_addr,    // {x, y}
+    input  [19:0] i_dl_addr,    // {x, y}
 
-    output [INT_W + FRAC_W - 1:0] A,
-    output [INT_W + FRAC_W - 1:0] B,
-    output [INT_W + FRAC_W - 1:0] C,
-    output [INT_W + FRAC_W - 1:0] D,
-    output [INT_W + FRAC_W - 1:0] E,
-    output [INT_W + FRAC_W - 1:0] F,
-    output [INT_W + FRAC_W - 1:0] G,
-    output [INT_W + FRAC_W - 1:0] H,
-    output                        o_valid
+    output [35:0] A,
+    output [35:0] B,
+    output [35:0] C,
+    output [35:0] D,
+    output [35:0] E,
+    output [35:0] F,
+    output [35:0] G,
+    output [35:0] H,
+    output        o_valid
 );
 
-localparam S_IDLE = 0;
-localparam S_CALC = 1;
+localparam q1x = 7'd0;
+localparam q1y = 7'd0;
+localparam q2x = 7'd0;
+localparam q2y = 7'd127;
+localparam q3x = 7'd127;
+localparam q3y = 7'd127;
+localparam q4x = 7'd127;
+localparam q4y = 7'd0;
 
-localparam WIDTH = INT_W + FRAC_W;
+logic [        5:0] counter_r, counter_w;
+logic [35:0] M_r [0:31], M_w [0:31];
 
-localparam q1x = 7'd00;
-localparam q1y = 7'd00;
-localparam q2x = 7'd00;
-localparam q2y = 7'd99;
-localparam q3x = 7'd99;
-localparam q3y = 7'd99;
-localparam q4x = 7'd99;
-localparam q4y = 7'd00;
+logic [35:0] mul0_a, mul1_a, mul2_a, mul3_a, mul4_a, mul5_a;
+logic [35:0] mul0_b, mul1_b, mul2_b, mul3_b, mul4_b, mul5_b;
+logic [35:0] mul0_ans, mul1_ans, mul2_ans, mul3_ans, mul4_ans, mul5_ans;
 
-logic               state_r, state_w;
-logic [        2:0] counter_r, counter_w;
-logic [WIDTH - 1:0] M_r [0:31];
-logic [WIDTH - 1:0] M_w [0:31];
-logic [INT_W - 1:0] temp0, temp1, temp2, temp3, temp4, temp5, temp6, temp7;
-logic [WIDTH - 1:0] mul0_a, mul0_b, mul1_a, mul1_b, mul2_a, mul2_b;
-logic [WIDTH - 1:0] mul3_a, mul3_b, mul4_a, mul4_b, mul5_a, mul5_b;
-logic [WIDTH - 1:0] div0_a, div0_b, div1_a, div1_b, div2_a, div2_b;
-logic [WIDTH - 1:0] mul0_ans, mul1_ans, mul2_ans;
-logic [WIDTH - 1:0] mul3_ans, mul4_ans, mul5_ans;
-logic [WIDTH - 1:0] div0_ans, div1_ans, div2_ans;
+logic [35:0] div0_a, div1_a, div2_a;
+logic [35:0] div0_b, div1_b, div2_b;
+logic [35:0] div0_ans, div1_ans, div2_ans;
+
+logic [35:0] matrix_r [0:7], matrix_w [0:7];
 logic               valid_r, valid_w;
-logic [WIDTH - 1:0] matrix_r [0:7];
-logic [WIDTH - 1:0] matrix_w [0:7];
 
 assign o_valid = valid_r;
 assign A = matrix_r[0];
@@ -93,189 +86,140 @@ assign F = matrix_r[5];
 assign G = matrix_r[6];
 assign H = matrix_r[7];
 
-mul #(
+MUL #(
     .INT_W(INT_W),
     .FRAC_W(FRAC_W)
-) mul0 (
+) mul_0 (
     .A(mul0_a),
     .B(mul0_b),
     .ANS(mul0_ans)
 );
-mul #(
+MUL #(
     .INT_W(INT_W),
     .FRAC_W(FRAC_W)
-) mul1 (
+) mul_1 (
     .A(mul1_a),
     .B(mul1_b),
     .ANS(mul1_ans)
 );
-mul #(
+MUL #(
     .INT_W(INT_W),
     .FRAC_W(FRAC_W)
-) mul2 (
+) mul_2 (
     .A(mul2_a),
     .B(mul2_b),
     .ANS(mul2_ans)
 );
-mul #(
+MUL #(
     .INT_W(INT_W),
     .FRAC_W(FRAC_W)
-) mul3 (
+) mul_3 (
     .A(mul3_a),
     .B(mul3_b),
     .ANS(mul3_ans)
 );
-mul #(
+MUL #(
     .INT_W(INT_W),
     .FRAC_W(FRAC_W)
-) mul4 (
+) mul_4 (
     .A(mul4_a),
     .B(mul4_b),
     .ANS(mul4_ans)
 );
-mul #(
+MUL #(
     .INT_W(INT_W),
     .FRAC_W(FRAC_W)
-) mul5 (
+) mul_5 (
     .A(mul5_a),
     .B(mul5_b),
     .ANS(mul5_ans)
 );
 
-div #(
+div1 #(
     .INT_W(INT_W),
     .FRAC_W(FRAC_W)
-) div0 (
+) div_0 (
     .A(div0_a),
     .B(div0_b),
     .ANS(div0_ans)
 );
-div #(
+div1 #(
     .INT_W(INT_W),
     .FRAC_W(FRAC_W)
-) div1 (
+) div_1 (
     .A(div1_a),
     .B(div1_b),
     .ANS(div1_ans)
 );
-div #(
+div1 #(
     .INT_W(INT_W),
     .FRAC_W(FRAC_W)
-) div2 (
+) div_2 (
     .A(div2_a),
     .B(div2_b),
     .ANS(div2_ans)
 );
 
-always_comb begin
-    state_w = state_r;
-    case (state_r)
-        S_IDLE: begin
-            if (i_start) begin
-                state_w = S_CALC;
-            end
-            else begin
-                state_w = S_IDLE;
-            end
-        end 
-        S_CALC: begin
-            if (valid_w) begin
-                state_w = S_IDLE;
-            end
-            else begin
-                state_w = S_CALC;
-            end
-        end
-        default: begin
-            state_w = S_IDLE;
-        end
-    endcase
-end
 
 always_comb begin
-    valid_w = 0;
+    counter_w = counter_r;
     for (integer i = 0;i < 32;i = i + 1) begin
         M_w[i] = M_r[i];
     end
     for (integer i = 0;i < 8;i = i + 1) begin
-        matrix_w = matrix_r;
+        matrix_w[i] = matrix_r[i];
     end
-    temp0 = 0;
-    temp1 = 0;
-    temp2 = 0;
-    temp3 = 0;
-    temp4 = 0;
-    temp5 = 0;
-    temp6 = 0;
-    temp7 = 0;
-    mul0_a = 0;
-    mul0_b = 0;
-    mul1_a = 0;
-    mul1_b = 0;
-    mul2_a = 0;
-    mul2_b = 0;
-    mul3_a = 0;
-    mul3_b = 0;
-    mul4_a = 0;
-    mul4_b = 0;
-    mul5_a = 0;
-    mul5_b = 0;
-    div0_a = 0;
-    div0_b = 0;
-    div1_a = 0;
-    div1_b = 0;
-    div2_a = 0;
-    div2_b = 0;
-    counter_w = counter_r;
-    case (state_r)
-        S_IDLE: begin
+    mul0_a = 0; mul0_b = 0;
+    mul1_a = 0; mul1_b = 0;
+    mul2_a = 0; mul2_b = 0;
+    mul3_a = 0; mul3_b = 0;
+    mul4_a = 0; mul4_b = 0;
+    mul5_a = 0; mul5_b = 0;
+    div0_a = 0; div0_b = 0;
+    div1_a = 0; div1_b = 0;
+    div2_a = 0; div2_b = 0;
+    valid_w = 0;
+
+    case (counter_r)
+        6'd0: begin
             if (i_start) begin
-                M_w[`M00][WIDTH - 1:FRAC_W] = i_ul_addr[19:10];
-                M_w[`M01][WIDTH - 1:FRAC_W] = i_ul_addr[ 9: 0];
-                M_w[`M10][WIDTH - 1:FRAC_W] = i_dl_addr[19:10] - i_ul_addr[19:10];
-                M_w[`M11][WIDTH - 1:FRAC_W] = i_dl_addr[ 9: 0] - i_ul_addr[ 9: 0];
-                M_w[`M20][WIDTH - 1:FRAC_W] = i_dr_addr[19:10] - i_ul_addr[19:10];
-                M_w[`M21][WIDTH - 1:FRAC_W] = i_dr_addr[ 9: 0] - i_ul_addr[ 9: 0];
-                M_w[`M30][WIDTH - 1:FRAC_W] = i_ur_addr[19:10] - i_ul_addr[19:10];
-                M_w[`M31][WIDTH - 1:FRAC_W] = i_ur_addr[ 9: 0] - i_ul_addr[ 9: 0];
-                temp0    = (i_dr_addr[19:10] << 1) + i_dr_addr[19:10];
-                M_w[`M26][WIDTH - 1:FRAC_W] = -((temp0 << 5) + temp0);
-                temp1    = (i_dr_addr[9:0] << 1) + i_dr_addr[9:0];
-                M_w[`M27][WIDTH - 1:FRAC_W] = -((temp1 << 5) + temp1);
-                temp2    = (i_ur_addr[19:10] << 1) + i_ur_addr[19:10];
-                M_w[`M36][WIDTH - 1:FRAC_W] = -((temp2 << 5) + temp2);
-                temp3    = (i_ur_addr[9:0] << 1) + i_ur_addr[9:0];
-                M_w[`M37][WIDTH - 1:FRAC_W] = -((temp3 << 5) + temp3);
-                M_w[`M43][WIDTH - 1:FRAC_W] = i_ul_addr[19:10];
-                M_w[`M44][WIDTH - 1:FRAC_W] = i_ul_addr[ 9: 0];
-                M_w[`M53][WIDTH - 1:FRAC_W] = i_dl_addr[19:10] - i_ul_addr[19:10];
-                M_w[`M54][WIDTH - 1:FRAC_W] = i_dl_addr[ 9: 0] - i_ul_addr[ 9: 0];
-                M_w[`M63][WIDTH - 1:FRAC_W] = i_dr_addr[19:10] - i_ul_addr[19:10];
-                M_w[`M64][WIDTH - 1:FRAC_W] = i_dr_addr[ 9: 0] - i_ul_addr[ 9: 0];
-                M_w[`M73][WIDTH - 1:FRAC_W] = i_ur_addr[19:10] - i_ul_addr[19:10];
-                M_w[`M74][WIDTH - 1:FRAC_W] = i_ur_addr[ 9: 0] - i_ul_addr[ 9: 0];
-                temp4    = (i_dl_addr[19:10] << 1) + i_dl_addr[19:10];
-                M_w[`M56][WIDTH - 1:FRAC_W] = -((temp4 << 5) + temp4);
-                temp5    = (i_dl_addr[9:0] << 1) + i_dl_addr[9:0];
-                M_w[`M57][WIDTH - 1:FRAC_W] = -((temp5 << 5) + temp5);
-                temp6    = (i_dr_addr[19:10] << 1) + i_dr_addr[19:10];
-                M_w[`M66][WIDTH - 1:FRAC_W] = -((temp6 << 5) + temp6);
-                temp7    = (i_dr_addr[9:0] << 1) + i_dr_addr[9:0];
-                M_w[`M67][WIDTH - 1:FRAC_W] = -((temp7 << 5) + temp7);
-                M_w[`M08][WIDTH - 1:FRAC_W] = q1x;
-                M_w[`M18][WIDTH - 1:FRAC_W] = q2x - q1x;
-                M_w[`M28][WIDTH - 1:FRAC_W] = q3x - q1x;
-                M_w[`M38][WIDTH - 1:FRAC_W] = q4x - q1x;
-                M_w[`M48][WIDTH - 1:FRAC_W] = q1y;
-                M_w[`M58][WIDTH - 1:FRAC_W] = q2y - q1y;
-                M_w[`M68][WIDTH - 1:FRAC_W] = q3y - q1y;
-                M_w[`M78][WIDTH - 1:FRAC_W] = q4y - q1y;
-            end
-            else begin
+                M_w[`M00][35:FRAC_W] = i_ul_addr[19:10];
+                M_w[`M01][35:FRAC_W] = i_ul_addr[ 9: 0];
+                M_w[`M10][35:FRAC_W] = i_dl_addr[19:10] - i_ul_addr[19:10];
+                M_w[`M11][35:FRAC_W] = i_dl_addr[ 9: 0] - i_ul_addr[ 9: 0];
+                M_w[`M20][35:FRAC_W] = i_dr_addr[19:10] - i_ul_addr[19:10];
+                M_w[`M21][35:FRAC_W] = i_dr_addr[ 9: 0] - i_ul_addr[ 9: 0];
+                M_w[`M30][35:FRAC_W] = i_ur_addr[19:10] - i_ul_addr[19:10];
+                M_w[`M31][35:FRAC_W] = i_ur_addr[ 9: 0] - i_ul_addr[ 9: 0];
+                M_w[`M26][35:FRAC_W] = -(i_dr_addr[19:10] << 7) + i_dr_addr[19:10];
+                M_w[`M27][35:FRAC_W] = -(i_dr_addr[ 9: 0] << 7) + i_dr_addr[ 9: 0];
+                M_w[`M36][35:FRAC_W] = -(i_ur_addr[19:10] << 7) + i_ur_addr[19:10];
+                M_w[`M37][35:FRAC_W] = -(i_ur_addr[ 9: 0] << 7) + i_ur_addr[ 9: 0];
+                M_w[`M43][35:FRAC_W] = i_ul_addr[19:10];
+                M_w[`M44][35:FRAC_W] = i_ul_addr[ 9: 0];
+                M_w[`M53][35:FRAC_W] = i_dl_addr[19:10] - i_ul_addr[19:10];
+                M_w[`M54][35:FRAC_W] = i_dl_addr[ 9: 0] - i_ul_addr[ 9: 0];
+                M_w[`M63][35:FRAC_W] = i_dr_addr[19:10] - i_ul_addr[19:10];
+                M_w[`M64][35:FRAC_W] = i_dr_addr[ 9: 0] - i_ul_addr[ 9: 0];
+                M_w[`M73][35:FRAC_W] = i_ur_addr[19:10] - i_ul_addr[19:10];
+                M_w[`M74][35:FRAC_W] = i_ur_addr[ 9: 0] - i_ul_addr[ 9: 0];
+                M_w[`M56][35:FRAC_W] = -(i_dl_addr[19:10] << 7) + i_dl_addr[19:10];
+                M_w[`M57][35:FRAC_W] = -(i_dl_addr[ 9: 0] << 7) + i_dl_addr[ 9: 0];
+                M_w[`M66][35:FRAC_W] = -(i_dr_addr[19:10] << 7) + i_dr_addr[19:10];
+                M_w[`M67][35:FRAC_W] = -(i_dr_addr[ 9: 0] << 7) + i_dr_addr[ 9: 0];
+                M_w[`M08][35:FRAC_W] = q1x;
+                M_w[`M18][35:FRAC_W] = q2x - q1x;
+                M_w[`M28][35:FRAC_W] = q3x - q1x;
+                M_w[`M38][35:FRAC_W] = q4x - q1x;
+                M_w[`M48][35:FRAC_W] = q1y;
+                M_w[`M58][35:FRAC_W] = q2y - q1y;
+                M_w[`M68][35:FRAC_W] = q3y - q1y;
+                M_w[`M78][35:FRAC_W] = q4y - q1y;
             end
         end
-        S_CALC: begin
+        6'd1: begin
             counter_w = counter_r + 1;
+
             case (counter_r)
                 0: begin
                     // row1
@@ -537,55 +481,8 @@ always_ff @(posedge i_clk or negedge i_rst_n) begin
         end
         valid_r <= valid_w;
         for (integer i = 0;i < 8;i = i + 1) begin
-            matrix_r <= matrix_w;
+            matrix_r[i] <= matrix_w[i];
         end
     end
 end
-endmodule
-
-
-module mul #(
-    parameter INT_W  = 20,
-    parameter FRAC_W = 13
-)(
-    input  [INT_W + FRAC_W - 1: 0] A,
-    input  [INT_W + FRAC_W - 1: 0] B,
-    output [INT_W + FRAC_W - 1: 0] ANS
-);
-    localparam WIDTH = INT_W + FRAC_W;
-    localparam MAX = {1'b0, {(WIDTH-1){1'b1}}};
-    localparam MIN = {1'b1, {(WIDTH-1){1'b0}}};
-    logic overflow;
-    logic [2 * WIDTH - 1:0] mul_result;
-    assign mul_result = $signed(A) * $signed(B);
-    assign ANS = overflow ? ((A[WIDTH - 1] ^ B[WIDTH - 1])? MIN : MAX): mul_result[WIDTH + FRAC_W - 1:FRAC_W];
-    always_comb begin
-        if (&(mul_result[2*WIDTH-1 -: (INT_W+1)]) || !(mul_result[2*WIDTH-1 -: (INT_W+1)])) begin
-            overflow = 0;
-        end
-        else overflow = 1;
-    end
-endmodule
-
-module div #(
-    parameter INT_W = 20, 
-    parameter FRAC_W = 13
-) (
-    input  [INT_W + FRAC_W - 1: 0] A,
-    input  [INT_W + FRAC_W - 1: 0] B,
-    output [INT_W + FRAC_W - 1: 0] ANS
-);
-    localparam WIDTH = INT_W + FRAC_W;
-    localparam MAX = {1'b0, {(WIDTH-1){1'b1}}};
-    localparam MIN = {1'b1, {(WIDTH-1){1'b0}}};
-    logic overflow;
-    logic [WIDTH + FRAC_W - 1:0] div_result;
-    assign div_result = $signed({A, {FRAC_W{1'b0}}}) / $signed(B);
-    assign ANS = overflow ? (A[WIDTH - 1] ^ B[WIDTH - 1])? MIN : MAX: div_result[WIDTH - 1: 0];
-    always_comb begin
-        if (&(div_result[WIDTH + FRAC_W - 1 -: (FRAC_W+1)]) || !(div_result[WIDTH + FRAC_W - 1 -: (FRAC_W+1)])) begin
-            overflow = 0;
-        end
-        else overflow = 1;
-    end
 endmodule
