@@ -15,11 +15,13 @@ s = Serial(
     rtscts=False
 )
 
-img = Image.open("amongus.jpg")
+# img = Image.open("amongus.jpg")
+img = Image.open("rainbow.jpg")
+img = img.resize((128,128))
 img = np.array(img)
 
 s.write(img)
 # for i in range(128*128*3):
-#     s.write(nd.randint(0,255).to_bytes(1, byteorder='big'))
+    # s.write(nd.randint(0,255).to_bytes(1, byteorder='big'))
     # s.write(((i+128) % 256).to_bytes(1, byteorder='big'))
     # s.write(nd.randint(0,1).to_bytes(1, byteorder='big'))

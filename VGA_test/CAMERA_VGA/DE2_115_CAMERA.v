@@ -490,6 +490,27 @@ wire            gen_read;
 wire            frame_valid;
 reg             led1, led2;
 
+////////////////////////
+reg [5:0] counter_r, counter_w;
+wire [47:0] numerA;
+wire [39:0] denomB;
+wire [47:0] div_result;
+wire        clken;
+reg [47:0] div_r, div_w;
+
+wire inverse_valid;
+wire is_inside;
+reg is_inside_w, is_inside_r;
+wire can_fetch;
+wire [13:0] image_addr_temp;
+reg [19:0] counter2_r, counter2_w;
+
+assign clken = counter_r < 16;
+assign numerA = 48'd9848695654;
+assign denomB = 40'd156564;
+///////////////////////
+
+
 //power on start
 wire             auto_start;
 //=======================================================
@@ -499,11 +520,14 @@ wire             auto_start;
 assign	D5M_TRIGGER	=	1'b1;  // tRIGGER
 assign	D5M_RESET_N	=	DLY_RST_1;
 assign  VGA_CTRL_CLK = ~VGA_CLK;
-assign  LEDR[13:0]        = image_addr;
-// assign  LEDR[15]    = test_line2;
-// assign  LEDR[16]    = test_line3;
-assign  LEDR[15]    = led1;
-assign  LEDR[16]    = led2;
+// assign  LEDR[13:0]        = image_addr;
+
+// assign  LEDR[13:0]        = image_addr_temp;
+// // assign  LEDR[15]    = led1;
+// assign  LEDR[16]    = is_inside_w;
+
+// assign LEDR[15:0] = div_r[15:0];
+
 // assign	LEDR		=	SW;
 // assign	LEDG		=	Y_Cont;
 assign  LEDG[0] = test_data[0];
@@ -512,6 +536,8 @@ assign  LEDG[2] = sram_wr_full;
 assign  LEDG[3] = test_line;
 // assign  LEDG[3] = UART_RXD;
 // assign  LEDG[4] = UART_TXD;
+assign LEDG[5] = rCCD_FVAL;
+assign LEDG[7] = is_inside;
 // assign	UART_TXD = UART_RXD;
 
 //fetch the high 8 bits
@@ -605,7 +631,7 @@ sdram_pll 			u6	(
 `endif
 						);
 
-//SDRam Read and Write as Frame Buffer
+// //SDRam Read and Write as Frame Buffer
 Sdram_Control	u7	(	//	HOST Side						
 						    .RESET_N(KEY[0]),
 							.CLK(sdram_ctrl_clk),
@@ -618,13 +644,8 @@ Sdram_Control	u7	(	//	HOST Side
 							.WR1(sCCD_DVAL),
 							// .WR1(medi_val),
 							.WR1_ADDR(0),
-`ifdef VGA_640x480p60
-						    .WR1_MAX_ADDR(640*480/2),
-						    .WR1_LENGTH(8'h50),
-`else
 							.WR1_MAX_ADDR(800*600/2),
 							.WR1_LENGTH(8'h80),
-`endif							
 							.WR1_LOAD(!DLY_RST_0),
 							.WR1_CLK(D5M_PIXLCLK),
 
@@ -636,13 +657,8 @@ Sdram_Control	u7	(	//	HOST Side
 							.WR2(sCCD_DVAL),
 							// .WR2(medi_val),
 							.WR2_ADDR(23'h100000),
-`ifdef VGA_640x480p60
-						    .WR2_MAX_ADDR(23'h100000+640*480/2),
-							.WR2_LENGTH(8'h50),
-`else							
 							.WR2_MAX_ADDR(23'h100000+800*600/2),
 							.WR2_LENGTH(8'h80),
-`endif	
 							.WR2_LOAD(!DLY_RST_0),
 							.WR2_CLK(D5M_PIXLCLK),
 
@@ -651,14 +667,9 @@ Sdram_Control	u7	(	//	HOST Side
 				        	// .RD1(Read),
 				        	.RD1(gen_read),
 				        	.RD1_ADDR(0),
-`ifdef VGA_640x480p60
-						    .RD1_MAX_ADDR(640*480/2),
-							.RD1_LENGTH(8'h50),
-`else
 							.RD1_MAX_ADDR(800*600/2),
 							// .RD1_LENGTH(8'h20),
 							.RD1_LENGTH(8'h40),
-`endif
 							.RD1_LOAD(!DLY_RST_0),
 							// .RD1_CLK(~VGA_CTRL_CLK),
 							.RD1_CLK(CLOCK2_50),
@@ -668,14 +679,9 @@ Sdram_Control	u7	(	//	HOST Side
 				        	// .RD2(Read),
 							.RD2(gen_read),
 							.RD2_ADDR(23'h100000),
-`ifdef VGA_640x480p60
-						    .RD2_MAX_ADDR(23'h100000+640*480/2),
-							.RD2_LENGTH(8'h50),
-`else
 							.RD2_MAX_ADDR(23'h100000+800*600/2),
 							// .RD2_LENGTH(8'h20),
 							.RD2_LENGTH(8'h40),
-`endif
 				        	.RD2_LOAD(!DLY_RST_0),
 							// .RD2_CLK(~VGA_CTRL_CLK),
 							.RD2_CLK(CLOCK2_50),
@@ -838,4 +844,137 @@ always @(*) begin
 	end
 end
 
+
+wire [35:0] A,B,C,D,E,F,G,H;
+reg [13:0] image_addr_temp_r, image_addr_temp_w;
+//test get_perspective
+GetPerspective get_perspective (
+    .i_clk(rCCD_FVAL),
+    .i_rst_n(DLY_RST_1),
+    .i_start(counter_r == 1),
+	.i_ul_addr({10'd310, 10'd63}), // first 10 bit is x, last is y
+    .i_ur_addr({10'd500, 10'd18}),
+    .i_dr_addr({10'd400, 10'd190}),
+    .i_dl_addr({10'd290, 10'd220}),
+	.o_A(A),
+	.o_B(B),
+	.o_C(C),
+	.o_D(D),
+	.o_E(E),
+	.o_F(F),
+	.o_G(G),
+	.o_H(H),
+	.o_valid(inverse_valid)
+	// .o_test(LEDR)
+);
+
+PerspectiveTransformer perspective_transformer (
+    .i_clk(rCCD_FVAL),
+    .i_rst_n(DLY_RST_1),
+    .i_start(inverse_valid),
+    .i_A(A),
+    .i_B(B),
+    .i_C(C),
+    .i_D(D),
+    .i_E(E),
+    .i_F(F),
+    .i_G(G),
+    .i_H(H),
+    .i_req(counter2_r < 152401), //80350
+    .o_inside(is_inside),
+    .o_point(image_addr_temp),
+    .o_can_fetch(can_fetch)
+);
+
+
+
+
+// //test div
+
+Div div_Div_3 (
+    .clock(CLOCK2_50),
+    .aclr(~DLY_RST_1),
+    .clken(clken),
+    .numer(numerA),
+    .denom(denomB),
+    .quotient(div_result)
+);
+
+reg [3:0] out_cntr_r, out_cntr_w;
+reg [17:0] ledr;
+assign LEDR = image_addr_temp;
+// assign LEDG[6] = out_cntr_r;
+
+
+always @(posedge rCCD_FVAL or negedge DLY_RST_1) begin
+	if (!DLY_RST_1) begin
+		out_cntr_r <= 0;
+	end
+	else begin
+		out_cntr_r <= out_cntr_r + 1;
+	end
+end
+always @(*) begin
+	case (out_cntr_r)
+		00:			ledr = A[35:18];
+		01: 		ledr = A[17: 0];
+		02: 		ledr = B[35:18];
+		03: 		ledr = B[17: 0];
+		04: 		ledr = C[35:18];
+		05: 		ledr = C[17: 0];
+		06: 		ledr = D[35:18];
+		07: 		ledr = D[17: 0];
+		08: 		ledr = E[35:18];
+		09: 		ledr = E[17: 0];
+		10: 		ledr = F[35:18];
+		11: 		ledr = F[17: 0];
+		12: 		ledr = G[35:18];
+		13: 		ledr = G[17: 0];
+		14: 		ledr = H[35:18];
+		15: 		ledr = H[17: 0];
+		default:	ledr = 0;
+	endcase
+end
+
+
+always @(*) begin
+	counter_w = counter_r;
+	counter2_w = counter2_r;
+	div_w = div_r;
+	is_inside_w = is_inside_r;
+	image_addr_temp_w = image_addr_temp_r;
+	if (counter_r != 2) begin
+		counter_w = counter_r + 1;
+	end
+	if (counter_r == 1) begin
+		div_w = div_result;
+	end
+	if (can_fetch) begin
+		counter2_w = 0;
+	end	
+	if (counter2_r != 240017) begin
+		counter2_w = counter2_r + 1;
+	end
+	if (counter2_r == 152400) begin
+		is_inside_w = is_inside;
+		image_addr_temp_w = image_addr_temp;
+	end
+end
+
+always @(posedge rCCD_FVAL or negedge DLY_RST_1) begin
+	if (!DLY_RST_1) begin
+		counter_r <= 0;
+		div_r <= 0;
+		counter2_r <= 20'hfffff;
+		is_inside_r <= 0;
+		image_addr_temp_r <= 0;
+	end
+	else begin
+		counter_r <= counter_w;
+		div_r <= div_w;
+		counter2_r <= counter2_w;
+		is_inside_r <= is_inside_w;
+		image_addr_temp_r <= image_addr_temp_w;
+	end
+end
 endmodule

@@ -102,9 +102,9 @@ always_comb begin
                 if (&pix_cntr_r) begin
                     last_success_w = 1;
                     last_ul_addr_w = new_addr_r[0];  // new_addr_r[min_index[0][2]];
-                    last_ur_addr_w = new_addr_r[1];  // new_addr_r[min_index[1][2]];
-                    last_dl_addr_w = new_addr_r[2];  // new_addr_r[min_index[2][2]];
-                    last_dr_addr_w = new_addr_r[3];  // new_addr_r[min_index[3][2]];
+                    last_ur_addr_w = new_addr_r[3];  // new_addr_r[min_index[1][2]];
+                    last_dl_addr_w = new_addr_r[1];  // new_addr_r[min_index[2][2]];
+                    last_dr_addr_w = new_addr_r[2];  // new_addr_r[min_index[3][2]];
                 end
                 else begin
                     last_success_w = 0;
