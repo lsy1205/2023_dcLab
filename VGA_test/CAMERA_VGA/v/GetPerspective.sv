@@ -157,47 +157,52 @@ always_comb begin
     endcase
     valid_w = (counter_r == 7'd69);
 
+    if (i_start) begin
+        counter_w = 7'd1;
+
+        M_w[`M00][35:FRAC_W] = i_ul_addr[19:10];
+        M_w[`M01][35:FRAC_W] = i_ul_addr[ 9: 0];
+        M_w[`M10][35:FRAC_W] = i_dl_addr[19:10] - i_ul_addr[19:10];
+        M_w[`M11][35:FRAC_W] = i_dl_addr[ 9: 0] - i_ul_addr[ 9: 0];
+        M_w[`M20][35:FRAC_W] = i_dr_addr[19:10] - i_ul_addr[19:10];
+        M_w[`M21][35:FRAC_W] = i_dr_addr[ 9: 0] - i_ul_addr[ 9: 0];
+        M_w[`M30][35:FRAC_W] = i_ur_addr[19:10] - i_ul_addr[19:10];
+        M_w[`M31][35:FRAC_W] = i_ur_addr[ 9: 0] - i_ul_addr[ 9: 0];
+
+        M_w[`M26][35:FRAC_W] = i_dr_addr[19:10] - (i_dr_addr[19:10] << 7);  // *127 = *(128-1)
+        M_w[`M27][35:FRAC_W] = i_dr_addr[ 9: 0] - (i_dr_addr[ 9: 0] << 7);  // *127 = *(128-1)
+        M_w[`M36][35:FRAC_W] = i_ur_addr[19:10] - (i_ur_addr[19:10] << 7);  // *127 = *(128-1)
+        M_w[`M37][35:FRAC_W] = i_ur_addr[ 9: 0] - (i_ur_addr[ 9: 0] << 7);  // *127 = *(128-1)
+
+        M_w[`M43][35:FRAC_W] = i_ul_addr[19:10];
+        M_w[`M44][35:FRAC_W] = i_ul_addr[ 9: 0];
+        M_w[`M53][35:FRAC_W] = i_dl_addr[19:10] - i_ul_addr[19:10];
+        M_w[`M54][35:FRAC_W] = i_dl_addr[ 9: 0] - i_ul_addr[ 9: 0];
+        M_w[`M63][35:FRAC_W] = i_dr_addr[19:10] - i_ul_addr[19:10];
+        M_w[`M64][35:FRAC_W] = i_dr_addr[ 9: 0] - i_ul_addr[ 9: 0];
+        M_w[`M73][35:FRAC_W] = i_ur_addr[19:10] - i_ul_addr[19:10];
+        M_w[`M74][35:FRAC_W] = i_ur_addr[ 9: 0] - i_ul_addr[ 9: 0];
+
+        M_w[`M56][35:FRAC_W] = i_dl_addr[19:10] - (i_dl_addr[19:10] << 7);  // *127 = *(128-1)
+        M_w[`M57][35:FRAC_W] = i_dl_addr[ 9: 0] - (i_dl_addr[ 9: 0] << 7);  // *127 = *(128-1)
+        M_w[`M66][35:FRAC_W] = i_dr_addr[19:10] - (i_dr_addr[19:10] << 7);  // *127 = *(128-1)
+        M_w[`M67][35:FRAC_W] = i_dr_addr[ 9: 0] - (i_dr_addr[ 9: 0] << 7);  // *127 = *(128-1)
+
+        M_w[`M08][35:FRAC_W] = 7'd0;    // q1x
+        M_w[`M18][35:FRAC_W] = 7'd0;    // q2x - q1x
+        M_w[`M28][35:FRAC_W] = 7'd127;  // q3x - q1x
+        M_w[`M38][35:FRAC_W] = 7'd127;  // q4x - q1x
+
+        M_w[`M48][35:FRAC_W] = 7'd0;    // q1y
+        M_w[`M58][35:FRAC_W] = 7'd127;  // q2y - q1y
+        M_w[`M68][35:FRAC_W] = 7'd127;  // q3y - q1y
+        M_w[`M78][35:FRAC_W] = 7'd0;    // q4y - q1y
+    end
+
+
     case (counter_r)
         7'd0: begin
-            if (i_start) begin
-                M_w[`M00][35:FRAC_W] = i_ul_addr[19:10];
-                M_w[`M01][35:FRAC_W] = i_ul_addr[ 9: 0];
-                M_w[`M10][35:FRAC_W] = i_dl_addr[19:10] - i_ul_addr[19:10];
-                M_w[`M11][35:FRAC_W] = i_dl_addr[ 9: 0] - i_ul_addr[ 9: 0];
-                M_w[`M20][35:FRAC_W] = i_dr_addr[19:10] - i_ul_addr[19:10];
-                M_w[`M21][35:FRAC_W] = i_dr_addr[ 9: 0] - i_ul_addr[ 9: 0];
-                M_w[`M30][35:FRAC_W] = i_ur_addr[19:10] - i_ul_addr[19:10];
-                M_w[`M31][35:FRAC_W] = i_ur_addr[ 9: 0] - i_ul_addr[ 9: 0];
-
-                M_w[`M26][35:FRAC_W] = i_dr_addr[19:10] - (i_dr_addr[19:10] << 7);  // *127 = *(128-1)
-                M_w[`M27][35:FRAC_W] = i_dr_addr[ 9: 0] - (i_dr_addr[ 9: 0] << 7);  // *127 = *(128-1)
-                M_w[`M36][35:FRAC_W] = i_ur_addr[19:10] - (i_ur_addr[19:10] << 7);  // *127 = *(128-1)
-                M_w[`M37][35:FRAC_W] = i_ur_addr[ 9: 0] - (i_ur_addr[ 9: 0] << 7);  // *127 = *(128-1)
-
-                M_w[`M43][35:FRAC_W] = i_ul_addr[19:10];
-                M_w[`M44][35:FRAC_W] = i_ul_addr[ 9: 0];
-                M_w[`M53][35:FRAC_W] = i_dl_addr[19:10] - i_ul_addr[19:10];
-                M_w[`M54][35:FRAC_W] = i_dl_addr[ 9: 0] - i_ul_addr[ 9: 0];
-                M_w[`M63][35:FRAC_W] = i_dr_addr[19:10] - i_ul_addr[19:10];
-                M_w[`M64][35:FRAC_W] = i_dr_addr[ 9: 0] - i_ul_addr[ 9: 0];
-                M_w[`M73][35:FRAC_W] = i_ur_addr[19:10] - i_ul_addr[19:10];
-                M_w[`M74][35:FRAC_W] = i_ur_addr[ 9: 0] - i_ul_addr[ 9: 0];
-
-                M_w[`M56][35:FRAC_W] = i_dl_addr[19:10] - (i_dl_addr[19:10] << 7);  // *127 = *(128-1)
-                M_w[`M57][35:FRAC_W] = i_dl_addr[ 9: 0] - (i_dl_addr[ 9: 0] << 7);  // *127 = *(128-1)
-                M_w[`M66][35:FRAC_W] = i_dr_addr[19:10] - (i_dr_addr[19:10] << 7);  // *127 = *(128-1)
-                M_w[`M67][35:FRAC_W] = i_dr_addr[ 9: 0] - (i_dr_addr[ 9: 0] << 7);  // *127 = *(128-1)
-
-                M_w[`M08][35:FRAC_W] = 7'd0;    // q1x
-                M_w[`M18][35:FRAC_W] = 7'd0;    // q2x - q1x
-                M_w[`M28][35:FRAC_W] = 7'd127;  // q3x - q1x
-                M_w[`M38][35:FRAC_W] = 7'd127;  // q4x - q1x
-
-                M_w[`M48][35:FRAC_W] = 7'd0;    // q1y
-                M_w[`M58][35:FRAC_W] = 7'd127;  // q2y - q1y
-                M_w[`M68][35:FRAC_W] = 7'd127;  // q3y - q1y
-                M_w[`M78][35:FRAC_W] = 7'd0;    // q4y - q1y
-            end
+            
         end
         7'd1: begin
             // div row1

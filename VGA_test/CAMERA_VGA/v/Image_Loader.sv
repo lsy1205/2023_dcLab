@@ -62,8 +62,7 @@ always_comb begin
         S_CHECK: begin
             avm_read_w = 1;
             avm_address_w = STATUS_BASE;
-            valid_w = 0;
-            
+
             if(!avm_waitrequest && avm_readdata[RX_OK_BIT]) begin
                 avm_read_w = 0;
             end

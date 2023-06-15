@@ -38,13 +38,12 @@ logic [35:0] H_r, H_w;
 logic [46:0] Ax, By, Dx, Ey, Gx, Hx;
 logic [46:0] rho_x, rho_y;
 logic [39:0] rho;
-logic [47:0] div0_ans, div1_ans;
+logic [47:0] div_ans_x, div_ans_y;
 
 assign o_inside = inside_r;
 assign o_point  = point_r;
 assign o_can_fetch = (col_counter_r == 17 && row_counter_r == 0);
 
-// assign clken = i_req || (!col_counter_r[9:4] && row_counter_r == 0); 
 assign clken = i_req || (col_counter_r < 17 && row_counter_r == 0); 
 
 assign rho_x = $signed(Ax) + $signed(By) + $signed(C_r);
@@ -88,7 +87,7 @@ DIV2 div_0 (
     .i_clken(clken),
     .A(rho_x),
     .B(rho),
-    .ANS(div0_ans)
+    .ANS(div_ans_x)
 );
 DIV2 div_1 (
     .i_clk(i_clk),
@@ -96,12 +95,12 @@ DIV2 div_1 (
     .i_clken(clken),
     .A(rho_y),
     .B(rho),
-    .ANS(div1_ans)
+    .ANS(div_ans_y)
 );
 
 always_comb begin
-    inside_w = !(div0_ans[47:7]) && !(div1_ans[47:7]);
-    point_w  = {div0_ans[6:0], div1_ans[6:0]};
+    inside_w = !(div_ans_x[47:7]) && !(div_ans_y[47:7]);
+    point_w  = {div_ans_x[6:0], div_ans_y[6:0]};
     col_counter_w = col_counter_r;
     row_counter_w = row_counter_r;
     A_w = A_r;

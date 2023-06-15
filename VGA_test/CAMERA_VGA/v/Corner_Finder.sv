@@ -75,10 +75,10 @@ always_comb begin
     row_counter_w = row_counter_r;
     col_counter_w = col_counter_r;
     new_addr_w[0] = new_addr_r[0];
-    new_addr_w[3] = new_addr_r[3];
     new_addr_w[1] = new_addr_r[1];
     new_addr_w[2] = new_addr_r[2];
-    pix_cntr_w = pix_cntr_r;
+    new_addr_w[3] = new_addr_r[3];
+    pix_cntr_w    = pix_cntr_r;
     last_success_w = last_success_r;
     last_ul_addr_w = last_ul_addr_r;
     last_ur_addr_w = last_ur_addr_r;
@@ -102,9 +102,9 @@ always_comb begin
                 if (&pix_cntr_r) begin
                     last_success_w = 1;
                     last_ul_addr_w = new_addr_r[0];  // new_addr_r[min_index[0][2]];
-                    last_ur_addr_w = new_addr_r[3];  // new_addr_r[min_index[1][2]];
                     last_dl_addr_w = new_addr_r[1];  // new_addr_r[min_index[2][2]];
                     last_dr_addr_w = new_addr_r[2];  // new_addr_r[min_index[3][2]];
+                    last_ur_addr_w = new_addr_r[3];  // new_addr_r[min_index[1][2]];
                 end
                 else begin
                     last_success_w = 0;
@@ -128,11 +128,11 @@ always_comb begin
         if (row_counter_r < new_addr_r[0][19:10]) begin
             new_addr_w[0] = {row_counter_r, col_counter_r};
         end
-        if (!(row_counter_r < new_addr_r[2][19:10])) begin
-            new_addr_w[2] = {row_counter_r, col_counter_r};
-        end
         if (!(col_counter_r > new_addr_r[1][9:0])) begin
             new_addr_w[1] = {row_counter_r, col_counter_r};
+        end
+        if (!(row_counter_r < new_addr_r[2][19:10])) begin
+            new_addr_w[2] = {row_counter_r, col_counter_r};
         end
         if (col_counter_r > new_addr_r[3][9:0]) begin
             new_addr_w[3] = {row_counter_r, col_counter_r};

@@ -20,14 +20,6 @@ RAM_image ram_imgae (
     .q(o_data)
 );
 
-// RAM_image ram_imgae (
-//     .aclr(~i_rst_n),
-//     .address(addr),
-//     .clock(i_clk),
-//     .data(24'hffffff),
-//     .wren(wen_test),
-//     .q(o_data)
-// );
 
 always_comb begin
     addr_counter_w = addr_counter_r;

@@ -541,20 +541,17 @@ assign LEDG[7] = is_inside;
 // assign	UART_TXD = UART_RXD;
 
 //fetch the high 8 bits
-assign  VGA_R = oVGA_R[9:2];
-assign  VGA_G = oVGA_G[9:2];
-assign  VGA_B = oVGA_B[9:2];
+assign VGA_R = oVGA_R[9:2];
+assign VGA_G = oVGA_G[9:2];
+assign VGA_B = oVGA_B[9:2];
 
-assign write_1 = medi ? 16'h7fff : 16'b0;
-assign write_2 = medi ? 16'h7fff : 16'b0;
-assign test = test_bit ? 16'h7fff : 16'b0;
 
 //D5M read 
 always@(posedge D5M_PIXLCLK)
 begin
-	rCCD_DATA	<=	D5M_D;
-	rCCD_LVAL	<=	D5M_LVAL;
-	rCCD_FVAL	<=	D5M_FVAL;
+	rCCD_DATA <= D5M_D;
+	rCCD_LVAL <= D5M_LVAL;
+	rCCD_FVAL <= D5M_FVAL;
 end
 
 //auto start when power on
@@ -583,20 +580,6 @@ CCD_Capture			u3	(	.oDATA(mCCD_DATA),
 							.iRST(DLY_RST_2)
 						);
 //D5M raw date convert to RGB data
-`ifdef VGA_640x480p60
-RAW2RGB				u4	(	.iCLK(D5M_PIXLCLK),
-							.iRST(DLY_RST_1),
-							.iDATA(mCCD_DATA),
-							.iDVAL(mCCD_DVAL),
-							.oRed(sCCD_R),
-							.oGreen(sCCD_G),
-							.oBlue(sCCD_B),
-							.oDVAL(sCCD_DVAL),
-							.iX_Cont(X_Cont),
-							.iY_Cont(Y_Cont),
-							.oThreshold(Threshold)
-						);
-`else
 RAW2RGB				u4	(	.iCLK(D5M_PIXLCLK),
 							.iRST_n(DLY_RST_1),
 							.iData(mCCD_DATA),
@@ -610,7 +593,6 @@ RAW2RGB				u4	(	.iCLK(D5M_PIXLCLK),
 							.iY_Cont(Y_Cont),
 							.oThreshold(Threshold)
 						);
-`endif
 //Frame count display
 SEG7_LUT_8 			u5	(	.oSEG0(HEX0),.oSEG1(HEX1),
 							.oSEG2(HEX2),.oSEG3(HEX3),
@@ -619,30 +601,21 @@ SEG7_LUT_8 			u5	(	.oSEG0(HEX0),.oSEG1(HEX1),
 							.iDIG(Frame_Cont[31:0])
 						);
 
-sdram_pll 			u6	(
-							.inclk0(CLOCK2_50),
+sdram_pll 			u6	(	.inclk0(CLOCK2_50),
 							.c0(sdram_ctrl_clk),
 							.c1(DRAM_CLK),
 							.c2(D5M_XCLKIN), //25M
-`ifdef VGA_640x480p60
-							.c3(VGA_CLK)     //25M 
-`else
 						    .c4(VGA_CLK)     //40M 	
-`endif
 						);
 
-// //SDRam Read and Write as Frame Buffer
+//SDRam Read and Write as Frame Buffer
 Sdram_Control	u7	(	//	HOST Side						
 						    .RESET_N(KEY[0]),
 							.CLK(sdram_ctrl_clk),
 
 							//	FIFO Write Side 1
 							.WR1_DATA({1'b0,sCCD_G[11:7],sCCD_B[11:2]}),
-							// .WR1_DATA({1'b0, gen_data[19:15], gen_data[9:0]}), // {1'b0,sCCD_G[11:7],sCCD_B[11:2]}
-							// .WR1_DATA(write_1),
-							// .WR1(gen_valid),
 							.WR1(sCCD_DVAL),
-							// .WR1(medi_val),
 							.WR1_ADDR(0),
 							.WR1_MAX_ADDR(800*600/2),
 							.WR1_LENGTH(8'h80),
@@ -651,11 +624,7 @@ Sdram_Control	u7	(	//	HOST Side
 
 							//	FIFO Write Side 2
 							.WR2_DATA({1'b0,sCCD_G[6:2],sCCD_R[11:2]}),
-							// .WR2_DATA({1'b0, gen_data[14:10], gen_data[29:20]}), // {1'b0,sCCD_G[6:2],sCCD_R[11:2]}
-							// .WR2_DATA(write_2),
-							// .WR2(gen_valid),
 							.WR2(sCCD_DVAL),
-							// .WR2(medi_val),
 							.WR2_ADDR(23'h100000),
 							.WR2_MAX_ADDR(23'h100000+800*600/2),
 							.WR2_LENGTH(8'h80),
@@ -664,26 +633,20 @@ Sdram_Control	u7	(	//	HOST Side
 
 							//	FIFO Read Side 1
 						    .RD1_DATA(Read_DATA1),
-				        	// .RD1(Read),
 				        	.RD1(gen_read),
 				        	.RD1_ADDR(0),
 							.RD1_MAX_ADDR(800*600/2),
-							// .RD1_LENGTH(8'h20),
 							.RD1_LENGTH(8'h40),
 							.RD1_LOAD(!DLY_RST_0),
-							// .RD1_CLK(~VGA_CTRL_CLK),
 							.RD1_CLK(CLOCK2_50),
 							
 							//	FIFO Read Side 2
 						    .RD2_DATA(Read_DATA2),
-				        	// .RD2(Read),
 							.RD2(gen_read),
 							.RD2_ADDR(23'h100000),
 							.RD2_MAX_ADDR(23'h100000+800*600/2),
-							// .RD2_LENGTH(8'h20),
 							.RD2_LENGTH(8'h40),
 				        	.RD2_LOAD(!DLY_RST_0),
-							// .RD2_CLK(~VGA_CTRL_CLK),
 							.RD2_CLK(CLOCK2_50),
 							
 							//	SDRAM Side
@@ -748,9 +711,18 @@ Image_Generator     img_gen (
 							.o_vaild(gen_valid),
 							.o_data(gen_data),
 							.i_img_data(image_data),
-							.o_req_addr(image_addr),
+							.o_req_img_addr(image_addr),
 
-							.frame_valid(frame_valid)
+							// .o_A(A),
+							// .o_B(B),
+							// .o_C(C),
+							// .o_D(D),
+							// .o_E(E),
+							// .o_F(F),
+							// .o_G(G),
+							// .o_H(H),
+
+							.o_inside(LEDG[6])
 );
 
 Median_Filter       medium_filter (
@@ -848,65 +820,66 @@ end
 wire [35:0] A,B,C,D,E,F,G,H;
 reg [13:0] image_addr_temp_r, image_addr_temp_w;
 //test get_perspective
-GetPerspective get_perspective (
-    .i_clk(rCCD_FVAL),
-    .i_rst_n(DLY_RST_1),
-    .i_start(counter_r == 1),
-	.i_ul_addr({10'd310, 10'd63}), // first 10 bit is x, last is y
-    .i_ur_addr({10'd500, 10'd18}),
-    .i_dr_addr({10'd400, 10'd190}),
-    .i_dl_addr({10'd290, 10'd220}),
-	.o_A(A),
-	.o_B(B),
-	.o_C(C),
-	.o_D(D),
-	.o_E(E),
-	.o_F(F),
-	.o_G(G),
-	.o_H(H),
-	.o_valid(inverse_valid)
-	// .o_test(LEDR)
-);
+// GetPerspective get_perspective (
+//    .i_clk(rCCD_FVAL),
+//    .i_rst_n(DLY_RST_1),
+//    .i_start(counter_r == 1),
+//    .i_ul_addr({10'd310, 10'd63}), // first 10 bit is x, last is y
+//    .i_ur_addr({10'd500, 10'd18}),
+//    .i_dr_addr({10'd400, 10'd190}),
+//    .i_dl_addr({10'd290, 10'd220}),
+//    .o_A(A),
+//    .o_B(B),
+//    .o_C(C),
+//    .o_D(D),
+//    .o_E(E),
+//    .o_F(F),
+//    .o_G(G),
+//    .o_H(H),
+//    .o_valid(inverse_valid)
+//    // .o_test(LEDR)
+// );
 
-PerspectiveTransformer perspective_transformer (
-    .i_clk(rCCD_FVAL),
-    .i_rst_n(DLY_RST_1),
-    .i_start(inverse_valid),
-    .i_A(A),
-    .i_B(B),
-    .i_C(C),
-    .i_D(D),
-    .i_E(E),
-    .i_F(F),
-    .i_G(G),
-    .i_H(H),
-    .i_req(counter2_r < 152401), //80350
-    .o_inside(is_inside),
-    .o_point(image_addr_temp),
-    .o_can_fetch(can_fetch)
-);
+// PerspectiveTransformer perspective_transformer (
+//     .i_clk(rCCD_FVAL),
+//     .i_rst_n(DLY_RST_1),
+//     .i_start(inverse_valid),
+//     .i_A(A),
+//     .i_B(B),
+//     .i_C(C),
+//     .i_D(D),
+//     .i_E(E),
+//     .i_F(F),
+//     .i_G(G),
+//     .i_H(H),
+//     .i_req(counter2_r < 152401), //80350
+//     .o_inside(is_inside),
+//     .o_point(image_addr_temp),
+//     .o_can_fetch(can_fetch)
+// );
 
 
 
 
 // //test div
 
-Div div_Div_3 (
-    .clock(CLOCK2_50),
-    .aclr(~DLY_RST_1),
-    .clken(clken),
-    .numer(numerA),
-    .denom(denomB),
-    .quotient(div_result)
-);
+// Div div_Div_3 (
+//     .clock(CLOCK2_50),
+//     .aclr(~DLY_RST_1),
+//     .clken(clken),
+//     .numer(numerA),
+//     .denom(denomB),
+//     .quotient(div_result)
+// );
 
-reg [3:0] out_cntr_r, out_cntr_w;
+reg [21:0] out_cntr_r, out_cntr_w;
+reg [ 3:0] cntr_r, cntr_w;
 reg [17:0] ledr;
-assign LEDR = image_addr_temp;
-// assign LEDG[6] = out_cntr_r;
+// assign LEDR = (LEDG[6]) ? image_addr : 18'b0;
+assign LEDR = ul_addr;
 
 
-always @(posedge rCCD_FVAL or negedge DLY_RST_1) begin
+always @(posedge CLOCK2_50 or negedge DLY_RST_1) begin
 	if (!DLY_RST_1) begin
 		out_cntr_r <= 0;
 	end
@@ -914,25 +887,32 @@ always @(posedge rCCD_FVAL or negedge DLY_RST_1) begin
 		out_cntr_r <= out_cntr_r + 1;
 	end
 end
-always @(*) begin
-	case (out_cntr_r)
-		00:			ledr = A[35:18];
-		01: 		ledr = A[17: 0];
-		02: 		ledr = B[35:18];
-		03: 		ledr = B[17: 0];
-		04: 		ledr = C[35:18];
-		05: 		ledr = C[17: 0];
-		06: 		ledr = D[35:18];
-		07: 		ledr = D[17: 0];
-		08: 		ledr = E[35:18];
-		09: 		ledr = E[17: 0];
-		10: 		ledr = F[35:18];
-		11: 		ledr = F[17: 0];
-		12: 		ledr = G[35:18];
-		13: 		ledr = G[17: 0];
-		14: 		ledr = H[35:18];
-		15: 		ledr = H[17: 0];
-		default:	ledr = 0;
+
+always @(posedge out_cntr_r[21] or negedge DLY_RST_1) begin
+	if (!DLY_RST_1) begin
+		cntr_r <= 0;
+	end
+	else begin
+		cntr_r <= cntr_r + 1;
+	end
+	case (cntr_r)
+		00:			ledr <= A[35:18];
+		01: 		ledr <= A[17: 0];
+		02: 		ledr <= B[35:18];
+		03: 		ledr <= B[17: 0];
+		04: 		ledr <= C[35:18];
+		05: 		ledr <= C[17: 0];
+		06: 		ledr <= D[35:18];
+		07: 		ledr <= D[17: 0];
+		08: 		ledr <= E[35:18];
+		09: 		ledr <= E[17: 0];
+		10: 		ledr <= F[35:18];
+		11: 		ledr <= F[17: 0];
+		12: 		ledr <= G[35:18];
+		13: 		ledr <= G[17: 0];
+		14: 		ledr <= H[35:18];
+		15: 		ledr <= H[17: 0];
+		default:	ledr <= 0;
 	endcase
 end
 

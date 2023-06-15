@@ -16,7 +16,8 @@ s = Serial(
 )
 
 # img = Image.open("amongus.jpg")
-img = Image.open("rainbow.jpg")
+img = Image.open("chessboard.jpg")
+# img = Image.open("rainbow.jpg")
 img = img.resize((128,128))
 img = np.array(img)
 
