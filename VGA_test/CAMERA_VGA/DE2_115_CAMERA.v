@@ -712,16 +712,6 @@ Image_Generator     img_gen (
 							.o_data(gen_data),
 							.i_img_data(image_data),
 							.o_req_img_addr(image_addr),
-
-							// .o_A(A),
-							// .o_B(B),
-							// .o_C(C),
-							// .o_D(D),
-							// .o_E(E),
-							// .o_F(F),
-							// .o_G(G),
-							// .o_H(H),
-
 							.o_inside(LEDG[6])
 );
 

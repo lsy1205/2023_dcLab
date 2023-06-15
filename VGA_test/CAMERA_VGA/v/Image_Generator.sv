@@ -19,15 +19,7 @@ module Image_Generator (
     output        o_vaild,
     output [31:0] o_data,
 
-    output        o_inside,
-    output [35:0] o_A,
-    output [35:0] o_B,
-    output [35:0] o_C,
-    output [35:0] o_D,
-    output [35:0] o_E,
-    output [35:0] o_F,
-    output [35:0] o_G,
-    output [35:0] o_H
+    output        o_inside
 );
 
 logic  [9:0] row_counter_r, row_counter_w;
@@ -75,12 +67,6 @@ GetPerspective get_perspective (
 	.i_ur_addr({i_ur_addr[9:0], i_ur_addr[19:10]}),     // {col, row}
 	.i_dr_addr({i_dr_addr[9:0], i_dr_addr[19:10]}),     // {col, row}
 	.i_dl_addr({i_dl_addr[9:0], i_dl_addr[19:10]}),     // {col, row}
-
-    // .i_ul_addr({10'd310, 10'd63}),
-    // .i_ur_addr({10'd500, 10'd18}),
-    // .i_dr_addr({10'd400, 10'd190}),
-    // .i_dl_addr({10'd290, 10'd220}),
-
 	.o_A(A),
 	.o_B(B),
 	.o_C(C),
@@ -141,30 +127,30 @@ always_comb begin
             out_data_w = {2'b0, i_img_data[23:16], 2'b0, i_img_data[15:8], 2'b0, i_img_data[7:0], 2'b0};
         end
 
-        // if (   row_counter_r > (i_ul_addr[19:10]) 
-        //     && row_counter_r < (i_ul_addr[19:10] + 15)
-        //     && col_counter_r > (i_ul_addr[ 9: 0] - 16)
-        //     && col_counter_r < (i_ul_addr[ 9: 0] + 15)) begin
-        //     out_data_w = {2'b0, 10'h3ff, 10'h0, 10'h3ff}; //RGB
-        // end
-        // if (   row_counter_r > (i_ur_addr[19:10]) 
-        //     && row_counter_r < (i_ur_addr[19:10] + 12)
-        //     && col_counter_r > (i_ur_addr[ 9: 0] - 13)
-        //     && col_counter_r < (i_ur_addr[ 9: 0] + 12)) begin
-        //     out_data_w = {2'b0, 10'h3ff, 10'h0, 10'h0};
-        // end
-        // if (   row_counter_r > (i_dl_addr[19:10]) 
-        //     && row_counter_r < (i_dl_addr[19:10] + 9)
-        //     && col_counter_r > (i_dl_addr[ 9: 0] - 10)
-        //     && col_counter_r < (i_dl_addr[ 9: 0] + 9)) begin
-        //     out_data_w = {2'b0, 10'h0, 10'h3ff, 10'h3ff};
-        // end
-        // if (   row_counter_r > (i_dr_addr[19:10]) 
-        //     && row_counter_r < (i_dr_addr[19:10] + 6)
-        //     && col_counter_r > (i_dr_addr[ 9: 0] - 7)
-        //     && col_counter_r < (i_dr_addr[ 9: 0] + 6)) begin
-        //     out_data_w = {2'b0, 10'h0, 10'h0, 10'h3ff};
-        // end
+        if (   row_counter_r > (i_ul_addr[19:10]) 
+            && row_counter_r < (i_ul_addr[19:10] + 15)
+            && col_counter_r > (i_ul_addr[ 9: 0] - 16)
+            && col_counter_r < (i_ul_addr[ 9: 0] + 15)) begin
+            out_data_w = {2'b0, 10'h3ff, 10'h0, 10'h3ff}; //RGB
+        end
+        if (   row_counter_r > (i_ur_addr[19:10]) 
+            && row_counter_r < (i_ur_addr[19:10] + 12)
+            && col_counter_r > (i_ur_addr[ 9: 0] - 13)
+            && col_counter_r < (i_ur_addr[ 9: 0] + 12)) begin
+            out_data_w = {2'b0, 10'h3ff, 10'h0, 10'h0};
+        end
+        if (   row_counter_r > (i_dl_addr[19:10]) 
+            && row_counter_r < (i_dl_addr[19:10] + 9)
+            && col_counter_r > (i_dl_addr[ 9: 0] - 10)
+            && col_counter_r < (i_dl_addr[ 9: 0] + 9)) begin
+            out_data_w = {2'b0, 10'h0, 10'h3ff, 10'h3ff};
+        end
+        if (   row_counter_r > (i_dr_addr[19:10]) 
+            && row_counter_r < (i_dr_addr[19:10] + 6)
+            && col_counter_r > (i_dr_addr[ 9: 0] - 7)
+            && col_counter_r < (i_dr_addr[ 9: 0] + 6)) begin
+            out_data_w = {2'b0, 10'h0, 10'h0, 10'h3ff};
+        end
     end
 end
 
