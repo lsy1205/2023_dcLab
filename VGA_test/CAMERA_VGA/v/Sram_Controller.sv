@@ -46,7 +46,7 @@ logic        change_r, change_w;
 logic        wen, ren;
 
 logic [29:0] test_counter_r, test_counter_w;
-logic [15:0] test_data;
+// logic [15:0] test_data;
 
 assign wen = (state_r == S_WRITE);
 assign ren = (state_r == S_READ);
@@ -60,7 +60,7 @@ assign o_SRAM_LB_N = 1'b0;
 assign o_SRAM_UB_N = 1'b0;
 
 // assign test_data = 16'b0;
-assign test_data = test_counter_r[29] ? 16'hffff : 16'b0;
+// assign test_data = test_counter_r[29] ? 16'hffff : 16'b0;
 assign o_rd_use = read_side_fifo_wusedw < 10;
 assign o_wr_use = write_side_fifo_rusedw > 250;
 
@@ -194,6 +194,9 @@ always_comb begin
                     read_addr_w = (read_addr_r == addr1_end) ? addr1_start : addr2_start;
                 end
             end
+        end
+        default: begin
+            
         end
     endcase
 end

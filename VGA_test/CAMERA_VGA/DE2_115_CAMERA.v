@@ -476,7 +476,8 @@ wire            gen_fin;
 wire            gen_ack;
 wire    [15:0]  test;
 wire            test_bit;
-wire    [15:0]  test_data;
+wire    [15:0]  vga_data;
+wire    [15:0]  sram_data;
 wire            test_rd_use;
 wire            sram_wr_full;
 wire    [23:0]  loader_data;
@@ -489,6 +490,12 @@ wire            test_line3;
 wire            gen_read;
 wire            frame_valid;
 reg             led1, led2;
+wire     [15:0] comp_data;
+wire            comp_valid;
+wire            vga_frame_start;
+wire            decomp_read;
+wire     [23:0] decomp_data;
+wire            VGA_CTRL_CLK;
 
 ////////////////////////
 reg [5:0] counter_r, counter_w;
@@ -497,6 +504,7 @@ wire [39:0] denomB;
 wire [47:0] div_result;
 wire        clken;
 reg [47:0] div_r, div_w;
+
 
 wire inverse_valid;
 wire is_inside;
@@ -530,10 +538,10 @@ assign  VGA_CTRL_CLK = ~VGA_CLK;
 
 // assign	LEDR		=	SW;
 // assign	LEDG		=	Y_Cont;
-assign  LEDG[0] = test_data[0];
+// assign  LEDG[0] = vga_data[0];
 assign  LEDG[1] = test_rd_use;
 assign  LEDG[2] = sram_wr_full;
-assign  LEDG[3] = test_line;
+// assign  LEDG[3] = test_line;
 // assign  LEDG[3] = UART_RXD;
 // assign  LEDG[4] = UART_TXD;
 assign LEDG[5] = rCCD_FVAL;
@@ -676,12 +684,13 @@ I2C_CCD_Config 		u8	(	//	Host Side
 //VGA DISPLAY
 VGA_Controller		u1	(	//	Host Side
 							.oRequest(Read),
-							// .iRed(Read_DATA2[9:0]),
-							// .iGreen({Read_DATA1[14:10],Read_DATA2[14:10]}),
-							// .iBlue(Read_DATA1[9:0]),
-							.iRed({test_data[15:11], 5'h0}),
-							.iGreen({test_data[10:5], 4'h0}),
-							.iBlue({test_data[4:0], 5'h0}),
+							.oFrame_start(vga_frame_start),
+							// .iRed({vga_data[15:11], 5'h0}),
+							// .iGreen({vga_data[10:5], 4'h0}),
+							// .iBlue({vga_data[4:0], 5'h0}),
+							.iRed({decomp_data[23:16], 2'b0}),
+							.iGreen({decomp_data[15:8], 2'b0}),
+							.iBlue({decomp_data[7:0], 2'b0}),
 							//	VGA Side
 							.oVGA_R(oVGA_R),
 							.oVGA_G(oVGA_G),
@@ -699,19 +708,19 @@ VGA_Controller		u1	(	//	Host Side
 Image_Generator     img_gen (
 							.i_clk(CLOCK2_50),
 							.i_rst_n(DLY_RST_1),
-							.i_enable(corner_found),
 							.i_pause(sram_wr_full),
 							.i_addr_valid(corner_val),
+							.i_enable(corner_found),
 							.i_ul_addr(ul_addr),
 							.i_ur_addr(ur_addr),
 							.i_dl_addr(dl_addr),
 							.i_dr_addr(dr_addr),
 							.o_req_cam_data(gen_read),
 							.i_cam_data({2'b0, Read_DATA2[9:0], Read_DATA1[14:10], Read_DATA2[14:10], Read_DATA1[9:0]}),
+							.o_req_img_addr(image_addr),
+							.i_img_data(image_data),
 							.o_vaild(gen_valid),
 							.o_data(gen_data),
-							.i_img_data(image_data),
-							.o_req_img_addr(image_addr),
 							.o_inside(LEDG[6])
 );
 
@@ -734,19 +743,39 @@ Corner_Finder       corner_finder (
 							.o_ul_addr(ul_addr),
 							.o_ur_addr(ur_addr),
 							.o_dl_addr(dl_addr),
-							.o_dr_addr(dr_addr),
+							.o_dr_addr(dr_addr)
+);
+
+Compressor compressor_0 (	.i_clk(CLOCK2_50),
+							.i_rst_n(DLY_RST_1),
+							.i_gen_valid(gen_valid),
+							.i_data({gen_data[29:22], gen_data[19:12], gen_data[9:2]}),
+							.o_valid(comp_valid),
+							.o_data(comp_data)
+);
+
+Decompressor decompressor_0 (	.i_clk(~VGA_CTRL_CLK),
+								.i_rst_n(DLY_RST_2),
+								.i_req(Read),
+								.i_data(sram_data),
+								.o_req(decomp_read),
+								.o_data(decomp_data)
 );
 
 Sram_Contoller      sram_control (
 							.i_clk(sdram_ctrl_clk),
 							.i_rst_n(DLY_RST_1),
 
-							.wr_data({gen_data[29:25], gen_data[19:14], gen_data[9:5]}),
-							.wr_request(gen_valid),
+							// .wr_data({gen_data[29:25], gen_data[19:14], gen_data[9:5]}),
+							.wr_data(comp_data),
+							// .wr_request(gen_valid),
+							.wr_request(comp_valid),
 							.wr_clk(CLOCK2_50),
 
-							.rd_data(test_data),
-							.rd_request(Read),
+							// .rd_data(vga_data),
+							.rd_data(sram_data),
+							// .rd_request(Read),
+							.rd_request(decomp_read),
 							.rd_clk(~VGA_CTRL_CLK),
 
 							.o_SRAM_ADDR(SRAM_ADDR),
@@ -763,7 +792,7 @@ Sram_Contoller      sram_control (
 
 Image_Controller    image_controller (
 							.i_clk(CLOCK2_50),
-							.i_rst_n(DLY_RST_2),
+							.i_rst_n(DLY_RST_1),
 							.wen(loader_valid),
 							.i_data(loader_data),
 							.i_address(image_addr),
@@ -782,7 +811,7 @@ Image_Controller    image_controller (
 
 test                 test_0 (
 		                .clk_clk(CLOCK2_50),                         //                        clk.clk
-		                .reset_reset_n(DLY_RST_2),                   //                      reset.reset_n
+		                .reset_reset_n(DLY_RST_1),                   //                      reset.reset_n
 		                .test_loader_0_conduit_end_name(),  //  test_loader_0_conduit_end.name
 		                .test_loader_0_conduit_end_data(loader_data),  //                           .data
 		                .test_loader_0_conduit_end_valid(loader_valid), //                           .valid
@@ -791,160 +820,4 @@ test                 test_0 (
 	);
 
 
-always @(*) begin
-	led1 = 0;
-	led2 = 0;
-	if (test_line3 || led2) begin
-		led2 = 1;
-	end
-	if (test_line2 || led1) begin
-		led1 = 1;
-	end
-	if (frame_valid) begin
-		led1 = 0;
-		led2 = 0;
-	end
-end
-
-
-wire [35:0] A,B,C,D,E,F,G,H;
-reg [13:0] image_addr_temp_r, image_addr_temp_w;
-//test get_perspective
-// GetPerspective get_perspective (
-//    .i_clk(rCCD_FVAL),
-//    .i_rst_n(DLY_RST_1),
-//    .i_start(counter_r == 1),
-//    .i_ul_addr({10'd310, 10'd63}), // first 10 bit is x, last is y
-//    .i_ur_addr({10'd500, 10'd18}),
-//    .i_dr_addr({10'd400, 10'd190}),
-//    .i_dl_addr({10'd290, 10'd220}),
-//    .o_A(A),
-//    .o_B(B),
-//    .o_C(C),
-//    .o_D(D),
-//    .o_E(E),
-//    .o_F(F),
-//    .o_G(G),
-//    .o_H(H),
-//    .o_valid(inverse_valid)
-//    // .o_test(LEDR)
-// );
-
-// PerspectiveTransformer perspective_transformer (
-//     .i_clk(rCCD_FVAL),
-//     .i_rst_n(DLY_RST_1),
-//     .i_start(inverse_valid),
-//     .i_A(A),
-//     .i_B(B),
-//     .i_C(C),
-//     .i_D(D),
-//     .i_E(E),
-//     .i_F(F),
-//     .i_G(G),
-//     .i_H(H),
-//     .i_req(counter2_r < 152401), //80350
-//     .o_inside(is_inside),
-//     .o_point(image_addr_temp),
-//     .o_can_fetch(can_fetch)
-// );
-
-
-
-
-// //test div
-
-// Div div_Div_3 (
-//     .clock(CLOCK2_50),
-//     .aclr(~DLY_RST_1),
-//     .clken(clken),
-//     .numer(numerA),
-//     .denom(denomB),
-//     .quotient(div_result)
-// );
-
-reg [21:0] out_cntr_r, out_cntr_w;
-reg [ 3:0] cntr_r, cntr_w;
-reg [17:0] ledr;
-// assign LEDR = (LEDG[6]) ? image_addr : 18'b0;
-assign LEDR = ul_addr;
-
-
-always @(posedge CLOCK2_50 or negedge DLY_RST_1) begin
-	if (!DLY_RST_1) begin
-		out_cntr_r <= 0;
-	end
-	else begin
-		out_cntr_r <= out_cntr_r + 1;
-	end
-end
-
-always @(posedge out_cntr_r[21] or negedge DLY_RST_1) begin
-	if (!DLY_RST_1) begin
-		cntr_r <= 0;
-	end
-	else begin
-		cntr_r <= cntr_r + 1;
-	end
-	case (cntr_r)
-		00:			ledr <= A[35:18];
-		01: 		ledr <= A[17: 0];
-		02: 		ledr <= B[35:18];
-		03: 		ledr <= B[17: 0];
-		04: 		ledr <= C[35:18];
-		05: 		ledr <= C[17: 0];
-		06: 		ledr <= D[35:18];
-		07: 		ledr <= D[17: 0];
-		08: 		ledr <= E[35:18];
-		09: 		ledr <= E[17: 0];
-		10: 		ledr <= F[35:18];
-		11: 		ledr <= F[17: 0];
-		12: 		ledr <= G[35:18];
-		13: 		ledr <= G[17: 0];
-		14: 		ledr <= H[35:18];
-		15: 		ledr <= H[17: 0];
-		default:	ledr <= 0;
-	endcase
-end
-
-
-always @(*) begin
-	counter_w = counter_r;
-	counter2_w = counter2_r;
-	div_w = div_r;
-	is_inside_w = is_inside_r;
-	image_addr_temp_w = image_addr_temp_r;
-	if (counter_r != 2) begin
-		counter_w = counter_r + 1;
-	end
-	if (counter_r == 1) begin
-		div_w = div_result;
-	end
-	if (can_fetch) begin
-		counter2_w = 0;
-	end	
-	if (counter2_r != 240017) begin
-		counter2_w = counter2_r + 1;
-	end
-	if (counter2_r == 152400) begin
-		is_inside_w = is_inside;
-		image_addr_temp_w = image_addr_temp;
-	end
-end
-
-always @(posedge rCCD_FVAL or negedge DLY_RST_1) begin
-	if (!DLY_RST_1) begin
-		counter_r <= 0;
-		div_r <= 0;
-		counter2_r <= 20'hfffff;
-		is_inside_r <= 0;
-		image_addr_temp_r <= 0;
-	end
-	else begin
-		counter_r <= counter_w;
-		div_r <= div_w;
-		counter2_r <= counter2_w;
-		is_inside_r <= is_inside_w;
-		image_addr_temp_r <= image_addr_temp_w;
-	end
-end
 endmodule

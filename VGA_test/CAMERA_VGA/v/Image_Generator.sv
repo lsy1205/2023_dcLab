@@ -39,7 +39,7 @@ logic        is_inside_r, is_inside_w;
 logic        req_next;
 
 assign o_inside = is_inside_r && valid_r;
-assign frame_valid = (col_counter_r == 0 && row_counter_r == 0);
+// assign o_frame_start = (col_counter_r == 0 && row_counter_r == 0);
 
 assign req_next = (!i_pause && col_counter_w < 800 && row_counter_w < 600);
 
@@ -49,15 +49,6 @@ assign o_req_img_addr = {image_addr[6:0], image_addr[13:7]};
 assign o_vaild = valid_r;
 assign o_data  = out_data_r;
 
-
-assign o_A = A;
-assign o_B = B;
-assign o_C = C;
-assign o_D = D;
-assign o_E = E;
-assign o_F = F;
-assign o_G = G;
-assign o_H = H;
 
 GetPerspective get_perspective (
     .i_clk(i_clk),
@@ -127,30 +118,30 @@ always_comb begin
             out_data_w = {2'b0, i_img_data[23:16], 2'b0, i_img_data[15:8], 2'b0, i_img_data[7:0], 2'b0};
         end
 
-        if (   row_counter_r > (i_ul_addr[19:10]) 
-            && row_counter_r < (i_ul_addr[19:10] + 15)
-            && col_counter_r > (i_ul_addr[ 9: 0] - 16)
-            && col_counter_r < (i_ul_addr[ 9: 0] + 15)) begin
-            out_data_w = {2'b0, 10'h3ff, 10'h0, 10'h3ff}; //RGB
-        end
-        if (   row_counter_r > (i_ur_addr[19:10]) 
-            && row_counter_r < (i_ur_addr[19:10] + 12)
-            && col_counter_r > (i_ur_addr[ 9: 0] - 13)
-            && col_counter_r < (i_ur_addr[ 9: 0] + 12)) begin
-            out_data_w = {2'b0, 10'h3ff, 10'h0, 10'h0};
-        end
-        if (   row_counter_r > (i_dl_addr[19:10]) 
-            && row_counter_r < (i_dl_addr[19:10] + 9)
-            && col_counter_r > (i_dl_addr[ 9: 0] - 10)
-            && col_counter_r < (i_dl_addr[ 9: 0] + 9)) begin
-            out_data_w = {2'b0, 10'h0, 10'h3ff, 10'h3ff};
-        end
-        if (   row_counter_r > (i_dr_addr[19:10]) 
-            && row_counter_r < (i_dr_addr[19:10] + 6)
-            && col_counter_r > (i_dr_addr[ 9: 0] - 7)
-            && col_counter_r < (i_dr_addr[ 9: 0] + 6)) begin
-            out_data_w = {2'b0, 10'h0, 10'h0, 10'h3ff};
-        end
+        // if (   row_counter_r > (i_ul_addr[19:10]) 
+        //     && row_counter_r < (i_ul_addr[19:10] + 15)
+        //     && col_counter_r > (i_ul_addr[ 9: 0] - 16)
+        //     && col_counter_r < (i_ul_addr[ 9: 0] + 15)) begin
+        //     out_data_w = {2'b0, 10'h3ff, 10'h0, 10'h3ff}; //RGB
+        // end
+        // if (   row_counter_r > (i_ur_addr[19:10]) 
+        //     && row_counter_r < (i_ur_addr[19:10] + 12)
+        //     && col_counter_r > (i_ur_addr[ 9: 0] - 13)
+        //     && col_counter_r < (i_ur_addr[ 9: 0] + 12)) begin
+        //     out_data_w = {2'b0, 10'h3ff, 10'h0, 10'h0};
+        // end
+        // if (   row_counter_r > (i_dl_addr[19:10]) 
+        //     && row_counter_r < (i_dl_addr[19:10] + 9)
+        //     && col_counter_r > (i_dl_addr[ 9: 0] - 10)
+        //     && col_counter_r < (i_dl_addr[ 9: 0] + 9)) begin
+        //     out_data_w = {2'b0, 10'h0, 10'h3ff, 10'h3ff};
+        // end
+        // if (   row_counter_r > (i_dr_addr[19:10]) 
+        //     && row_counter_r < (i_dr_addr[19:10] + 6)
+        //     && col_counter_r > (i_dr_addr[ 9: 0] - 7)
+        //     && col_counter_r < (i_dr_addr[ 9: 0] + 6)) begin
+        //     out_data_w = {2'b0, 10'h0, 10'h0, 10'h3ff};
+        // end
     end
 end
 

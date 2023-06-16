@@ -45,6 +45,7 @@ module	VGA_Controller(	//	Host Side
 						iGreen,
 						iBlue,
 						oRequest,
+						oFrame_start,
 						//	VGA Side
 						oVGA_R,
 						oVGA_G,
@@ -100,6 +101,7 @@ input		[9:0]	iRed;
 input		[9:0]	iGreen;
 input		[9:0]	iBlue;
 output	reg			oRequest;
+output              oFrame_start;
 //	VGA Side
 output	reg	[9:0]	oVGA_R;
 output	reg	[9:0]	oVGA_G;
@@ -131,6 +133,8 @@ wire	[12:0]		v_mask;
 assign v_mask = 13'd0 ;//iZOOM_MODE_SW ? 13'd0 : 13'd26;
 
 ////////////////////////////////////////////////////////
+
+assign oFrame_start = (H_Cont == X_START-3 && V_Cont == Y_START-1);
 
 assign	mVGA_BLANK	=	mVGA_H_SYNC & mVGA_V_SYNC;
 assign	mVGA_SYNC	=	1'b0;
