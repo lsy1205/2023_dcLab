@@ -1,0 +1,11 @@
+	component Image_Loader_Wrapper is
+		port (
+			clk_clk                        : in  std_logic                     := 'X'; -- clk
+			image_loader_wrapper_out_data  : out std_logic_vector(23 downto 0);        -- data
+			image_loader_wrapper_out_valid : out std_logic;                            -- valid
+			reset_reset_n                  : in  std_logic                     := 'X'; -- reset_n
+			uart_0_external_connection_rxd : in  std_logic                     := 'X'; -- rxd
+			uart_0_external_connection_txd : out std_logic                             -- txd
+		);
+	end component Image_Loader_Wrapper;
+

@@ -1006,6 +1006,18 @@ set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
 set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
 set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name SYSTEMVERILOG_FILE v/Compressor.sv
+set_global_assignment -name SYSTEMVERILOG_FILE v/Perspective_Transformer.sv
+set_global_assignment -name SYSTEMVERILOG_FILE v/GetPerspective.sv
+set_global_assignment -name VERILOG_FILE Test/synthesis/test.v -library test
+set_global_assignment -name QIP_FILE Test/synthesis/test.qip
+set_global_assignment -name SYSTEMVERILOG_FILE v/Image_Loader.sv
+set_global_assignment -name SYSTEMVERILOG_FILE v/Image_Controller.sv
+set_global_assignment -name SDC_FILE DE2_115_D5M_VGA.sdc
+set_global_assignment -name SYSTEMVERILOG_FILE v/Sram_Controller.sv
+set_global_assignment -name SYSTEMVERILOG_FILE v/Corner_Finder.sv
+set_global_assignment -name SYSTEMVERILOG_FILE v/Median_Filter.sv
+set_global_assignment -name SYSTEMVERILOG_FILE v/Image_Generator.sv
 set_global_assignment -name VERILOG_FILE v/Line_Buffer1.v
 set_global_assignment -name VERILOG_FILE v/Line_Buffer.v
 set_global_assignment -name QIP_FILE v/Line_Buffer1.qip
@@ -1015,7 +1027,6 @@ set_global_assignment -name VERILOG_FILE Sdram_Control/control_interface.v
 set_global_assignment -name VERILOG_FILE Sdram_Control/sdr_data_path.v
 set_global_assignment -name VERILOG_FILE Sdram_Control/Sdram_Control.v
 set_global_assignment -name SOURCE_FILE Sdram_Control/Sdram_Params.h
-set_global_assignment -name VERILOG_FILE Sdram_Control/Sdram_RD_FIFO.v
 set_global_assignment -name VERILOG_FILE Sdram_Control/Sdram_WR_FIFO.v
 set_global_assignment -name VERILOG_FILE v/CCD_Capture.v
 set_global_assignment -name VERILOG_FILE v/I2C_CCD_Config.v
@@ -1024,12 +1035,15 @@ set_global_assignment -name VERILOG_FILE v/RAW2RGB.v
 set_global_assignment -name VERILOG_FILE v/Reset_Delay.v
 set_global_assignment -name VERILOG_FILE v/SEG7_LUT.v
 set_global_assignment -name VERILOG_FILE v/SEG7_LUT_8.v
-set_global_assignment -name VERILOG_FILE v/Stack_RAM.v
 set_global_assignment -name VERILOG_FILE v/VGA_Controller.v
 set_global_assignment -name SDC_FILE DE2_115_D5M_VGA.SDC
 set_global_assignment -name QIP_FILE v/sdram_pll.qip
 set_global_assignment -name VERILOG_FILE v/touch_tcon.v
-set_global_assignment -name VERILOG_FILE v/VGA_Param.v
 set_global_assignment -name SOURCE_FILE VGA_Param.h
 set_global_assignment -name VERILOG_FILE DE2_115_CAMERA.v
+set_global_assignment -name QIP_FILE SRAM_RD_FIFO.qip
+set_global_assignment -name QIP_FILE SRAM_WR_FIFO.qip
+set_global_assignment -name QIP_FILE RAM_image.qip
+set_global_assignment -name QIP_FILE Sdram_RD_FIFO.qip
+set_global_assignment -name QIP_FILE Div.qip
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

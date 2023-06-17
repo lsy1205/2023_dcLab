@@ -1,8 +1,16 @@
 <sld_project_info>
   <project>
-    <hash md5_digest_80b="409eb3a4cfc409b0b0a2"/>
+    <hash md5_digest_80b="ffb8ff224f110b05b23c"/>
   </project>
   <file_info>
     <file device="EP4CE115F29C7" path="DE2_115_CAMERA.sof" usercode="0xFFFFFFFF"/>
   </file_info>
+  <sld_infos>
+    <sld_info hpath="test:test_0" name="test_0">
+      <assignment_values>
+        <assignment_value text="QSYS_NAME test HAS_SOPCINFO 1 GENERATION_ID 1686590316"/>
+      </assignment_values>
+      <parameters/>
+    </sld_info>
+  </sld_infos>
 </sld_project_info>

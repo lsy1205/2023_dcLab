@@ -39,98 +39,6 @@
 //   Ver  :| Author            :| Mod. Date :| 		Changes Made:
 //   V1.0 :| Johnny Fan        :| 07/08/01  :|      Initial Revision
 // --------------------------------------------------------------------
-`include "VGA_Param.h"
-`ifdef VGA_640x480p60
-module RAW2RGB(	oRed,
-				oGreen,
-				oBlue,
-				oDVAL,
-				iX_Cont,
-				iY_Cont,
-				iDATA,
-				iDVAL,
-				iCLK,
-				iRST
-				);
-
-input	[10:0]	iX_Cont;
-input	[10:0]	iY_Cont;
-input	[11:0]	iDATA;
-input			iDVAL;
-input			iCLK;
-input			iRST;
-output	[11:0]	oRed;
-output	[11:0]	oGreen;
-output	[11:0]	oBlue;
-output			oDVAL;
-wire	[11:0]	mDATA_0;
-wire	[11:0]	mDATA_1;
-reg		[11:0]	mDATAd_0;
-reg		[11:0]	mDATAd_1;
-reg		[11:0]	mCCD_R;
-reg		[12:0]	mCCD_G;
-reg		[11:0]	mCCD_B;
-reg				mDVAL;
-
-wire    threshold;
-//out
-assign  threshold = (((rRed + rGreen + rGreen + rBlue) >> 2) > 128) ? 1 : 0; 
-assign	oRed	=	(threshold) ? 255 : 0;//rRed;
-assign	oGreen	=	(threshold) ? 255 : 0;//rGreen[12:1];
-assign	oBlue	=	(threshold) ? 255 : 0;//rBlue;
-assign	oDVAL	=	mDVAL;
-
-Line_Buffer1 	u0	(	.clken(iDVAL),
-						.clock(iCLK),
-						.shiftin(iDATA),
-						.taps0x(mDATA_1),
-						.taps1x(mDATA_0)	);
-
-always@(posedge iCLK or negedge iRST)
-begin
-	if(!iRST)
-	begin
-		mCCD_R	<=	0;
-		mCCD_G	<=	0;
-		mCCD_B	<=	0;
-		mDATAd_0<=	0;
-		mDATAd_1<=	0;
-		mDVAL	<=	0;
-	end
-	else
-	begin
-		mDATAd_0	<=	mDATA_0;
-		mDATAd_1	<=	mDATA_1;
-		mDVAL		<=	{iY_Cont[0]|iX_Cont[0]}	?	1'b0	:	iDVAL;
-		if({iY_Cont[0],iX_Cont[0]}==2'b10)
-		begin
-			mCCD_R	<=	mDATA_0;
-			mCCD_G	<=	mDATAd_0+mDATA_1;
-			mCCD_B	<=	mDATAd_1;
-		end	
-		else if({iY_Cont[0],iX_Cont[0]}==2'b11)
-		begin
-			mCCD_R	<=	mDATAd_0;
-			mCCD_G	<=	mDATA_0+mDATAd_1;
-			mCCD_B	<=	mDATA_1;
-		end
-		else if({iY_Cont[0],iX_Cont[0]}==2'b00)
-		begin
-			mCCD_R	<=	mDATA_1;
-			mCCD_G	<=	mDATA_0+mDATAd_1;
-			mCCD_B	<=	mDATAd_0;
-		end
-		else if({iY_Cont[0],iX_Cont[0]}==2'b01)
-		begin
-			mCCD_R	<=	mDATAd_1;
-			mCCD_G	<=	mDATAd_0+mDATA_1;
-			mCCD_B	<=	mDATA_0;
-		end
-	end
-end
-
-endmodule
-`else
 module	RAW2RGB				(	iCLK,iRST_n,
 								//Read Port 1
 								iData,
@@ -141,7 +49,8 @@ module	RAW2RGB				(	iCLK,iRST_n,
 								oDval,
 								iZoom,
 								iX_Cont,
-								iY_Cont
+								iY_Cont,
+								oThreshold
 							);
 
 
@@ -155,6 +64,7 @@ output			oDval;
 input	[1:0]	iZoom;
 input	[15:0]	iX_Cont;
 input	[15:0]	iY_Cont;
+output          oThreshold;
 
 wire	[11:0]	wData0;
 wire	[11:0]	wData1;
@@ -172,10 +82,20 @@ reg				oDval;
 
 reg				dval_ctrl;
 reg				dval_ctrl_en;
+
+wire    [12:0]  red_th, blue_th, green_th;
+wire    [13:0]  gray;
 //out
-assign	oRed	=	rRed;
-assign	oGreen	=	rGreen[12:1];
-assign	oBlue	=	rBlue;
+assign	oRed	=   rRed; // 0; // oThreshold ? rRed : 0;
+assign	oGreen	=	rGreen[12:1]; // (rGreen[12:1] > green_th) ? rGreen[12:1] - gray + 2048 : 0;// oThreshold ? rGreen[12:1] : 0;
+assign	oBlue	=	rBlue; // 0; // oThreshold ? rBlue : 0;
+assign  red_th  =   gray - 0;
+assign  blue_th =   gray - 0;
+assign  green_th =  gray + 300;
+assign  gray    =   (rRed + rBlue + rGreen) >> 2;
+
+assign  oThreshold = ( rGreen[12:1] > green_th) ? 1 : 0; 
+// assign  oThreshold = ( $signed(rGreen[12:1]) > $signed(green_th) && $signed(rRed) < $signed(red_th) && $signed(rBlue) < $signed(blue_th)) ? 1 : 0; 
 
 Line_Buffer	L1	(
 					.clken(iDval),
@@ -345,5 +265,3 @@ always@(posedge iCLK or negedge iRST_n)
 
 
 endmodule
-
-`endif

@@ -464,6 +464,61 @@ wire	[9:0]	oVGA_R;   				//	VGA Red[9:0]
 wire	[9:0]	oVGA_G;	 				//	VGA Green[9:0]
 wire	[9:0]	oVGA_B;   				//	VGA Blue[9:0]
 
+wire            Threshold;
+wire    [15:0]  write_1, write_2;
+wire            gen_valid;
+wire    [31:0]  gen_data;
+wire            medi, medi_val;
+wire            corner_val;
+wire    [19:0]  ul_addr, ur_addr, dl_addr, dr_addr;
+wire            corner_found;
+wire            gen_fin;
+wire            gen_ack;
+wire    [15:0]  test;
+wire            test_bit;
+wire    [15:0]  vga_data;
+wire    [15:0]  sram_data;
+wire            test_rd_use;
+wire            sram_wr_full;
+wire    [23:0]  loader_data;
+wire            loader_valid;
+wire    [23:0]  image_data;
+wire    [13:0]  image_addr;
+wire            test_line;
+wire            test_line2;
+wire            test_line3;
+wire            gen_read;
+wire            frame_valid;
+reg             led1, led2;
+wire     [15:0] comp_data;
+wire            comp_valid;
+wire            vga_frame_start;
+wire            decomp_read;
+wire     [23:0] decomp_data;
+wire            VGA_CTRL_CLK;
+
+////////////////////////
+reg [5:0] counter_r, counter_w;
+wire [47:0] numerA;
+wire [39:0] denomB;
+wire [47:0] div_result;
+wire        clken;
+reg [47:0] div_r, div_w;
+
+
+wire inverse_valid;
+wire is_inside;
+reg is_inside_w, is_inside_r;
+wire can_fetch;
+wire [13:0] image_addr_temp;
+reg [19:0] counter2_r, counter2_w;
+
+assign clken = counter_r < 16;
+assign numerA = 48'd9848695654;
+assign denomB = 40'd156564;
+///////////////////////
+
+
 //power on start
 wire             auto_start;
 //=======================================================
@@ -473,22 +528,38 @@ wire             auto_start;
 assign	D5M_TRIGGER	=	1'b1;  // tRIGGER
 assign	D5M_RESET_N	=	DLY_RST_1;
 assign  VGA_CTRL_CLK = ~VGA_CLK;
+// assign  LEDR[13:0]        = image_addr;
 
-assign	LEDR		=	SW;
-assign	LEDG		=	Y_Cont;
-assign	UART_TXD = UART_RXD;
+// assign  LEDR[13:0]        = image_addr_temp;
+// // assign  LEDR[15]    = led1;
+// assign  LEDR[16]    = is_inside_w;
+
+// assign LEDR[15:0] = div_r[15:0];
+
+// assign	LEDR		=	SW;
+// assign	LEDG		=	Y_Cont;
+// assign  LEDG[0] = vga_data[0];
+assign  LEDG[1] = test_rd_use;
+assign  LEDG[2] = sram_wr_full;
+// assign  LEDG[3] = test_line;
+// assign  LEDG[3] = UART_RXD;
+// assign  LEDG[4] = UART_TXD;
+assign LEDG[5] = rCCD_FVAL;
+assign LEDG[7] = is_inside;
+// assign	UART_TXD = UART_RXD;
 
 //fetch the high 8 bits
-assign  VGA_R = oVGA_R[9:2];
-assign  VGA_G = oVGA_G[9:2];
-assign  VGA_B = oVGA_B[9:2];
+assign VGA_R = oVGA_R[9:2];
+assign VGA_G = oVGA_G[9:2];
+assign VGA_B = oVGA_B[9:2];
+
 
 //D5M read 
 always@(posedge D5M_PIXLCLK)
 begin
-	rCCD_DATA	<=	D5M_D;
-	rCCD_LVAL	<=	D5M_LVAL;
-	rCCD_FVAL	<=	D5M_FVAL;
+	rCCD_DATA <= D5M_D;
+	rCCD_LVAL <= D5M_LVAL;
+	rCCD_FVAL <= D5M_FVAL;
 end
 
 //auto start when power on
@@ -517,19 +588,6 @@ CCD_Capture			u3	(	.oDATA(mCCD_DATA),
 							.iRST(DLY_RST_2)
 						);
 //D5M raw date convert to RGB data
-`ifdef VGA_640x480p60
-RAW2RGB				u4	(	.iCLK(D5M_PIXLCLK),
-							.iRST(DLY_RST_1),
-							.iDATA(mCCD_DATA),
-							.iDVAL(mCCD_DVAL),
-							.oRed(sCCD_R),
-							.oGreen(sCCD_G),
-							.oBlue(sCCD_B),
-							.oDVAL(sCCD_DVAL),
-							.iX_Cont(X_Cont),
-							.iY_Cont(Y_Cont)
-						);
-`else
 RAW2RGB				u4	(	.iCLK(D5M_PIXLCLK),
 							.iRST_n(DLY_RST_1),
 							.iData(mCCD_DATA),
@@ -540,9 +598,9 @@ RAW2RGB				u4	(	.iCLK(D5M_PIXLCLK),
 							.oDval(sCCD_DVAL),
 							.iZoom(SW[16]),
 							.iX_Cont(X_Cont),
-							.iY_Cont(Y_Cont)
+							.iY_Cont(Y_Cont),
+							.oThreshold(Threshold)
 						);
-`endif
 //Frame count display
 SEG7_LUT_8 			u5	(	.oSEG0(HEX0),.oSEG1(HEX1),
 							.oSEG2(HEX2),.oSEG3(HEX3),
@@ -551,16 +609,11 @@ SEG7_LUT_8 			u5	(	.oSEG0(HEX0),.oSEG1(HEX1),
 							.iDIG(Frame_Cont[31:0])
 						);
 
-sdram_pll 			u6	(
-							.inclk0(CLOCK2_50),
+sdram_pll 			u6	(	.inclk0(CLOCK2_50),
 							.c0(sdram_ctrl_clk),
 							.c1(DRAM_CLK),
 							.c2(D5M_XCLKIN), //25M
-`ifdef VGA_640x480p60
-							.c3(VGA_CLK)     //25M 
-`else
 						    .c4(VGA_CLK)     //40M 	
-`endif
 						);
 
 //SDRam Read and Write as Frame Buffer
@@ -572,13 +625,8 @@ Sdram_Control	u7	(	//	HOST Side
 							.WR1_DATA({1'b0,sCCD_G[11:7],sCCD_B[11:2]}),
 							.WR1(sCCD_DVAL),
 							.WR1_ADDR(0),
-`ifdef VGA_640x480p60
-						    .WR1_MAX_ADDR(640*480/2),
-						    .WR1_LENGTH(8'h50),
-`else
 							.WR1_MAX_ADDR(800*600/2),
 							.WR1_LENGTH(8'h80),
-`endif							
 							.WR1_LOAD(!DLY_RST_0),
 							.WR1_CLK(D5M_PIXLCLK),
 
@@ -586,43 +634,28 @@ Sdram_Control	u7	(	//	HOST Side
 							.WR2_DATA({1'b0,sCCD_G[6:2],sCCD_R[11:2]}),
 							.WR2(sCCD_DVAL),
 							.WR2_ADDR(23'h100000),
-`ifdef VGA_640x480p60
-						    .WR2_MAX_ADDR(23'h100000+640*480/2),
-							.WR2_LENGTH(8'h50),
-`else							
 							.WR2_MAX_ADDR(23'h100000+800*600/2),
 							.WR2_LENGTH(8'h80),
-`endif	
 							.WR2_LOAD(!DLY_RST_0),
 							.WR2_CLK(D5M_PIXLCLK),
 
 							//	FIFO Read Side 1
 						    .RD1_DATA(Read_DATA1),
-				        	.RD1(Read),
+				        	.RD1(gen_read),
 				        	.RD1_ADDR(0),
-`ifdef VGA_640x480p60
-						    .RD1_MAX_ADDR(640*480/2),
-							.RD1_LENGTH(8'h50),
-`else
 							.RD1_MAX_ADDR(800*600/2),
-							.RD1_LENGTH(8'h80),
-`endif
+							.RD1_LENGTH(8'h40),
 							.RD1_LOAD(!DLY_RST_0),
-							.RD1_CLK(~VGA_CTRL_CLK),
+							.RD1_CLK(CLOCK2_50),
 							
 							//	FIFO Read Side 2
 						    .RD2_DATA(Read_DATA2),
-							.RD2(Read),
+							.RD2(gen_read),
 							.RD2_ADDR(23'h100000),
-`ifdef VGA_640x480p60
-						    .RD2_MAX_ADDR(23'h100000+640*480/2),
-							.RD2_LENGTH(8'h50),
-`else
 							.RD2_MAX_ADDR(23'h100000+800*600/2),
-							.RD2_LENGTH(8'h80),
-`endif
+							.RD2_LENGTH(8'h40),
 				        	.RD2_LOAD(!DLY_RST_0),
-							.RD2_CLK(~VGA_CTRL_CLK),
+							.RD2_CLK(CLOCK2_50),
 							
 							//	SDRAM Side
 						    .SA(DRAM_ADDR),
@@ -633,7 +666,9 @@ Sdram_Control	u7	(	//	HOST Side
 							.CAS_N(DRAM_CAS_N),
 							.WE_N(DRAM_WE_N),
 							.DQ(DRAM_DQ),
-							.DQM(DRAM_DQM)
+							.DQM(DRAM_DQM),
+							.test1(test_line2),
+							.test2(test_line3)
 						);
 //D5M I2C control
 I2C_CCD_Config 		u8	(	//	Host Side
@@ -649,9 +684,13 @@ I2C_CCD_Config 		u8	(	//	Host Side
 //VGA DISPLAY
 VGA_Controller		u1	(	//	Host Side
 							.oRequest(Read),
-							.iRed(Read_DATA2[9:0]),
-							.iGreen({Read_DATA1[14:10],Read_DATA2[14:10]}),
-							.iBlue(Read_DATA1[9:0]),
+							.oFrame_start(vga_frame_start),
+							// .iRed({vga_data[15:11], 5'h0}),
+							// .iGreen({vga_data[10:5], 4'h0}),
+							// .iBlue({vga_data[4:0], 5'h0}),
+							.iRed({decomp_data[23:16], 2'b0}),
+							.iGreen({decomp_data[15:8], 2'b0}),
+							.iBlue({decomp_data[7:0], 2'b0}),
 							//	VGA Side
 							.oVGA_R(oVGA_R),
 							.oVGA_G(oVGA_G),
@@ -665,5 +704,120 @@ VGA_Controller		u1	(	//	Host Side
 							.iRST_N(DLY_RST_2),
 							.iZOOM_MODE_SW(SW[16])
 						);
+
+Image_Generator     img_gen (
+							.i_clk(CLOCK2_50),
+							.i_rst_n(DLY_RST_1),
+							.i_pause(sram_wr_full),
+							.i_addr_valid(corner_val),
+							.i_enable(corner_found),
+							.i_ul_addr(ul_addr),
+							.i_ur_addr(ur_addr),
+							.i_dl_addr(dl_addr),
+							.i_dr_addr(dr_addr),
+							.o_req_cam_data(gen_read),
+							.i_cam_data({2'b0, Read_DATA2[9:0], Read_DATA1[14:10], Read_DATA2[14:10], Read_DATA1[9:0]}),
+							.o_req_img_addr(image_addr),
+							.i_img_data(image_data),
+							.o_vaild(gen_valid),
+							.o_data(gen_data),
+							.o_inside(LEDG[6])
+);
+
+Median_Filter       medium_filter (
+							.i_clk(D5M_PIXLCLK),
+							.i_rst_n(DLY_RST_1),
+							.i_valid(sCCD_DVAL),
+							.i_data(Threshold),
+							.o_valid(medi_val),
+							.o_data(medi)
+);
+
+Corner_Finder       corner_finder (
+							.i_clk(D5M_PIXLCLK),
+							.i_rst_n(DLY_RST_1),
+							.i_valid(medi_val),
+							.i_data(medi),
+							.o_valid(corner_val),
+							.o_success(corner_found),
+							.o_ul_addr(ul_addr),
+							.o_ur_addr(ur_addr),
+							.o_dl_addr(dl_addr),
+							.o_dr_addr(dr_addr)
+);
+
+Compressor compressor_0 (	.i_clk(CLOCK2_50),
+							.i_rst_n(DLY_RST_1),
+							.i_gen_valid(gen_valid),
+							.i_data({gen_data[29:22], gen_data[19:12], gen_data[9:2]}),
+							.o_valid(comp_valid),
+							.o_data(comp_data)
+);
+
+Decompressor decompressor_0 (	.i_clk(~VGA_CTRL_CLK),
+								.i_rst_n(DLY_RST_2),
+								.i_req(Read),
+								.i_data(sram_data),
+								.o_req(decomp_read),
+								.o_data(decomp_data)
+);
+
+Sram_Contoller      sram_control (
+							.i_clk(sdram_ctrl_clk),
+							.i_rst_n(DLY_RST_1),
+
+							// .wr_data({gen_data[29:25], gen_data[19:14], gen_data[9:5]}),
+							.wr_data(comp_data),
+							// .wr_request(gen_valid),
+							.wr_request(comp_valid),
+							.wr_clk(CLOCK2_50),
+
+							// .rd_data(vga_data),
+							.rd_data(sram_data),
+							// .rd_request(Read),
+							.rd_request(decomp_read),
+							.rd_clk(~VGA_CTRL_CLK),
+
+							.o_SRAM_ADDR(SRAM_ADDR),
+							.io_SRAM_DQ(SRAM_DQ),
+							.o_SRAM_WE_N(SRAM_WE_N),
+							.o_SRAM_CE_N(SRAM_CE_N),
+							.o_SRAM_OE_N(SRAM_OE_N),
+							.o_SRAM_LB_N(SRAM_LB_N),
+							.o_SRAM_UB_N(SRAM_UB_N),
+
+							.o_rd_use(test_rd_use),
+							.o_wr_use(sram_wr_full)
+);
+
+Image_Controller    image_controller (
+							.i_clk(CLOCK2_50),
+							.i_rst_n(DLY_RST_1),
+							.wen(loader_valid),
+							.i_data(loader_data),
+							.i_address(image_addr),
+							.o_data(image_data)
+);
+
+// Image_Loader_Wrapper        image_loader_wrapper (
+// 	                        .clk_clk(CLOCK3_50),                        //                        clk.clk
+// 	                        .image_loader_wrapper_i_clk(CLOCK3_50),               //                 img_loader.i_clk
+// 	                        .image_loader_wrapper_data(loader_data),                //                           .data
+// 	                        .image_loader_wrapper_valid(loader_valid),               //                           .valid
+// 	                        .reset_reset_n(DLY_RST_2),                  //                      reset.reset_n
+// 	                        .uart_0_external_connection_rxd(UART_RXD), // uart_0_external_connection.rxd
+// 	                        .uart_0_external_connection_txd(UART_TXD)  //                           .txd
+// );
+
+test                 test_0 (
+		                .clk_clk(CLOCK2_50),                         //                        clk.clk
+		                .reset_reset_n(DLY_RST_1),                   //                      reset.reset_n
+		                .test_loader_0_conduit_end_name(),  //  test_loader_0_conduit_end.name
+		                .test_loader_0_conduit_end_data(loader_data),  //                           .data
+		                .test_loader_0_conduit_end_valid(loader_valid), //                           .valid
+		                .uart_0_external_connection_rxd(UART_RXD),  // uart_0_external_connection.rxd
+		                .uart_0_external_connection_txd(UART_TXD)   //                           .txd
+	);
+
 
 endmodule
